@@ -2,16 +2,20 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
-class ApiTradingViewTest extends TestCase
+class ApiTradingviewTokenTest extends TestCase
 {
     public function setUp(): void
     {
         parent::setUp();
         Config::set('TRADINGVIEW_SECRET', 'test-secret');
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
     }
 
     public function test_it_can_not_access_tradingview_endpoint_without_secret_token()
@@ -38,4 +42,6 @@ class ApiTradingViewTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+
 }
