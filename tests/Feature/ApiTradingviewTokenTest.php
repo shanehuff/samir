@@ -37,7 +37,11 @@ class ApiTradingviewTokenTest extends TestCase
     public function test_it_can_access_tradingview_endpoint_correctly()
     {
         $response = $this->postJson('/api/tradingview', [
-            'secret' => 'test-secret'
+            'secret' => 'test-secret',
+            'payloads' => [
+                'side' => 'buy',
+                'timeframe' => '5m'
+            ]
         ]);
 
         $response->assertStatus(200);
