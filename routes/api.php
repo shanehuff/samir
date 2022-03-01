@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\HandleTradingviewHookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->post('/tradingview', function (Request $request) {
-    ray($request->all());
-    return $request->all();
-});
+Route::middleware('auth.tradingview')->post('/tradingview', HandleTradingviewHookController::class);
