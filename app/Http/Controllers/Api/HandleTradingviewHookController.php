@@ -3,12 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Tradingview\InteractsWithTradingviewAlerts;
 use Illuminate\Http\Request;
 
 class HandleTradingviewHookController extends Controller
 {
-    public function __invoke(Request $request)
+    use InteractsWithTradingviewAlerts;
+
+    public function __invoke(Request $request): array
     {
-        ray($request->input('secret'));
+        $request->validate([
+            'payloads.side' => 'required|string',
+            'payloads.timeframe' => 'required|string'
+        ]);
+
+        $this->createTradingviewAlert(
+            $request->input('payloads.side'),
+            $request->input('payloads.timeframe')
+        );
+
+        return ['status' => 'success'];
     }
 }

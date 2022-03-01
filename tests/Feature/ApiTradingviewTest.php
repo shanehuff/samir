@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\TradingviewAlert;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
@@ -14,6 +15,11 @@ class ApiTradingviewTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
     }
 
     public function test_it_store_tradingview_webhooks_to_db_correctly()
@@ -29,7 +35,8 @@ class ApiTradingviewTest extends TestCase
 
         $this->assertDatabaseHas('tradingview_alerts', [
             'side' => 'buy',
-            'timeframe' => '5m'
+            'timeframe' => '5m',
+            'status' => TradingviewAlert::STATUS_PENDING
         ]);
     }
 }
