@@ -26,3 +26,7 @@ Commander manage bots to execute the trade.
 2. Commander collects data from `tradingview_alerts` table based on the event triggered. Update itself available to sell.
 3. Tradingview -> sends an alert of selling with timeframe 5m -> repeat step (1)
 4. Commander collects data from `tradingview_alerts` table again. Send a command to bot to execute the selling trade.
+
+### Resources
+
+Documentation of 3Commas bot API: https://github.com/3commas-io/3commas-official-api-docs/blob/master/bots_api.md
