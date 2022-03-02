@@ -12,15 +12,25 @@ class HandleTradingviewHookController extends Controller
 
     public function __invoke(Request $request): array
     {
+        info(sprintf(
+            'HandleTradingviewHookController: Receive request from Tradingview with data: %s',
+            json_encode($request->all())
+        ));
+
         $request->validate([
             'payloads.side' => 'required|string',
             'payloads.timeframe' => 'required|string'
         ]);
 
-        $this->createTradingviewAlert(
+        $alert = $this->createTradingviewAlert(
             $request->input('payloads.side'),
             $request->input('payloads.timeframe')
         );
+
+        info(sprintf(
+            'HandleTradingviewHookController: Created Tradingview alert entry: %s',
+            $alert ?? $alert->toJson()
+        ));
 
         return ['status' => 'success'];
     }
