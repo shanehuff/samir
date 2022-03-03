@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Commander;
 use App\Models\TradingviewAlert;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,14 +16,17 @@ class ProcessTradingviewAlert implements ShouldQueue
 
     public TradingviewAlert $alert;
 
+    public Commander $commander;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(TradingviewAlert $alert)
+    public function __construct(TradingviewAlert $alert, Commander $commander)
     {
         $this->alert = $alert;
+        $this->commander = $commander;
     }
 
     /**
@@ -32,6 +36,10 @@ class ProcessTradingviewAlert implements ShouldQueue
      */
     public function handle()
     {
-        //
+        $isSellSignal = '4h' === $this->alert->timeframe && 'sell' === $this->alert->side;
+
+        if ($isSellSignal) {
+            $this->commander->selling();
+        }
     }
 }

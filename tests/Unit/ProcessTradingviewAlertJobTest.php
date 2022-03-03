@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Commander\InteractsWithCommanders;
 use App\Jobs\ProcessTradingviewAlert;
+use App\Models\Commander;
 use App\Models\TradingviewAlert;
 use App\Tradingview\InteractsWithTradingviewAlerts;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,12 @@ class ProcessTradingviewAlertJobTest extends TestCase
     {
         /** @var TradingviewAlert $alert */
         $alert = $this->alert;
-        (new ProcessTradingviewAlert($alert))->handle();
+
+        /** @var Commander $commander */
+        $commander = $this->commander;
+
+        $this->assertEquals(Commander::STATUS_CHILL, $commander->status);
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_SELL, $commander->status);
     }
 }
