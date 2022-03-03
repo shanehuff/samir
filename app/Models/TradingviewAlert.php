@@ -13,8 +13,7 @@ class TradingviewAlert extends Model
 
     // Statuses
     public const STATUS_PENDING = 0;
-    public const STATUS_EXECUTED = 1;
-    public const STATUS_FAILED = 2;
+    public const STATUS_PROCESSED = 1;
 
     protected $attributes = [
         'status' => self::STATUS_PENDING
