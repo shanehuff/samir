@@ -10,7 +10,7 @@ class VerifyTradingviewSecretToken
     public function handle(Request $request, Closure $next)
     {
         $token = $request->input('secret');
-        $tokenToCheck = config('TRADINGVIEW_SECRET');
+        $tokenToCheck = config('tradingview.secret');
 
         if (empty($token) || $tokenToCheck !== $token) {
             return abort(401);

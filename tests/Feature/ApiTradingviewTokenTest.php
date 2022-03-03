@@ -10,7 +10,7 @@ class ApiTradingviewTokenTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        Config::set('TRADINGVIEW_SECRET', 'test-secret');
+        Config::set('tradingview.secret', 'test-secret');
     }
 
     public function tearDown(): void
