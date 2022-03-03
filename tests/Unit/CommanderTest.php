@@ -19,7 +19,7 @@ class CommanderTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        
+
         $this->commander = $this->createCommander(
             'Test Commander', // name
             1000, // fund
@@ -42,6 +42,21 @@ class CommanderTest extends TestCase
         $this->assertEquals(1000, $commander->fund);
         $this->assertEquals(1, $commander->risk);
         $this->assertEquals(123456, $commander->bot_id);
+        $this->assertEquals(Commander::STATUS_CHILL, $commander->status);
+    }
+
+    public function test_commander_switching_status()
+    {
+        /** @var Commander $commander */
+        $commander = $this->commander;
+
+        $commander->selling();
+        $this->assertEquals(Commander::STATUS_SELL, $commander->status);
+
+        $commander->buying();
+        $this->assertEquals(Commander::STATUS_BUY, $commander->status);
+
+        $commander->chilling();
         $this->assertEquals(Commander::STATUS_CHILL, $commander->status);
     }
 }

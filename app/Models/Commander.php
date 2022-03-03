@@ -27,4 +27,28 @@ class Commander extends Model
         'bot_id',
         'status'
     ];
+
+    public function selling(): static
+    {
+        $this->status = self::STATUS_SELL;
+        $this->save();
+
+        return $this;
+    }
+
+    public function buying(): static
+    {
+        $this->status = self::STATUS_BUY;
+        $this->save();
+
+        return $this;
+    }
+
+    public function chilling(): static
+    {
+        $this->status = self::STATUS_CHILL;
+        $this->save();
+
+        return $this;
+    }
 }
