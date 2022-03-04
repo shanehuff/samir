@@ -43,7 +43,7 @@ class ProcessTradingviewAlertJobTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_it_can_turn_on_sell_mode_of_commander_with_4h_alert()
+    public function test_it_can_switching_mode_of_commander_with_4h_alert()
     {
         /** @var TradingviewAlert $alert */
         $alert = $this->alert;
@@ -51,8 +51,17 @@ class ProcessTradingviewAlertJobTest extends TestCase
         /** @var Commander $commander */
         $commander = $this->commander;
 
+        // Switch from chill to sell mode
         $this->assertEquals(Commander::STATUS_CHILL, $commander->status);
         (new ProcessTradingviewAlert($alert, $commander))->handle();
         $this->assertEquals(Commander::STATUS_SELL, $commander->status);
+
+        // Switch from sell to chill mode
+        $alert->side = 'chill';
+        $alert->save();
+
+        $this->assertEquals(Commander::STATUS_SELL, $commander->status);
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_CHILL, $commander->status);
     }
 }
