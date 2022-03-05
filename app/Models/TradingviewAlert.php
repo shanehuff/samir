@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\TradingviewAlertCreated;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,5 +24,9 @@ class TradingviewAlert extends Model
         'side',
         'timeframe',
         'status'
+    ];
+
+    protected $dispatchesEvents = [
+        'created' => TradingviewAlertCreated::class
     ];
 }

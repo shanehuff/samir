@@ -9,6 +9,7 @@ use App\Models\TradingviewAlert;
 use App\Tradingview\InteractsWithTradingviewAlerts;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class ProcessTradingviewAlertJobTest extends TestCase
@@ -24,6 +25,8 @@ class ProcessTradingviewAlertJobTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        Event::fake();
 
         $this->alert = $this->createTradingviewAlert(
             'sell',
@@ -45,6 +48,7 @@ class ProcessTradingviewAlertJobTest extends TestCase
 
     public function test_it_can_switching_mode_of_commander_with_4h_alert()
     {
+
         /** @var TradingviewAlert $alert */
         $alert = $this->alert;
 

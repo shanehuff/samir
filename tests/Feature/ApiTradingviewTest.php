@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\TradingviewAlert;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Illuminate\Support\Facades\Event;
+use App\Events\TradingviewAlertCreated;
 use Tests\TestCase;
 
 class ApiTradingviewTest extends TestCase
@@ -24,6 +26,8 @@ class ApiTradingviewTest extends TestCase
 
     public function test_it_store_tradingview_webhooks_to_db_correctly()
     {
+        Event::fake();
+
         $response = $this->postJson('/api/tradingview', [
             'payloads' => [
                 'side' => 'buy',
@@ -38,5 +42,7 @@ class ApiTradingviewTest extends TestCase
             'timeframe' => '5m',
             'status' => TradingviewAlert::STATUS_PENDING
         ]);
+
+        Event::assertDispatched(TradingviewAlertCreated::class);
     }
 }

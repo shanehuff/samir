@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Events\TradingviewAlertCreated;
+use App\Listeners\UpdateCommanderStatusUsingTradingviewAlert;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,6 +29,10 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        ray('test');
+        Event::listen(
+            TradingviewAlertCreated::class,
+            [UpdateCommanderStatusUsingTradingviewAlert::class, 'handle']
+        );
     }
 }
