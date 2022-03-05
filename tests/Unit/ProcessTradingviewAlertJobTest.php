@@ -60,8 +60,28 @@ class ProcessTradingviewAlertJobTest extends TestCase
         $alert->side = 'chill';
         $alert->save();
 
-        $this->assertEquals(Commander::STATUS_SELL, $commander->status);
         (new ProcessTradingviewAlert($alert, $commander))->handle();
         $this->assertEquals(Commander::STATUS_CHILL, $commander->status);
+
+        // Switch from chill to buy mode
+        $alert->side = 'buy';
+        $alert->save();
+
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_BUY, $commander->status);
+
+        // Switch from buy to sell mode
+        $alert->side = 'sell';
+        $alert->save();
+
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_SELL, $commander->status);
+
+        // Switch from sell to buy mode
+        $alert->side = 'buy';
+        $alert->save();
+
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_BUY, $commander->status);
     }
 }
