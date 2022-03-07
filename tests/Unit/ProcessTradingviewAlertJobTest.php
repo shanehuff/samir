@@ -88,4 +88,18 @@ class ProcessTradingviewAlertJobTest extends TestCase
         (new ProcessTradingviewAlert($alert, $commander))->handle();
         $this->assertEquals(Commander::STATUS_BUY, $commander->status);
     }
+
+    public function test_it_command_a_bot_to_execute_a_sell_trade_from_5m_sell_signal()
+    {
+        /** @var TradingviewAlert $alert */
+        $alert = $this->alert;
+        $alert->timeframe = '5m';
+        $alert->save();
+
+        // Do nothing if commander is chilling
+        $this->assertEquals(Commander::STATUS_CHILL, $this->commander->status);
+        (new ProcessTradingviewAlert($alert, $this->commander))->handle();
+        $this->assertEquals(Commander::STATUS_CHILL, $this->commander->status);
+        //@TODO Check bot history to make sure no command has been given after the job run
+    }
 }
