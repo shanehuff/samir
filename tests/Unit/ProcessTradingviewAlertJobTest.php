@@ -100,6 +100,11 @@ class ProcessTradingviewAlertJobTest extends TestCase
         $this->assertEquals(Commander::STATUS_CHILL, $this->commander->status);
         (new ProcessTradingviewAlert($alert, $this->commander))->handle();
         $this->assertEquals(Commander::STATUS_CHILL, $this->commander->status);
-        //@TODO Check bot history to make sure no command has been given after the job run
+
+        $this->assertDatabaseHas('commander_trades', [
+            'commander_id' => $this->commander->id,
+            'bot_id' => $this->commander->bot_id,
+            'side' => 'sell'
+        ]);
     }
 }
