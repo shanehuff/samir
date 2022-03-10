@@ -9,6 +9,7 @@ use App\Models\TradingviewAlert;
 use App\Tradingview\InteractsWithTradingviewAlerts;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class ProcessTradingviewAlertJobTest extends TestCase
@@ -24,6 +25,8 @@ class ProcessTradingviewAlertJobTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        Event::fake();
 
         $this->alert = $this->createTradingviewAlert(
             'sell',
@@ -43,16 +46,65 @@ class ProcessTradingviewAlertJobTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_it_can_turn_on_sell_mode_of_commander_with_4h_alert()
+    public function test_it_can_switching_mode_of_commander_with_4h_alert()
     {
+
         /** @var TradingviewAlert $alert */
         $alert = $this->alert;
 
         /** @var Commander $commander */
         $commander = $this->commander;
 
+        // Switch from chill to sell mode
         $this->assertEquals(Commander::STATUS_CHILL, $commander->status);
         (new ProcessTradingviewAlert($alert, $commander))->handle();
         $this->assertEquals(Commander::STATUS_SELL, $commander->status);
+
+        // Switch from sell to chill mode
+        $alert->side = 'chill';
+        $alert->save();
+
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_CHILL, $commander->status);
+
+        // Switch from chill to buy mode
+        $alert->side = 'buy';
+        $alert->save();
+
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_BUY, $commander->status);
+
+        // Switch from buy to sell mode
+        $alert->side = 'sell';
+        $alert->save();
+
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_SELL, $commander->status);
+
+        // Switch from sell to buy mode
+        $alert->side = 'buy';
+        $alert->save();
+
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_BUY, $commander->status);
+    }
+
+    public function test_it_command_a_bot_to_execute_a_sell_trade_from_5m_sell_signal()
+    {
+        /** @var TradingviewAlert $alert */
+        $alert = $this->alert;
+        $alert->timeframe = '5m';
+        $alert->save();
+
+        // Do nothing if commander is chilling
+        $this->assertEquals(Commander::STATUS_CHILL, $this->commander->status);
+        (new ProcessTradingviewAlert($alert, $this->commander))->handle();
+        $this->assertEquals(Commander::STATUS_CHILL, $this->commander->status);
+
+        $this->assertDatabaseHas('commander_trades', [
+            'commander_id' => $this->commander->id,
+            'bot_id' => $this->commander->bot_id,
+            'side' => 'sell'
+        ]);
     }
 }
