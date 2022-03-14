@@ -3,6 +3,8 @@
 namespace Modules\ThreeCommas\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\ThreeCommas\Contracts\ThreeCommasClientContract;
+use Modules\ThreeCommas\Client\ThreeCommasClient;
 
 class ThreeCommasProvider extends ServiceProvider
 {
@@ -14,10 +16,13 @@ class ThreeCommasProvider extends ServiceProvider
     public function boot(): void
     {
         if ($this->app->runningInConsole()) {
-            // php artisan vendor:publish --provider="Modules\ThreeCommas\Providers\ThreeCommasProvider" --tag="config"
             $this->publishes([
-              __DIR__ . '/../config/commas.php' => config_path('commas.php'),
+                __DIR__ . '/../config/commas.php' => config_path('commas.php'),
             ], 'config');
         }
+
+        $this->app->bind(ThreeCommasClientContract::class, function () {
+            return (new ThreeCommasClient)->setBaseURI(config('commas.base_uri'));
+        });
     }
 }
