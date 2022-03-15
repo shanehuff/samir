@@ -29,8 +29,6 @@ trait InteractsWithCommanders
             ->where('bot_id', $botId)
             ->first();
 
-
         return $commander ?? $this->createCommander($name, $fund, $risk, $botId);
-
     }
 }

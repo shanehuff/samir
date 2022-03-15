@@ -29,7 +29,6 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        ray('test');
         Event::listen(
             TradingviewAlertCreated::class,
             [UpdateCommanderStatusUsingTradingviewAlert::class, 'handle']

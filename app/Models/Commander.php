@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Commander extends Model
 {
@@ -50,5 +51,32 @@ class Commander extends Model
         $this->save();
 
         return $this;
+    }
+
+    public function trades(): HasMany
+    {
+        return $this->hasMany(CommanderTrade::class);
+    }
+
+    public function buy()
+    {
+        if (self::STATUS_BUY === $this->status) {
+            //@TODO Do buying via bot service here
+            $this->trades()->create([
+                'side' => 'buy',
+                'bot_id' => $this->bot_id
+            ]);
+        }
+    }
+
+    public function sell()
+    {
+        if (self::STATUS_SELL === $this->status) {
+            //@TODO Do selling via bot service here
+            $this->trades()->create([
+                'side' => 'sell',
+                'bot_id' => $this->bot_id
+            ]);
+        }
     }
 }
