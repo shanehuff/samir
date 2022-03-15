@@ -121,11 +121,18 @@ class ProcessTradingviewAlertJobTest extends TestCase
             'bot_id' => $commander->bot_id,
             'side' => 'sell'
         ]);
+    }
 
+    public function test_it_command_a_bot_to_execute_a_sell_trade_from_5m_buy_signal()
+    {
         /** @var TradingviewAlert $alert */
         $alert = $this->alert;
+        $alert->timeframe = '5m';
         $alert->side = 'buy';
         $alert->save();
+
+        /** @var Commander $commander */
+        $commander = $this->commander;
 
         $commander->buying();
         // Creates selling trade
