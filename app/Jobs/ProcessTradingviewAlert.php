@@ -22,6 +22,9 @@ class ProcessTradingviewAlert implements ShouldQueue
     public const ACTION_BUY_MODE = 2;
     public const ACTION_CHILL_MODE = 3;
     public const ACTION_UNKNOWN = 4;
+    public const ACTION_BUY = 5;
+    public const ACTION_SELL = 6;
+
 
     /**
      * Create a new job instance.
@@ -42,12 +45,16 @@ class ProcessTradingviewAlert implements ShouldQueue
     public function handle()
     {
         match ($this->resolveActionFromAlert($this->alert)) {
-            
+
             self::ACTION_SELL_MODE => $this->commander->selling(),
 
             self::ACTION_BUY_MODE => $this->commander->buying(),
 
             self::ACTION_CHILL_MODE => $this->commander->chilling(),
+
+            self::ACTION_BUY => $this->commander->buy(),
+
+            self::ACTION_SELL => $this->commander->sell(),
 
             default => info(sprintf(
                 'Receive unknown action from alert: %s',
@@ -68,6 +75,14 @@ class ProcessTradingviewAlert implements ShouldQueue
 
         if ('4h' === $alert->timeframe && 'buy' === $alert->side) {
             return self::ACTION_BUY_MODE;
+        }
+
+        if ('5m' === $alert->timeframe && 'buy' === $alert->side) {
+            return self::ACTION_BUY;
+        }
+
+        if ('5m' === $alert->timeframe && 'sell' === $alert->side) {
+            return self::ACTION_SELL;
         }
 
         return self::ACTION_UNKNOWN;

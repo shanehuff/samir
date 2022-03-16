@@ -96,15 +96,54 @@ class ProcessTradingviewAlertJobTest extends TestCase
         $alert->timeframe = '5m';
         $alert->save();
 
+        /** @var Commander $commander */
+        $commander = $this->commander;
+
         // Do nothing if commander is chilling
-        $this->assertEquals(Commander::STATUS_CHILL, $this->commander->status);
-        (new ProcessTradingviewAlert($alert, $this->commander))->handle();
-        $this->assertEquals(Commander::STATUS_CHILL, $this->commander->status);
+        $this->assertEquals(Commander::STATUS_CHILL, $commander->status);
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_CHILL, $commander->status);
+
+        $this->assertDatabaseMissing('commander_trades', [
+            'commander_id' => $commander->id,
+            'bot_id' => $commander->bot_id,
+            'side' => 'sell'
+        ]);
+
+        $commander->selling();
+        // Creates selling trade
+        $this->assertEquals(Commander::STATUS_SELL, $commander->status);
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_SELL, $commander->status);
 
         $this->assertDatabaseHas('commander_trades', [
-            'commander_id' => $this->commander->id,
-            'bot_id' => $this->commander->bot_id,
+            'commander_id' => $commander->id,
+            'bot_id' => $commander->bot_id,
             'side' => 'sell'
+        ]);
+    }
+
+    public function test_it_command_a_bot_to_execute_a_sell_trade_from_5m_buy_signal()
+    {
+        /** @var TradingviewAlert $alert */
+        $alert = $this->alert;
+        $alert->timeframe = '5m';
+        $alert->side = 'buy';
+        $alert->save();
+
+        /** @var Commander $commander */
+        $commander = $this->commander;
+
+        $commander->buying();
+        // Creates selling trade
+        $this->assertEquals(Commander::STATUS_BUY, $commander->status);
+        (new ProcessTradingviewAlert($alert, $commander))->handle();
+        $this->assertEquals(Commander::STATUS_BUY, $commander->status);
+
+        $this->assertDatabaseHas('commander_trades', [
+            'commander_id' => $commander->id,
+            'bot_id' => $commander->bot_id,
+            'side' => 'buy'
         ]);
     }
 }

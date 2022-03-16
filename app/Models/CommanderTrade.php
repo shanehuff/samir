@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class CommanderTrade extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'commander_id',
+        'bot_id',
+        'side'
+    ];
 }
