@@ -119,7 +119,8 @@ class ProcessTradingviewAlertJobTest extends TestCase
         $this->assertDatabaseHas('commander_trades', [
             'commander_id' => $commander->id,
             'bot_id' => $commander->bot_id,
-            'side' => 'sell'
+            'side' => 'sell',
+            'amount' => 10
         ]);
     }
 

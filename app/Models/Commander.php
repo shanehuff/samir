@@ -58,13 +58,19 @@ class Commander extends Model
         return $this->hasMany(CommanderTrade::class);
     }
 
+    public function getBaseOrderSizeAttribute(): float|int
+    {
+        return $this->risk * $this->fund / 100;
+    }
+
     public function buy()
     {
         if (self::STATUS_BUY === $this->status) {
             //@TODO Do buying via bot service here
             $this->trades()->create([
                 'side' => 'buy',
-                'bot_id' => $this->bot_id
+                'bot_id' => $this->bot_id,
+                'amount' => $this->base_order_size
             ]);
         }
     }
@@ -75,7 +81,8 @@ class Commander extends Model
             //@TODO Do selling via bot service here
             $this->trades()->create([
                 'side' => 'sell',
-                'bot_id' => $this->bot_id
+                'bot_id' => $this->bot_id,
+                'amount' => $this->base_order_size
             ]);
         }
     }

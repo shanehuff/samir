@@ -12,6 +12,7 @@ class CommanderTrade extends Model
     protected $fillable = [
         'commander_id',
         'bot_id',
-        'side'
+        'side',
+        'amount'
     ];
 }
