@@ -123,7 +123,7 @@ class ProcessTradingviewAlertJobTest extends TestCase
         ]);
     }
 
-    public function test_it_command_a_bot_to_execute_a_sell_trade_from_5m_buy_signal()
+    public function test_it_command_a_bot_to_execute_a_buy_trade_from_5m_buy_signal()
     {
         /** @var TradingviewAlert $alert */
         $alert = $this->alert;
@@ -135,7 +135,7 @@ class ProcessTradingviewAlertJobTest extends TestCase
         $commander = $this->commander;
 
         $commander->buying();
-        // Creates selling trade
+        // Creates buying trade
         $this->assertEquals(Commander::STATUS_BUY, $commander->status);
         (new ProcessTradingviewAlert($alert, $commander))->handle();
         $this->assertEquals(Commander::STATUS_BUY, $commander->status);
@@ -143,7 +143,8 @@ class ProcessTradingviewAlertJobTest extends TestCase
         $this->assertDatabaseHas('commander_trades', [
             'commander_id' => $commander->id,
             'bot_id' => $commander->bot_id,
-            'side' => 'buy'
+            'side' => 'buy',
+            'amount' => 10 // 1% of $1,000.00
         ]);
     }
 }
