@@ -94,6 +94,7 @@ class ProcessTradingviewAlertJobTest extends TestCase
         /** @var TradingviewAlert $alert */
         $alert = $this->alert;
         $alert->timeframe = '5m';
+        $alert->price = 9999;
         $alert->save();
 
         /** @var Commander $commander */
@@ -120,7 +121,8 @@ class ProcessTradingviewAlertJobTest extends TestCase
             'commander_id' => $commander->id,
             'bot_id' => $commander->bot_id,
             'side' => 'sell',
-            'amount' => 10
+            'amount' => 10,
+            'entry' => 9999
         ]);
     }
 
@@ -130,6 +132,7 @@ class ProcessTradingviewAlertJobTest extends TestCase
         $alert = $this->alert;
         $alert->timeframe = '5m';
         $alert->side = 'buy';
+        $alert->price = 9999;
         $alert->save();
 
         /** @var Commander $commander */
@@ -145,7 +148,8 @@ class ProcessTradingviewAlertJobTest extends TestCase
             'commander_id' => $commander->id,
             'bot_id' => $commander->bot_id,
             'side' => 'buy',
-            'amount' => 10 // 1% of $1,000.00
+            'amount' => 10,
+            'entry' => 9999
         ]);
     }
 }

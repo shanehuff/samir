@@ -63,26 +63,28 @@ class Commander extends Model
         return $this->risk * $this->fund / 100;
     }
 
-    public function buy()
+    public function buy(float $entry = 0.0)
     {
         if (self::STATUS_BUY === $this->status) {
             //@TODO Do buying via bot service here
             $this->trades()->create([
                 'side' => 'buy',
                 'bot_id' => $this->bot_id,
-                'amount' => $this->base_order_size
+                'amount' => $this->base_order_size,
+                'entry' => $entry
             ]);
         }
     }
 
-    public function sell()
+    public function sell(float $entry = 0.0)
     {
         if (self::STATUS_SELL === $this->status) {
             //@TODO Do selling via bot service here
             $this->trades()->create([
                 'side' => 'sell',
                 'bot_id' => $this->bot_id,
-                'amount' => $this->base_order_size
+                'amount' => $this->base_order_size,
+                'entry' => $entry
             ]);
         }
     }

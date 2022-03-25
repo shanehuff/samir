@@ -13,6 +13,7 @@ class CommanderTrade extends Model
         'commander_id',
         'bot_id',
         'side',
-        'amount'
+        'amount',
+        'entry'
     ];
 }
