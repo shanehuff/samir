@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Commander\Profit;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -74,6 +75,15 @@ class Commander extends Model
                 'entry' => $entry
             ]);
         }
+    }
+
+    public function getProfit(): Profit
+    {
+        $profit = new Profit;
+        $profit->setCommander($this);
+        $profit->calculate();
+
+        return $profit;
     }
 
     public function sell(float $entry = 0.0)
