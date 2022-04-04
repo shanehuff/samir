@@ -1,24 +1,23 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use App\Commander\InteractsWithCommanders;
 use App\Models\Commander;
-use App\Models\CommanderTrade;
-use App\Commander\Profit;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
 use Tests\InteractsWithTradingSeeds;
 
-class CommanderProfitTest extends TestCase
+class GetCommanderProfitTest extends TestCase
 {
     use DatabaseTransactions,
+        WithoutMiddleware,
         InteractsWithCommanders,
         InteractsWithTradingSeeds;
 
     protected Commander $commander;
 
-    /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
     public function setUp(): void
     {
         parent::setUp();
@@ -30,7 +29,7 @@ class CommanderProfitTest extends TestCase
             0 // 3Commas bot ID
         );
 
-        $this->seedTradingRecords();
+        $this->
     }
 
     public function tearDown(): void
@@ -38,11 +37,16 @@ class CommanderProfitTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_it_can_calculate_profit_for_simple_trades()
+    public function test_it_shows_single_commander_profit_correctly()
     {
-        $profit = $this->commander->getProfit();
+        $response = $this->json(
+            sprintf('/api/commanders/%s/profit', $this->commander->id)
+        );
 
-        $this->assertInstanceOf(Profit::class, $profit);
-        $this->assertEquals(30.0, $profit->getTotal());
+        $response->assertOK();
+        $response->assertJson([
+            'commander_id' => $this->commander->id,
+            'profit' => 30.0
+        ]);
     }
 }
