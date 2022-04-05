@@ -24,7 +24,8 @@ class GetCommanderProfitController extends Controller
             'buy_entry' => $profit->getBuyEntry(),
             'sell_size' => $profit->getSellSize(),
             'sell_entry' => $profit->getSellEntry(),
-            'daily_profit_percentage' => $profit->getDailyProfitPercentage()
+            'daily_profit_percentage' => $profit->getDailyProfitPercentage(),
+            'duration' => $profit->getDuration()
         ]);
     }
 }
