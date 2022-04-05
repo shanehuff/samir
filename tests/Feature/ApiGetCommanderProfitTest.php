@@ -49,7 +49,8 @@ class ApiGetCommanderProfitTest extends TestCase
             'buy_size' => 420.0,
             'buy_entry' => 420.0,
             'sell_size' => 450.0,
-            'sell_entry' => 450.0
+            'sell_entry' => 450.0,
+            'daily_profit_percentage' => 0.1
         ]);
     }
 }

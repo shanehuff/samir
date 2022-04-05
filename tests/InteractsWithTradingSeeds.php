@@ -14,7 +14,9 @@ trait InteractsWithTradingSeeds
             'bot_id' => $commander->bot_id,
             'commander_id' => $commander->id,
             'amount' => 420.00,
-            'entry' => 420.00
+            'entry' => 420.00,
+            'created_at' => '2022-04-01 00:00:00',
+            'updated_at' => '2022-04-01 00:00:00'
         ]);
 
         CommanderTrade::create([
@@ -22,7 +24,9 @@ trait InteractsWithTradingSeeds
             'bot_id' => $commander->bot_id,
             'commander_id' => $commander->id,
             'amount' => 450.00,
-            'entry' => 450.00
+            'entry' => 450.00,
+            'created_at' => '2022-05-01 00:00:00',
+            'updated_at' => '2022-05-01 00:00:00'
         ]);
     }
 }

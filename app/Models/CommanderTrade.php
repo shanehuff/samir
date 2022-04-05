@@ -14,6 +14,8 @@ class CommanderTrade extends Model
         'bot_id',
         'side',
         'amount',
-        'entry'
+        'entry',
+        'created_at', // for testing purpose
+        'updated_at' // for testing purpose
     ];
 }

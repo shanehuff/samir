@@ -47,5 +47,7 @@ class CommanderProfitTest extends TestCase
         $this->assertEquals(420.0, $profit->getBuyEntry());
         $this->assertEquals(450.0, $profit->getSellSize());
         $this->assertEquals(450.0, $profit->getSellEntry());
+        $this->assertEquals(30, $profit->getDuration());
+        $this->assertEquals(0.1, $profit->getDailyProfitPercentage());
     }
 }

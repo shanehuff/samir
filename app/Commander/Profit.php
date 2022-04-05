@@ -4,6 +4,7 @@ namespace App\Commander;
 
 use App\Models\Commander;
 use App\Models\CommanderTrade;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -20,6 +21,12 @@ class Profit
     protected float $sell_size;
 
     protected float $sell_entry;
+
+    protected Carbon $from_date;
+
+    protected Carbon $to_date;
+
+    protected float $daily_profit_percentage;
 
     /**
      * @return Commander
@@ -44,6 +51,8 @@ class Profit
         $trades = DB::table(app(CommanderTrade::class)->getTable())
             ->select(
                 'side',
+                DB::raw('MIN(created_at) as from_date'),
+                DB::raw('MAX(created_at) as to_date'),
                 DB::raw('SUM(amount) as size'),
                 DB::raw('AVG(entry) as entry')
             )
@@ -77,13 +86,17 @@ class Profit
     {
         $buy = $trades->firstWhere('side', 'buy');
         $sell = $trades->firstwhere('side', 'sell');
+
         $this->buy_entry = $buy->entry;
         $this->buy_size = $buy->size;
         $this->sell_entry = $sell->entry;
         $this->sell_size = $sell->size;
+        $this->from_date = $this->resolveFromDateFromTrades($trades);
+        $this->to_date = $this->resolveToDateFromTrades($trades);
 
         if ($buy && $sell) {
             $this->total = ($sell->entry - $buy->entry) * ($buy->size / $buy->entry);
+            $this->calculateDailyProfit();
         }
 
         return $this;
@@ -151,5 +164,65 @@ class Profit
     public function setSellEntry(float $sell_entry): void
     {
         $this->sell_entry = $sell_entry;
+    }
+
+    public function getDuration(): int
+    {
+        return $this->to_date->diffInDays($this->from_date);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFromDate(): string
+    {
+        return $this->from_date;
+    }
+
+    /**
+     * @param string $from_date
+     */
+    public function setFromDate(string $from_date): void
+    {
+        $this->from_date = new Carbon($from_date);
+    }
+
+    /**
+     * @return string
+     */
+    public function getToDate(): string
+    {
+        return $this->to_date;
+    }
+
+    /**
+     * @param string $to_date
+     */
+    public function setToDate(string $to_date): void
+    {
+        $this->to_date = new Carbon($to_date);
+    }
+
+    public function resolveFromDateFromTrades(Collection $trades): Carbon
+    {
+        return new Carbon($trades->min('from_date'));
+    }
+
+    public function resolveToDateFromTrades(Collection $trades): Carbon
+    {
+        return new Carbon($trades->max('to_date'));
+    }
+
+    public function calculateDailyProfit()
+    {
+        $this->daily_profit_percentage = $this->total / $this->commander->fund * 100 / $this->getDuration();
+    }
+
+    /**
+     * @return float
+     */
+    public function getDailyProfitPercentage(): float
+    {
+        return $this->daily_profit_percentage;
     }
 }
