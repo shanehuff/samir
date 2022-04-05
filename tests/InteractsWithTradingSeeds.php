@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use App\Models\CommanderTrade;
+
 trait InteractsWithTradingSeeds
 {
     private function seedTradingRecords() {

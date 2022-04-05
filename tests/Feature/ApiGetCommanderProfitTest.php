@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
 use Tests\InteractsWithTradingSeeds;
 
-class GetCommanderProfitTest extends TestCase
+class ApiGetCommanderProfitTest extends TestCase
 {
     use DatabaseTransactions,
         WithoutMiddleware,
@@ -18,6 +18,7 @@ class GetCommanderProfitTest extends TestCase
 
     protected Commander $commander;
 
+    /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
     public function setUp(): void
     {
         parent::setUp();
@@ -29,7 +30,7 @@ class GetCommanderProfitTest extends TestCase
             0 // 3Commas bot ID
         );
 
-        $this->
+        $this->seedTradingRecords();
     }
 
     public function tearDown(): void
@@ -39,14 +40,16 @@ class GetCommanderProfitTest extends TestCase
 
     public function test_it_shows_single_commander_profit_correctly()
     {
-        $response = $this->json(
-            sprintf('/api/commanders/%s/profit', $this->commander->id)
-        );
+        $response = $this->json('GET', sprintf('/api/commanders/%s/profit', $this->commander->id));
 
         $response->assertOK();
         $response->assertJson([
             'commander_id' => $this->commander->id,
-            'profit' => 30.0
+            'profit' => 30.0,
+            'buy_size' => 420.0,
+            'buy_entry' => 420.0,
+            'sell_size' => 450.0,
+            'sell_entry' => 450.0
         ]);
     }
 }

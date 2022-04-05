@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use App\Commander\InteractsWithCommanders;
 use App\Models\Commander;
-use App\Models\CommanderTrade;
 use App\Commander\Profit;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
@@ -44,5 +43,9 @@ class CommanderProfitTest extends TestCase
 
         $this->assertInstanceOf(Profit::class, $profit);
         $this->assertEquals(30.0, $profit->getTotal());
+        $this->assertEquals(420.0, $profit->getBuySize());
+        $this->assertEquals(420.0, $profit->getBuyEntry());
+        $this->assertEquals(450.0, $profit->getSellSize());
+        $this->assertEquals(450.0, $profit->getSellEntry());
     }
 }

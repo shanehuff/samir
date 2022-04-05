@@ -4,6 +4,7 @@ namespace App\Commander;
 
 use App\Models\Commander;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -30,5 +31,10 @@ trait InteractsWithCommanders
             ->first();
 
         return $commander ?? $this->createCommander($name, $fund, $risk, $botId);
+    }
+
+    public function findCommanderOrFail(int $id): Model|Collection|Builder|array|null
+    {
+        return Commander::query()->findOrFail($id);
     }
 }
