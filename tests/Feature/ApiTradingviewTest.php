@@ -31,7 +31,8 @@ class ApiTradingviewTest extends TestCase
         $response = $this->postJson('/api/tradingview', [
             'payloads' => [
                 'side' => 'buy',
-                'timeframe' => '5m'
+                'timeframe' => '5m',
+                'price' => 9999
             ]
         ]);
 
@@ -40,7 +41,8 @@ class ApiTradingviewTest extends TestCase
         $this->assertDatabaseHas('tradingview_alerts', [
             'side' => 'buy',
             'timeframe' => '5m',
-            'status' => TradingviewAlert::STATUS_PENDING
+            'status' => TradingviewAlert::STATUS_PENDING,
+            'price' => 9999
         ]);
 
         Event::assertDispatched(TradingviewAlertCreated::class);

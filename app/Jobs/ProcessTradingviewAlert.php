@@ -52,9 +52,9 @@ class ProcessTradingviewAlert implements ShouldQueue
 
             self::ACTION_CHILL_MODE => $this->commander->chilling(),
 
-            self::ACTION_BUY => $this->commander->buy(),
+            self::ACTION_BUY => $this->commander->buy($this->alert->price),
 
-            self::ACTION_SELL => $this->commander->sell(),
+            self::ACTION_SELL => $this->commander->sell($this->alert->price),
 
             default => info(sprintf(
                 'Receive unknown action from alert: %s',

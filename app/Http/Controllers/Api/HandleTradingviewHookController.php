@@ -19,7 +19,8 @@ class HandleTradingviewHookController extends Controller
 
         $alert = $this->createTradingviewAlert(
             $request->input('payloads.side'),
-            $request->input('payloads.timeframe')
+            $request->input('payloads.timeframe'),
+            (float)$request->input('payloads.price')
         );
 
         return ['status' => 'success'];

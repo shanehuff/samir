@@ -23,7 +23,8 @@ class TradingviewAlert extends Model
     protected $fillable = [
         'side',
         'timeframe',
-        'status'
+        'status',
+        'price'
     ];
 
     protected $dispatchesEvents = [

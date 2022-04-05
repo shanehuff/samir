@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Commander\Profit;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -58,24 +59,42 @@ class Commander extends Model
         return $this->hasMany(CommanderTrade::class);
     }
 
-    public function buy()
+    public function getBaseOrderSizeAttribute(): float|int
+    {
+        return $this->risk * $this->fund / 100;
+    }
+
+    public function buy(float $entry = 0.0)
     {
         if (self::STATUS_BUY === $this->status) {
             //@TODO Do buying via bot service here
             $this->trades()->create([
                 'side' => 'buy',
-                'bot_id' => $this->bot_id
+                'bot_id' => $this->bot_id,
+                'amount' => $this->base_order_size,
+                'entry' => $entry
             ]);
         }
     }
 
-    public function sell()
+    public function getProfit(): Profit
+    {
+        $profit = new Profit;
+        $profit->setCommander($this);
+        $profit->calculate();
+
+        return $profit;
+    }
+
+    public function sell(float $entry = 0.0)
     {
         if (self::STATUS_SELL === $this->status) {
             //@TODO Do selling via bot service here
             $this->trades()->create([
                 'side' => 'sell',
-                'bot_id' => $this->bot_id
+                'bot_id' => $this->bot_id,
+                'amount' => $this->base_order_size,
+                'entry' => $entry
             ]);
         }
     }
