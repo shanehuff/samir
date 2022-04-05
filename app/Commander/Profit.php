@@ -225,4 +225,14 @@ class Profit
     {
         return $this->daily_profit_percentage;
     }
+
+    public function getMonthlyProfitPercentage(): float|int
+    {
+        return $this->daily_profit_percentage * 30;
+    }
+
+    public function getApy(): float|int
+    {
+        return $this->daily_profit_percentage * 365;
+    }
 }
