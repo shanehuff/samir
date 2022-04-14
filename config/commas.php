@@ -13,5 +13,7 @@ return [
 	|
 	| A basic uri of api
 	*/
-    'base_uri' => env('3COMMAS_BASE_ENDPOINT', 'https://api.3commas.io/public/api')
+    'base_uri' => env('3COMMAS_BASE_ENDPOINT', 'https://api.3commas.io/public/api'),
+	'api_key' => env('3COMMAS_API_KEY', ''),
+	'secret_key' => env('3COMMAS_SECRET_KEY', '')
 ];
