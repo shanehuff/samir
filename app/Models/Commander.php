@@ -2,16 +2,26 @@
 
 namespace App\Models;
 
+use App\Commander\Position;
 use App\Commander\Profit;
+use App\Commander\Risk;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Commander extends Model
 {
     use HasFactory;
 
     protected $table = 'commanders';
+
+    protected ?Risk $risk = null;
+
+    protected ?Position $position = null;
+
+    protected ?Profit $profit = null;
 
     // Statuses
     public const STATUS_CHILL = 0;
@@ -79,11 +89,41 @@ class Commander extends Model
 
     public function getProfit(): Profit
     {
-        $profit = new Profit;
-        $profit->setCommander($this);
-        $profit->calculate();
+        if (!$this->profit) {
+            $profit = new Profit;
+            $profit->setCommander($this);
+            $profit->calculate();
 
-        return $profit;
+            $this->profit = $profit;
+        }
+
+        return $this->profit;
+    }
+
+    public function getRisk(): Risk
+    {
+        if (!$this->risk) {
+            $risk = new Risk;
+            $risk->setCommander($this);
+            $risk->calculate();
+
+            $this->risk = $risk;
+        }
+
+        return $this->risk;
+    }
+
+    public function getPosition(): Position
+    {
+        if (!$this->position) {
+            $position = new Position;
+            $position->setCommander($this);
+            $position->calculate();
+
+            $this->position = $position;
+        }
+
+        return $this->position;
     }
 
     public function sell(float $entry = 0.0)
@@ -97,5 +137,21 @@ class Commander extends Model
                 'entry' => $entry
             ]);
         }
+    }
+
+    public function getSummaryTrades(): Collection
+    {
+        return DB::table(app(CommanderTrade::class)->getTable())
+            ->select(
+                'side',
+                DB::raw('MIN(created_at) as from_date'),
+                DB::raw('MAX(created_at) as to_date'),
+                DB::raw('SUM(amount) as size'),
+                DB::raw('AVG(entry) as entry')
+            )
+            ->where('commander_id', $this->id)
+            ->whereNotNull('amount')
+            ->groupBy('side')
+            ->get();
     }
 }

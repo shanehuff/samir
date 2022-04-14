@@ -12,19 +12,7 @@ class Profit
 {
     protected Commander $commander;
 
-    protected float $total;
-
-    protected float $buy_size;
-
-    protected float $buy_entry;
-
-    protected float $sell_size;
-
-    protected float $sell_entry;
-
-    protected Carbon $from_date;
-
-    protected Carbon $to_date;
+    protected ?float $total = null;
 
     protected float $daily_profit_percentage;
 
@@ -48,28 +36,17 @@ class Profit
 
     public function calculate(): static
     {
-        $trades = DB::table(app(CommanderTrade::class)->getTable())
-            ->select(
-                'side',
-                DB::raw('MIN(created_at) as from_date'),
-                DB::raw('MAX(created_at) as to_date'),
-                DB::raw('SUM(amount) as size'),
-                DB::raw('AVG(entry) as entry')
-            )
-            ->where('commander_id', $this->commander->id)
-            ->whereNotNull('amount')
-            ->groupBy('side')
-            ->get();
+        $position = $this->commander->getPosition();
 
-        $this->createFromTrades($trades);
+        $this->createFromPosition($position);
 
         return $this;
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getTotal(): float
+    public function getTotal(): ?float
     {
         return $this->total;
     }
@@ -82,140 +59,11 @@ class Profit
         $this->total = $total;
     }
 
-    public function createFromTrades(Collection $trades): static
-    {
-        $buy = $trades->firstWhere('side', 'buy');
-        $sell = $trades->firstwhere('side', 'sell');
-
-        $this->buy_entry = $buy->entry;
-        $this->buy_size = $buy->size;
-        $this->sell_entry = $sell->entry;
-        $this->sell_size = $sell->size;
-        $this->from_date = $this->resolveFromDateFromTrades($trades);
-        $this->to_date = $this->resolveToDateFromTrades($trades);
-
-        if ($buy && $sell) {
-            $this->total = ($sell->entry - $buy->entry) * ($buy->size / $buy->entry);
-            $this->calculateDailyProfit();
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getBuySize(): float
-    {
-        return $this->buy_size;
-    }
-
-    /**
-     * @param float $buy_size
-     */
-    public function setBuySize(float $buy_size): void
-    {
-        $this->buy_size = $buy_size;
-    }
-
-    /**
-     * @return float
-     */
-    public function getBuyEntry(): float
-    {
-        return $this->buy_entry;
-    }
-
-    /**
-     * @param float $buy_entry
-     */
-    public function setBuyEntry(float $buy_entry): void
-    {
-        $this->buy_entry = $buy_entry;
-    }
-
-    /**
-     * @return float
-     */
-    public function getSellSize(): float
-    {
-        return $this->sell_size;
-    }
-
-    /**
-     * @param float $sell_size
-     */
-    public function setSellSize(float $sell_size): void
-    {
-        $this->sell_size = $sell_size;
-    }
-
-    /**
-     * @return float
-     */
-    public function getSellEntry(): float
-    {
-        return $this->sell_entry;
-    }
-
-    /**
-     * @param float $sell_entry
-     */
-    public function setSellEntry(float $sell_entry): void
-    {
-        $this->sell_entry = $sell_entry;
-    }
-
-    public function getDuration(): int
-    {
-        return $this->to_date->diffInDays($this->from_date);
-    }
-
-    /**
-     * @return string
-     */
-    public function getFromDate(): string
-    {
-        return $this->from_date;
-    }
-
-    /**
-     * @param string $from_date
-     */
-    public function setFromDate(string $from_date): void
-    {
-        $this->from_date = new Carbon($from_date);
-    }
-
-    /**
-     * @return string
-     */
-    public function getToDate(): string
-    {
-        return $this->to_date;
-    }
-
-    /**
-     * @param string $to_date
-     */
-    public function setToDate(string $to_date): void
-    {
-        $this->to_date = new Carbon($to_date);
-    }
-
-    public function resolveFromDateFromTrades(Collection $trades): Carbon
-    {
-        return new Carbon($trades->min('from_date'));
-    }
-
-    public function resolveToDateFromTrades(Collection $trades): Carbon
-    {
-        return new Carbon($trades->max('to_date'));
-    }
-
     public function calculateDailyProfit()
     {
-        $this->daily_profit_percentage = $this->total / $this->commander->fund * 100 / $this->getDuration();
+        $position = $this->commander->getPosition();
+
+        $this->daily_profit_percentage = $this->total / $this->commander->fund * 100 / $position->getDuration();
     }
 
     /**
@@ -234,5 +82,13 @@ class Profit
     public function getApy(): float|int
     {
         return $this->daily_profit_percentage * 365;
+    }
+
+    public function createFromPosition(Position $position)
+    {
+        if($position->hasRealizedProfit()) {
+            $this->total = ($position->getSellEntry() - $position->getBuyEntry()) * ($position->getBuySize() / $position->getBuyEntry());
+            $this->calculateDailyProfit();
+        }
     }
 }

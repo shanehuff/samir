@@ -4,12 +4,12 @@ namespace Tests\Unit;
 
 use App\Commander\InteractsWithCommanders;
 use App\Models\Commander;
-use App\Commander\Profit;
+use App\Commander\Risk;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 use Tests\InteractsWithTradingSeeds;
 
-class CommanderProfitTest extends TestCase
+class CommanderRiskTest extends TestCase
 {
     use DatabaseTransactions,
         InteractsWithCommanders,
@@ -24,12 +24,12 @@ class CommanderProfitTest extends TestCase
 
         $this->commander = $this->createCommander(
             'Test Commander', // name
-            1000, // fund
+            33, // fund
             1, // 1% risk,
             0 // 3Commas bot ID
         );
 
-        $this->seedTradingRecords();
+        $this->seedTradingRecords('for_risk_calculating');
     }
 
     public function tearDown(): void
@@ -37,14 +37,14 @@ class CommanderProfitTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_it_can_calculate_profit_for_simple_trades()
+    public function test_it_can_calculate_risk_for_simple_trades()
     {
-        $profit = $this->commander->getProfit();
+        $risk = $this->commander->getRisk();
 
-        $this->assertInstanceOf(Profit::class, $profit);
-        $this->assertEquals(30.0, $profit->getTotal());
-        $this->assertEquals(0.1, $profit->getDailyProfitPercentage());
-        $this->assertEquals(3, $profit->getMonthlyProfitPercentage());
-        $this->assertEquals(36.5, $profit->getApy());
+        $this->assertInstanceOf(Risk::class, $risk);
+        $this->assertEquals(20, $risk->getLeverage());
+        $this->assertEquals(2.70, round($risk->getMargin(), 2));
+        $this->assertEquals(30.30, round($risk->getAvailableMargin(), 2));
+        $this->assertEquals(166.19, round($risk->getLiquidationPrice(), 2));
     }
 }
