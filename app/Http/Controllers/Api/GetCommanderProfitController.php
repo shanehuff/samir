@@ -15,17 +15,18 @@ class GetCommanderProfitController extends Controller
     {
         /** @var Commander $commander */
         $commander = $this->findCommanderOrFail($id);
+        $position = $commander->getPosition();
         $profit = $commander->getProfit();
 
         return response()->json([
             'commander_id' => $commander->id,
             'profit' => $profit->getTotal(),
-            'buy_size' => $profit->getBuySize(),
-            'buy_entry' => $profit->getBuyEntry(),
-            'sell_size' => $profit->getSellSize(),
-            'sell_entry' => $profit->getSellEntry(),
+            'buy_size' => $position->getBuySize(),
+            'buy_entry' => $position->getBuyEntry(),
+            'sell_size' => $position->getSellSize(),
+            'sell_entry' => $position->getSellEntry(),
             'daily_profit_percentage' => $profit->getDailyProfitPercentage(),
-            'duration' => $profit->getDuration(),
+            'duration' => $position->getDuration(),
             'monthly_profit_percentage' => $profit->getMonthlyProfitPercentage(),
             'apy' => $profit->getApy()
         ]);

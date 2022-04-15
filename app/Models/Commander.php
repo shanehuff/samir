@@ -17,7 +17,7 @@ class Commander extends Model
 
     protected $table = 'commanders';
 
-    protected ?Risk $risk = null;
+    protected ?Risk $riskCalculator = null;
 
     protected ?Position $position = null;
 
@@ -102,15 +102,15 @@ class Commander extends Model
 
     public function getRisk(): Risk
     {
-        if (!$this->risk) {
+        if (!$this->riskCalculator) {
             $risk = new Risk;
             $risk->setCommander($this);
             $risk->calculate();
 
-            $this->risk = $risk;
+            $this->riskCalculator = $risk;
         }
 
-        return $this->risk;
+        return $this->riskCalculator;
     }
 
     public function getPosition(): Position
