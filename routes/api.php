@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HandleTradingviewHookController;
 use App\Http\Controllers\Api\GetCommanderProfitController;
+use App\Http\Controllers\Api\GetCommanderRiskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,4 @@ use App\Http\Controllers\Api\GetCommanderProfitController;
 
 Route::middleware('auth.tradingview')->post('/tradingview', HandleTradingviewHookController::class);
 Route::get('/commanders/{id}/profit', GetCommanderProfitController::class);
+Route::get('/commanders/{id}/risk', GetCommanderRiskController::class);
