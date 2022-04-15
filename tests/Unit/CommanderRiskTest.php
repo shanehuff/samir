@@ -24,7 +24,7 @@ class CommanderRiskTest extends TestCase
 
         $this->commander = $this->createCommander(
             'Test Commander', // name
-            33, // fund
+            33.0773, // fund
             1, // 1% risk,
             0 // 3Commas bot ID
         );
@@ -41,10 +41,12 @@ class CommanderRiskTest extends TestCase
     {
         $risk = $this->commander->getRisk();
 
+        ray($this->commander);
+
         $this->assertInstanceOf(Risk::class, $risk);
         $this->assertEquals(20, $risk->getLeverage());
         $this->assertEquals(2.70, round($risk->getMargin(), 2));
-        $this->assertEquals(30.30, round($risk->getAvailableMargin(), 2));
-        $this->assertEquals(166.19, round($risk->getLiquidationPrice(), 2));
+        $this->assertEquals(30.37, round($risk->getAvailableMargin(), 2));
+        $this->assertEquals(165.60, round($risk->getLiquidationPrice(), 2));
     }
 }
