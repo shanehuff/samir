@@ -14,7 +14,7 @@ class Risk
 
     protected ?float $availableMargin = null;
 
-    protected const BINANCE_RATIO = 1.02551;
+    protected const BINANCE_RATIO = 1.0256;
 
     protected Commander $commander;
 

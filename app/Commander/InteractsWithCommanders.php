@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 trait InteractsWithCommanders
 {
-    public function createCommander(string $name, int $fund, int $risk, int $botId, $status = Commander::STATUS_CHILL): Model|Builder
+    public function createCommander(string $name, float $fund, int $risk, int $botId, $status = Commander::STATUS_CHILL): Model|Builder
     {
         return Commander::query()->create([
             'name' => $name,
@@ -21,7 +21,7 @@ trait InteractsWithCommanders
         ]);
     }
 
-    public function findOrCreateCommander(string $name, int $fund, int $risk, int $botId): Model|Builder
+    public function findOrCreateCommander(string $name, float $fund, int $risk, int $botId): Model|Builder
     {
         $commander = Commander::query()
             ->where('name', $name)

@@ -37,7 +37,6 @@ class UpdateCommanderStatusUsingTradingviewAlert
      */
     public function handle(TradingviewAlertCreated $event)
     {
-        ray('ok');
         dispatch(new ProcessTradingviewAlert($event->alert, $this->commander));
     }
 }

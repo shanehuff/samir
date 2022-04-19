@@ -1,17 +1,18 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use App\Commander\InteractsWithCommanders;
 use App\Models\Commander;
-use App\Commander\Risk;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
 use Tests\InteractsWithTradingSeeds;
 
-class CommanderRiskTest extends TestCase
+class ApiGetCommanderRiskTest extends TestCase
 {
     use DatabaseTransactions,
+        WithoutMiddleware,
         InteractsWithCommanders,
         InteractsWithTradingSeeds;
 
@@ -37,16 +38,16 @@ class CommanderRiskTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_it_can_calculate_risk_for_simple_trades()
+    public function test_it_shows_single_commander_risk_correctly()
     {
-        $risk = $this->commander->getRisk();
+        $response = $this->json('GET', sprintf('/api/commanders/%s/risk', $this->commander->id));
 
-        ray($this->commander);
-
-        $this->assertInstanceOf(Risk::class, $risk);
-        $this->assertEquals(20, $risk->getLeverage());
-        $this->assertEquals(2.70, round($risk->getMargin(), 2));
-        $this->assertEquals(30.37, round($risk->getAvailableMargin(), 2));
-        $this->assertEquals(165.60, round($risk->getLiquidationPrice(), 2));
+        $response->assertOK();
+        $response->assertJson([
+            'commander_id' => $this->commander->id,
+            'leverage' => 20,
+            'balance' => 33.0773,
+            'liquidation_price' => 165.6
+        ]);
     }
 }
