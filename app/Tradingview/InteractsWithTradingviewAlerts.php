@@ -22,4 +22,19 @@ trait InteractsWithTradingviewAlerts
             'price' => $price
         ]);
     }
+
+    public function createTradingviewAlertV2(
+        int $resolution,
+        int $stochastic,
+        float $price = 0.0,
+        $status = TradingviewAlert::STATUS_PENDING
+    ): Model|Builder
+    {
+        return TradingviewAlert::query()->create([
+            'resolution' => $resolution,
+            'stochastic' => $stochastic,
+            'status' => $status,
+            'price' => $price
+        ]);
+    }
 }
