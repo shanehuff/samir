@@ -24,7 +24,9 @@ class TradingviewAlert extends Model
         'side',
         'timeframe',
         'status',
-        'price'
+        'price',
+        'resolution',
+        'stochastic'
     ];
 
     protected $dispatchesEvents = [

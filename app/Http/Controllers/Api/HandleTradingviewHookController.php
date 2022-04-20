@@ -13,16 +13,29 @@ class HandleTradingviewHookController extends Controller
     public function __invoke(Request $request): array
     {
         $request->validate([
-            'payloads.side' => 'required|string',
-            'payloads.timeframe' => 'required|string'
+            'payloads' => 'required|array'
         ]);
 
-        $alert = $this->createTradingviewAlert(
-            $request->input('payloads.side'),
-            $request->input('payloads.timeframe'),
-            (float)$request->input('payloads.price')
-        );
+        if($this->shouldUseV2($request)) {
+            $this->createTradingviewAlertV2(
+                $request->input('payloads.resolution'),
+                $request->input('payloads.stochastic'),
+                (float)$request->input('payloads.price')
+            );
+        }else{
+            $this->createTradingviewAlert(
+                $request->input('payloads.side'),
+                $request->input('payloads.timeframe'),
+                (float)$request->input('payloads.price')
+            );
+        }
+
 
         return ['status' => 'success'];
+    }
+
+    private function shouldUseV2(Request $request): bool
+    {
+        return $request->has('payloads.resolution');
     }
 }
