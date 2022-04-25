@@ -1,4 +1,4 @@
-# Samir (AKA Intelligent Lizard)
+# Samir
 
 This is a project that help us implement our trading strategy on exchanges like Binance.
 
@@ -13,8 +13,8 @@ This is a project that help us implement our trading strategy on exchanges like 
 
 * ~~Setup Laravel system with SQLite database.~~
 * ~~Setup TradingView trigger system.~~
-* Setup Commander objects.
-* Setup 3Commas Bot Management.
+* ~~Setup Commander objects.~~
+* ~~Setup 3Commas Bot Management.~~ STALLED
 
 ## Commanders
 
@@ -22,6 +22,10 @@ This is a project that help us implement our trading strategy on exchanges like 
 * Manage bots to execute the trade.
 * Manage a fund.
 * Decide how much base order size based on the fund.
+
+## Binance Futures API Integration
+
+## CI Integration
 
 ### 3Commas
 
