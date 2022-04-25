@@ -8,7 +8,7 @@ use App\Commander\Strategy;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-class CommanderStrategyTest extends TestCase
+class CommanderStrategy extends TestCase
 {
     use DatabaseTransactions,
         InteractsWithCommanders,
@@ -35,34 +35,43 @@ class CommanderStrategyTest extends TestCase
 
     public function test_it_can_create_a_new_strategy()
     {
-        $strategy = $this->commander->getStrategy();
-
-        $strategy->setBuyMode([
-            'indicator' => 'stochastic',
-            'value' => 'under 20',
-            'resolution' => 240 // 4h timeframe
+        $strategySellTrend = Strategy::create([
+            'resolution' => 240,
+            'value_min' => 80,
+            'value_max' => 100,
+            'type' => 'trend',
+            'side' => 'sell'
         ]);
 
-        $strategy->setBuyTrigger([
-            'indicator' => 'stochastic',
-            'value' => 'under 10',
-            'resolution' => 5 // 5m timeframe
+        $strategyBuyTrend = Strategy::create([
+            'resolution' => 240,
+            'value_min' => 0,
+            'value_max' => 20,
+            'type' => 'trend',
+            'side' => 'sell'
         ]);
 
-        $strategy->setSellMode([
-            'indicator' => 'stochastic',
-            'value' => 'above 80',
-            'resolution' => 240 // 4h timeframe
+        $strategySellTrigger = Strategy::create([
+            'resolution' => 5,
+            'value_min' => 90,
+            'value_max' => 100,
+            'type' => 'trigger',
+            'side' => 'buy'
         ]);
 
-        $strategy->setSellTrigger([
-            'indicator' => 'stochastic',
-            'value' => 'above 90',
-            'resolution' => 5 // 5m timeframe
+        $strategyBuyTrigger = Strategy::create([
+            'resolution' => 5,
+            'value_min' => 0,
+            'value_max' => 10,
+            'type' => 'trigger',
+            'side' => 'buy'
         ]);
 
-        $strategy->create();
-
-        $this->assertInstanceOf(Strategy::class, $strategy);
+        $this->commander
+            ->setSellTrend($strategySellTrend)
+            ->setBuyTrend($strategyBuyTrend)
+            ->setSellTrigger($strategySellTrigger)
+            ->setBuyTrigger($strategyBuyTrigger)
+            ->save();
     }
 }
