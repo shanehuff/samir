@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('balances', function (Blueprint $table) {
             $table->id();
             $table->string('symbol')->unique()->index();
-            $table->unsignedFloat('available')->default(0);
-            $table->unsignedFloat('on_order')->default(0);
+            $table->unsignedDouble('available')->default(0);
+            $table->unsignedDouble('on_order')->default(0);
             $table->timestamps();
         });
     }

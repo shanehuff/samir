@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\GetBalancesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HandleTradingviewHookController;
 use App\Http\Controllers\Api\GetCommanderProfitController;
@@ -19,3 +20,5 @@ use App\Http\Controllers\Api\GetCommanderRiskController;
 Route::middleware('auth.tradingview')->post('/tradingview', HandleTradingviewHookController::class);
 Route::get('/commanders/{id}/profit', GetCommanderProfitController::class);
 Route::get('/commanders/{id}/risk', GetCommanderRiskController::class);
+Route::middleware('auth.tradingview')
+    ->post('/balances', GetBalancesController::class);
