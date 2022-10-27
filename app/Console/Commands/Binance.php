@@ -2,8 +2,11 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Binance\API;
+use App\Binance\ApiClient;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Binance extends Command
 {
@@ -28,12 +31,35 @@ class Binance extends Command
      */
     public function handle()
     {
-        $api = new API(
+        $api = new ApiClient(
             config('services.binance.key'),
             config('services.binance.secret')
         );
-        $balances = collect($api->balances());
-        dd($balances->where('available', '>', 0)->toArray());
+
+        dd(collect($api->saving()));
+
+        $balances = collect($api->balances())
+            ->where('available', '>', 0);
+
+        if ($balances->count() > 0) {
+            $data = [];
+            $balances->each(function ($balance, $symbol) use (&$data) {
+                $data[] = [
+                    'symbol' => $symbol,
+                    'available' => $balance['available'],
+                    'on_order' => $balance['onOrder'],
+                    'updated_at' => Carbon::now()
+                ];
+            });
+
+            DB::table('balances')
+                ->upsert(
+                    $data,
+                    ['symbol'],
+                    ['available', 'on_order', 'updated_at']
+                );
+        }
+
         return Command::SUCCESS;
     }
 }
