@@ -38,6 +38,48 @@ class Binance extends Command
             config('services.binance.key'),
             config('services.binance.secret')
         );
+
+        // Collect loans data
+        $loans = collect($api->loans())->get('rows');
+
+        foreach($loans as $loan) {
+            $loanSymbol = $loan['loanCoin'];
+
+            if (isset($data[$loanSymbol])) {
+                $data[$loanSymbol] = [
+                    'symbol' => $loanSymbol,
+                    'available' => $data[$loanSymbol]['available'] + 0,
+                    'on_order' => $data[$loanSymbol]['on_order'] - $loan['totalDebt'],
+                    'updated_at' => Carbon::now()
+                ];
+            } else {
+                $data[$loanSymbol] = [
+                    'symbol' => $loanSymbol,
+                    'available' => 0,
+                    'on_order' => 0 - $loan['totalDebt'],
+                    'updated_at' => Carbon::now()
+                ];
+            }
+
+            $collateralSymbol = $loan['collateralCoin'];
+
+            if (isset($data[$collateralSymbol])) {
+                $data[$collateralSymbol] = [
+                    'symbol' => $collateralSymbol,
+                    'available' => $data[$collateralSymbol]['available'] + 0,
+                    'on_order' => $data[$collateralSymbol]['on_order'] + $loan['collateralAmount'],
+                    'updated_at' => Carbon::now()
+                ];
+            } else {
+                $data[$collateralSymbol] = [
+                    'symbol' => $collateralSymbol,
+                    'available' => 0,
+                    'on_order' => 0 + $loan['collateralAmount'],
+                    'updated_at' => Carbon::now()
+                ];
+            }
+        }
+
         // Collect defi farming data
         $farmings = collect($api->farming())->where('share.shareAmount', '>', 0);
 

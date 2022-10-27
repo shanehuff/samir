@@ -37,4 +37,16 @@ class ApiClient extends API
             true
         );
     }
+
+    public function loans()
+    {
+        return $this->httpRequest(
+            'v1/loan/ongoing/orders',
+            'GET',
+            [
+                'sapi' => true
+            ],
+            true
+        );
+    }
 }
