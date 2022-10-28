@@ -49,4 +49,16 @@ class ApiClient extends API
             true
         );
     }
+
+    public function futures()
+    {
+        return $this->httpRequest(
+            'fapi/v2/account',
+            'GET',
+            [
+                'fapi' => true
+            ],
+            true
+        );
+    }
 }

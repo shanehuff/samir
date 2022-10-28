@@ -39,6 +39,15 @@ class Binance extends Command
             config('services.binance.secret')
         );
 
+        // Collect futures data
+        $futures = collect($api->futures())->get('totalMarginBalance');
+        $data['FU'] = [
+            'symbol' => 'FU',
+            'available' => $futures + 10,
+            'on_order' => 0,
+            'updated_at' => Carbon::now()
+        ];
+
         // Collect loans data
         $loans = collect($api->loans())->get('rows');
 
