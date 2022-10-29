@@ -35,6 +35,6 @@ class BinanceDev extends Command
             config('services.binance.secret')
         );
 
-        dd(collect($api->futures())->get('totalMarginBalance'));
+        dd(collect($api->createFuturesCloseOrder()));
     }
 }
