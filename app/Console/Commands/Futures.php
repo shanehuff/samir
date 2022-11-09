@@ -2,25 +2,25 @@
 
 namespace App\Console\Commands;
 
+use App\Binance\FuturesClient;
 use Exception;
 use Illuminate\Console\Command;
-use App\Binance\ApiClient;
 
-class BinanceDev extends Command
+class Futures extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'binance:dev';
+    protected $signature = 'futures';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Interacts With Binance API (Development)';
+    protected $description = 'Interacts With Binance Futures API (Development)';
 
     /**
      * Execute the console command.
@@ -30,11 +30,12 @@ class BinanceDev extends Command
      */
     public function handle()
     {
-        $api = new ApiClient(
+        $futures = new FuturesClient(
             config('services.binance.key'),
             config('services.binance.secret')
         );
 
-        dd(collect($api->createFuturesCloseOrder()));
+        dd(collect($futures->positions()));
+
     }
 }
