@@ -3,6 +3,7 @@
 namespace App\Binance;
 
 use Binance\API;
+use Illuminate\Support\Collection;
 
 class FuturesClient extends API
 {
@@ -43,9 +44,9 @@ class FuturesClient extends API
         );
     }
 
-    public function positions()
+    public function positions(): Collection
     {
-        return $this->httpRequest(
+        return collect($this->httpRequest(
             'fapi/v2/positionRisk',
             'GET',
             [
@@ -53,6 +54,6 @@ class FuturesClient extends API
                 'symbol' => 'BNBBUSD'
             ],
             true
-        );
+        ));
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Binance\FuturesClient;
+use App\Commander\FuturesDealer;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -30,12 +30,9 @@ class Futures extends Command
      */
     public function handle()
     {
-        $futures = new FuturesClient(
-            config('services.binance.key'),
-            config('services.binance.secret')
-        );
+        $dealer = new FuturesDealer();
 
-        dd(collect($futures->positions()));
+        dd($dealer->longPlan());
 
     }
 }
