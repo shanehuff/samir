@@ -28,18 +28,18 @@ class FuturesDealer
 
     public function isInactive(): bool
     {
-        return false == $this->isActive();
+        return false === $this->isActive();
     }
 
     public function isActive(): bool
     {
-        return (float)$this->long['positionAmt'] && (float)$this->short['positionAmt'];
+        return (float)$this->long['positionAmt'] || (float)$this->short['positionAmt'];
     }
 
     public function longPlan(): array
     {
         $plans = [];
-        $steps = 6;
+        $steps = 3;
         $startSize = 0.02;
         $entry = $this->long['markPrice'] - 0.1;
 
@@ -79,5 +79,56 @@ class FuturesDealer
         }
 
         return $plans;
+    }
+
+    public function side()
+    {
+        if ((float)$this->long['positionAmt'] && (float)$this->short['positionAmt']) {
+            return 'BOTH';
+        }
+
+        if ((float)$this->long['positionAmt']) {
+            return 'LONG';
+        }
+
+        if ((float)$this->short['positionAmt']) {
+            return 'SHORT';
+        }
+    }
+
+    public function positions(): array
+    {
+        $positions = [];
+
+        if ('LONG' === $this->side()) {
+            $positions[] = [
+                'entry' => $this->long['entryPrice'],
+                'size' => $this->long['positionAmt'],
+                'profit' => $this->long['unRealizedProfit'],
+                'liquidation' => $this->long['liquidationPrice']
+            ];
+        }
+
+        return $positions;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'active' => $this->isActive(),
+            'side' => $this->side(),
+            'positions' => $this->positions()
+        ];
+    }
+
+    public function executeLongPlan(): array
+    {
+        $results = [];
+
+        foreach ($this->longPlan() as $order) {
+            $results[] = $this->client->openLong($order['size'], $order['entry']);
+        }
+
+        return $results;
     }
 }

@@ -62,25 +62,6 @@ class ApiClient extends API
         );
     }
 
-    public function createFuturesOrder()
-    {
-        return $this->httpRequest(
-            'fapi/v1/order',
-            'POST',
-            [
-                'fapi' => true,
-                'symbol' => 'BNBUSDT',
-                'side' => 'BUY',
-                'quantity' => 0.02,
-                'type' => 'LIMIT',
-                'price' => 305,
-                'timeInForce' => 'GTC',
-                'positionSide' => 'LONG'
-            ],
-            true
-        );
-    }
-
     public function createFuturesCloseOrder()
     {
         return $this->httpRequest(

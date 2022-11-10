@@ -56,4 +56,23 @@ class FuturesClient extends API
             true
         ));
     }
+
+    public function openLong(float $size, float $entry): array
+    {
+        return $this->httpRequest(
+            'fapi/v1/order',
+            'POST',
+            [
+                'fapi' => true,
+                'symbol' => 'BNBBUSD',
+                'side' => 'BUY',
+                'quantity' => $size,
+                'type' => 'LIMIT',
+                'price' => $entry,
+                'timeInForce' => 'GTC',
+                'positionSide' => 'LONG'
+            ],
+            true
+        );
+    }
 }

@@ -32,7 +32,10 @@ class Futures extends Command
     {
         $dealer = new FuturesDealer();
 
-        dd($dealer->longPlan());
-
+        if ($dealer->isActive()) {
+            dd($dealer->toArray());
+        } else {
+            dd($dealer->executeLongPlan());
+        }
     }
 }
