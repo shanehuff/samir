@@ -43,7 +43,7 @@ class Binance extends Command
         $futures = collect($api->futures())->get('totalMarginBalance');
         $data['FU'] = [
             'symbol' => 'FU',
-            'available' => $futures + 8.2,
+            'available' => $futures,
             'on_order' => 0,
             'updated_at' => Carbon::now()
         ];
