@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Commander\FuturesDealer;
+use App\Dealers\Dealer;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -30,12 +30,6 @@ class Futures extends Command
      */
     public function handle()
     {
-        $dealer = new FuturesDealer();
-
-        if ($dealer->isActive()) {
-            dd($dealer->toArray());
-        } else {
-            dd($dealer->executeLongPlan());
-        }
+        dd(Dealer::current()->takeProfitOrCancel());
     }
 }

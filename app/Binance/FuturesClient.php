@@ -3,11 +3,12 @@
 namespace App\Binance;
 
 use Binance\API;
+use Exception;
 use Illuminate\Support\Collection;
 
 class FuturesClient extends API
 {
-    public function account()
+    public function account(): array
     {
         return $this->httpRequest(
             'fapi/v2/account',
@@ -19,7 +20,10 @@ class FuturesClient extends API
         );
     }
 
-    public function balance()
+    /**
+     * @throws Exception
+     */
+    public function balance(): array
     {
         return $this->httpRequest(
             'fapi/v2/balance',
@@ -31,7 +35,10 @@ class FuturesClient extends API
         );
     }
 
-    public function userTrades()
+    /**
+     * @throws Exception
+     */
+    public function userTrades(): array
     {
         return $this->httpRequest(
             'fapi/v1/userTrades',
@@ -44,6 +51,9 @@ class FuturesClient extends API
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function positions(): Collection
     {
         return collect($this->httpRequest(
@@ -57,6 +67,9 @@ class FuturesClient extends API
         ));
     }
 
+    /**
+     * @throws Exception
+     */
     public function openLong(float $size, float $entry): array
     {
         return $this->httpRequest(
@@ -71,6 +84,35 @@ class FuturesClient extends API
                 'price' => $entry,
                 'timeInForce' => 'GTC',
                 'positionSide' => 'LONG'
+            ],
+            true
+        );
+    }
+
+    public function orders(string $symbol = 'BNBBUSD', $limit = 500, $fromOrderId = 0, $params = []): array
+    {
+        return $this->httpRequest(
+            'fapi/v1/openOrders',
+            'GET',
+            [
+                'fapi' => true,
+                'symbol' => $symbol
+            ],
+            true
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function cancelAllOrders(): array
+    {
+        return $this->httpRequest(
+            'fapi/v1/allOpenOrders',
+            'DELETE',
+            [
+                'fapi' => true,
+                'symbol' => 'BNBBUSD'
             ],
             true
         );
