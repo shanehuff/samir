@@ -30,6 +30,7 @@ class Futures extends Command
      */
     public function handle()
     {
-        dd(Dealer::current()->takeProfitOrCancel());
+
+        Dealer::openLongOrUpdate();
     }
 }

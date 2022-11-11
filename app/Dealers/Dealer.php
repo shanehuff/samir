@@ -205,16 +205,18 @@ class Dealer extends Model
         }
     }
 
+    public function hasNoPositionOnBinance(): bool
+    {
+        return 0.0 === (float)$this->positions()[0]['entry'];
+    }
+
     /**
      * @throws Exception
      */
     public function takeProfitOrCancel()
     {
-        $positions = $this->positions();
-        $isNoPosition = 0.0 === (float)$positions[0]['entry'];
-
         // Cancel all orders if no position created
-        if ($this->isActive() && $isNoPosition) {
+        if ($this->isActive() && $this->hasNoPositionOnBinance()) {
             try {
                 $this->client->cancelAllOrders();
             } catch (Exception $exception) {
@@ -235,6 +237,7 @@ class Dealer extends Model
      */
     public static function openLongOrUpdate()
     {
+        // Open long if dealer is inactive
         if (self::isInactive()) {
             /** @var Dealer $dealer */
             $dealer = self::query()
@@ -245,6 +248,52 @@ class Dealer extends Model
                 ]);
 
             $dealer->executeLongPlan();
+        } else {
+            // Sync orders data between Samir and Binance
+            /** @var Dealer $dealer */
+            $dealer = self::current();
+
+            // Position closed manually or liquidated. Get orders data and update Samir database.
+            if ($dealer->hasNoPositionOnBinance()) {
+                $dealer->collectTrades();
+                $dealer->close();
+                $dealer->syncOrders();
+            }
+        }
+    }
+
+    public function syncOrders()
+    {
+        $this->orders->each(/**
+         * @throws Exception
+         */ function ($order) {
+            $binanceOrder = $this->client->getOrder($order->binance_order_id);
+
+            // Update status
+            $order->status = DealerOrder::STATUS[$binanceOrder['status']];
+            $order->save();
+        });
+    }
+
+    public function close()
+    {
+        $this->status = self::STATUS_CLOSED;
+        $this->save();
+    }
+
+    public static function client(): FuturesClient
+    {
+        return (new self)->client;
+    }
+
+    public function collectTrades()
+    {
+        $trades = $this->client->userTrades($this->created_at->timestamp);
+        dd($trades);
+        if($trades->count()) {
+            $trades->each(function($trade) {
+                dd($trade);
+            });
         }
     }
 }
