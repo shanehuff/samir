@@ -6,21 +6,21 @@ use App\Dealers\Dealer;
 use Exception;
 use Illuminate\Console\Command;
 
-class Futures extends Command
+class FuturesDown extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'futures';
+    protected $signature = 'futures:down';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Interacts With Binance Futures API (Development)';
+    protected $description = 'Interacts With Binance FuturesDown API (Development)';
 
     /**
      * Execute the console command.
@@ -30,6 +30,6 @@ class Futures extends Command
      */
     public function handle()
     {
-        dd(Dealer::current()->positions());
+        Dealer::openLongOrUpdate();
     }
 }
