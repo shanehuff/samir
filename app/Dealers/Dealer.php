@@ -51,6 +51,11 @@ class Dealer extends Model
         return $this->hasMany(DealerOrder::class);
     }
 
+    public function trades(): HasMany
+    {
+        return $this->hasMany(DealerTrade::class);
+    }
+
     public static function isInactive(): bool
     {
         return false === self::isActive();
@@ -194,7 +199,10 @@ class Dealer extends Model
         $this->save();
         $this->refresh();
 
+        $time = [];
+
         foreach ($orders as $order) {
+            $time[] = $order['updateTime'];
             $this->orders()->create([
                 'binance_order_id' => $order['orderId'],
                 'binance_client_id' => $order['clientOrderId'],
@@ -203,6 +211,9 @@ class Dealer extends Model
                 'size' => $order['origQty']
             ]);
         }
+
+        $this->binance_timestamp = min($time);
+        $this->save();
     }
 
     public function hasNoPositionOnBinance(): bool
@@ -253,16 +264,17 @@ class Dealer extends Model
             /** @var Dealer $dealer */
             $dealer = self::current();
 
+            $dealer->collectTrades();
+            $dealer->updateOrderStatuses();
+
             // Position closed manually or liquidated. Get orders data and update Samir database.
             if ($dealer->hasNoPositionOnBinance()) {
-                $dealer->collectTrades();
                 $dealer->close();
-                $dealer->syncOrders();
             }
         }
     }
 
-    public function syncOrders()
+    public function updateOrderStatuses()
     {
         $this->orders->each(/**
          * @throws Exception
@@ -286,13 +298,34 @@ class Dealer extends Model
         return (new self)->client;
     }
 
+    /**
+     * @throws Exception
+     */
     public function collectTrades()
     {
-        $trades = $this->client->userTrades($this->created_at->timestamp);
-        dd($trades);
-        if($trades->count()) {
-            $trades->each(function($trade) {
-                dd($trade);
+        $trades = collect($this->client->userTrades($this->binance_timestamp));
+
+        if ($trades->count()) {
+            $trades->each(function ($trade) {
+                $this->trades()
+                    ->upsert([[
+                        'binance_id' => $trade['id'],
+                        'binance_order_id' => $trade['orderId'],
+                        'dealer_id' => $this->id,
+                        'symbol' => $trade['symbol'],
+                        'side' => $trade['side'],
+                        'price' => $trade['price'],
+                        'size' => $trade['qty'],
+                        'realized_pnl' => $trade['realizedPnl'],
+                        'pnl_asset' => $trade['marginAsset'],
+                        'total' => $trade['quoteQty'],
+                        'fee' => $trade['commission'],
+                        'fee_asset' => $trade['commissionAsset'],
+                        'binance_timestamp' => $trade['time'],
+                        'position_side' => $trade['positionSide'],
+                        'buyer' => $trade['buyer'],
+                        'maker' => $trade['maker'],
+                    ]], ['binance_id']);
             });
         }
     }

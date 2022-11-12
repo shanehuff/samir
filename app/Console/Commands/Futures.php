@@ -30,7 +30,6 @@ class Futures extends Command
      */
     public function handle()
     {
-
         Dealer::openLongOrUpdate();
     }
 }
