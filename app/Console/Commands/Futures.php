@@ -30,8 +30,6 @@ class Futures extends Command
      */
     public function handle()
     {
-        $dealer = Dealer::find(1);
-
-        dd($dealer->profit());
+        dd(Dealer::current()->positions());
     }
 }

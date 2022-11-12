@@ -189,13 +189,18 @@ class Dealer extends Model
 
         foreach ($orders as $order) {
             $time[] = $order['updateTime'];
-            $this->orders()->create([
-                'binance_order_id' => $order['orderId'],
-                'binance_client_id' => $order['clientOrderId'],
-                'status' => DealerOrder::STATUS_NEW,
-                'price' => $order['price'],
-                'size' => $order['origQty']
-            ]);
+            $this->orders()->upsert([
+                [
+                    'binance_order_id' => $order['orderId'],
+                    'binance_client_id' => $order['clientOrderId'],
+                    'status' => DealerOrder::STATUS_NEW,
+                    'price' => $order['price'],
+                    'size' => $order['origQty']
+                ]
+            ],
+                ['binance_order_id'],
+                ['status']
+            );
         }
 
         $this->binance_timestamp = min($time);
@@ -335,8 +340,8 @@ class Dealer extends Model
             $profit['fee'] += $fee;
             $profit['net_profit'] += $fee + $trade->realized_pnl;
 
-            if($trade->buyer) {
-                $total+= $trade->total;
+            if ($trade->buyer) {
+                $total += $trade->total;
             }
         });
 
@@ -347,12 +352,13 @@ class Dealer extends Model
 
     private function maybeTakeProfit()
     {
-        dd($this->shortPlan());
+        if ($this->positions()['profit'] >= 0) {
+            $this->executeShortPlan(); // @TODO Should be changed to executeTakeProfitPlan later
+        }
     }
 
-    private function shortPlan()
+    public function shortPlan(): array
     {
-        //dd($this->long);
         $plans = [];
         $size = $this->firstOrder()->size;
         $count = $this->countFilledOrders();
@@ -397,9 +403,13 @@ class Dealer extends Model
 
         for ($i = 0; $i < count($plans); $i++) {
             $sizes[] = $plans[$i]['size'];
-            $entries[] = $plans[$i]['entry'];
         }
 
+        rsort($sizes);
+
+        for ($i = 0; $i < count($plans); $i++) {
+            $plans[$i]['size'] = $sizes[$i];
+        }
 
         return $plans;
     }
@@ -417,5 +427,23 @@ class Dealer extends Model
         return $this->orders()
             ->where('status', DealerOrder::STATUS_FILLED)
             ->count();
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function executeShortPlan(): array
+    {
+        $orders = [];
+
+        foreach ($this->shortPlan() as $order) {
+            $orders[] = $this->client->closeLong($order['size'], $order['entry']);
+        }
+
+        if (count($orders)) {
+            $this->store($orders);
+        }
+
+        return $orders;
     }
 }

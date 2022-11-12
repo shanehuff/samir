@@ -136,17 +136,25 @@ class FuturesClient extends API
         );
     }
 
-    public function income()
+    /**
+     * @throws Exception
+     */
+    public function closeLong(float $size, float $entry): array
     {
-//        return $this->httpRequest(
-//            'fapi/v1/order',
-//            'GET',
-//            [
-//                'fapi' => true,
-//                'symbol' => 'BNBBUSD',
-//                'orderId' => $orderId
-//            ],
-//            true
-//        );
+        return $this->httpRequest(
+            'fapi/v1/order',
+            'POST',
+            [
+                'fapi' => true,
+                'symbol' => 'BNBBUSD',
+                'side' => 'SELL',
+                'quantity' => $size,
+                'type' => 'LIMIT',
+                'price' => $entry,
+                'timeInForce' => 'GTC',
+                'positionSide' => 'LONG'
+            ],
+            true
+        );
     }
 }
