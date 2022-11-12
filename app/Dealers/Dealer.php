@@ -162,20 +162,6 @@ class Dealer extends Model
     /**
      * @throws Exception
      */
-    public function toArray(): array
-    {
-        return [
-            'active' => $this->isActive(),
-            'side' => $this->side(),
-            'positions' => $this->positions(),
-            'orders_binance' => $this->ordersOnBinance(),
-            'orders' => $this->orders->toArray()
-        ];
-    }
-
-    /**
-     * @throws Exception
-     */
     public function executeLongPlan(): array
     {
         $orders = [];
@@ -224,22 +210,26 @@ class Dealer extends Model
     /**
      * @throws Exception
      */
-    public function takeProfitOrCancel()
+    public static function takeProfitOrCancel()
     {
-        // Cancel all orders if no position created
-        if ($this->isActive() && $this->hasNoPositionOnBinance()) {
-            try {
-                $this->client->cancelAllOrders();
-            } catch (Exception $exception) {
-                info($exception->getMessage());
+        if (self::isActive()) {
+            $dealer = self::current();
+
+            $dealer->updateOrderStatuses();
+            $dealer->collectTrades();
+
+            if ($dealer->hasNoPositionOnBinance()) {
+                // Cancel all orders if no position created
+                try {
+                    $dealer->client->cancelAllOrders();
+                } catch (Exception $exception) {
+                    info($exception->getMessage());
+                }
+
+                $dealer->close();
+            } else {
+                $dealer->maybeTakeProfit();
             }
-
-            $this->status = self::STATUS_CLOSED;
-            $this->save();
-
-            $this->orders()->update([
-                'status' => DealerOrder::STATUS_CLOSED
-            ]);
         }
     }
 
@@ -274,7 +264,7 @@ class Dealer extends Model
         }
     }
 
-    public function updateOrderStatuses()
+    private function updateOrderStatuses()
     {
         $this->orders->each(/**
          * @throws Exception
@@ -287,7 +277,7 @@ class Dealer extends Model
         });
     }
 
-    public function close()
+    private function close()
     {
         $this->status = self::STATUS_CLOSED;
         $this->save();
@@ -301,7 +291,7 @@ class Dealer extends Model
     /**
      * @throws Exception
      */
-    public function collectTrades()
+    private function collectTrades()
     {
         $trades = collect($this->client->userTrades($this->binance_timestamp));
 
@@ -330,15 +320,102 @@ class Dealer extends Model
         }
     }
 
-    public function profit(): float|int
+    public function profit(): array
     {
-        $profit = 0;
-        $this->trades->each(function ($trade) use (&$profit) {
-            $fee = 'BNB' === $trade->fee_asset ? $trade->fee * $trade->price : $trade->fee;
+        $profit = [
+            'realized_profit' => 0,
+            'fee' => 0,
+            'net_profit' => 0
+        ];
+        $total = 0;
+        $this->trades->each(function ($trade) use (&$profit, &$total) {
+            $fee = -1 * ('BNB' === $trade->fee_asset ? $trade->fee * $trade->price : $trade->fee);
 
-            $profit += -1 * $fee + $trade->realized_pnl;
+            $profit['realized_profit'] += $trade->realized_pnl;
+            $profit['fee'] += $fee;
+            $profit['net_profit'] += $fee + $trade->realized_pnl;
+
+            if($trade->buyer) {
+                $total+= $trade->total;
+            }
         });
 
+        $profit['roe'] = number_format($profit['net_profit'] / $total * 100, 2) . '%';
+
         return $profit;
+    }
+
+    private function maybeTakeProfit()
+    {
+        dd($this->shortPlan());
+    }
+
+    private function shortPlan()
+    {
+        //dd($this->long);
+        $plans = [];
+        $size = $this->firstOrder()->size;
+        $count = $this->countFilledOrders();
+        $steps = $this->long['positionAmt'] / ($size ?? 0.02) / $count;
+        $startSize = 0.02;
+        $entry = $this->short['markPrice'] + 0.1;
+
+        $plans[] = [
+            'size' => $startSize,
+            'entry' => (float)number_format($entry, 2),
+            'total' => (float)number_format($startSize * $entry, 2)
+        ];
+
+        $planner = function ($_plans) {
+            $limitMove = 0.0256000000000001;
+            $_size = 0;
+            $_entry = 0;
+
+            foreach ($_plans as $plan) {
+                $_size += $plan['size'];
+            }
+
+            foreach ($_plans as $plan) {
+                $_entry += $plan['size'] * $plan['entry'] / $_size;
+            }
+
+            $output = [
+                'size' => $_size * 2,
+                'entry' => (float)number_format($_entry * (1 + $limitMove) - 0.02, 2)
+            ];
+
+            return [
+                'size' => $output['size'],
+                'entry' => $output['entry'],
+                'total' => (float)number_format($output['size'] * $output['entry'], 2)
+            ];
+        };
+
+        for ($i = 1; $i < $steps; $i++) {
+            $plans[] = $planner($plans);
+        }
+
+        for ($i = 0; $i < count($plans); $i++) {
+            $sizes[] = $plans[$i]['size'];
+            $entries[] = $plans[$i]['entry'];
+        }
+
+
+        return $plans;
+    }
+
+    /** @noinspection PhpIncompatibleReturnTypeInspection */
+    private function firstOrder(): ?DealerOrder
+    {
+        return $this->orders()
+            ->orderBy('id')
+            ->first();
+    }
+
+    private function countFilledOrders(): int
+    {
+        return $this->orders()
+            ->where('status', DealerOrder::STATUS_FILLED)
+            ->count();
     }
 }
