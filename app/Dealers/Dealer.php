@@ -329,4 +329,16 @@ class Dealer extends Model
             });
         }
     }
+
+    public function profit(): float|int
+    {
+        $profit = 0;
+        $this->trades->each(function ($trade) use (&$profit) {
+            $fee = 'BNB' === $trade->fee_asset ? $trade->fee * $trade->price : $trade->fee;
+
+            $profit += -1 * $fee + $trade->realized_pnl;
+        });
+
+        return $profit;
+    }
 }
