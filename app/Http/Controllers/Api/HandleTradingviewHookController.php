@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Dealers\Dealer;
 use App\Http\Controllers\Controller;
 use App\Tradingview\InteractsWithTradingviewAlerts;
 use Illuminate\Http\Request;
@@ -16,26 +17,18 @@ class HandleTradingviewHookController extends Controller
             'payloads' => 'required|array'
         ]);
 
-        if($this->shouldUseV2($request)) {
-            $this->createTradingviewAlertV2(
-                $request->input('payloads.resolution'),
-                $request->input('payloads.stochastic'),
-                (float)$request->input('payloads.price')
-            );
-        }else{
-            $this->createTradingviewAlert(
-                $request->input('payloads.side'),
-                $request->input('payloads.timeframe'),
-                (float)$request->input('payloads.price')
-            );
+        info(json_encode($request->payloads));
+
+        if('down' === $request->payloads['direction']) {
+            Dealer::openLongOrUpdate();
         }
 
+        if('up' === $request->payloads['direction']) {
+            Dealer::takeProfitOrCancel();
+        }
 
-        return ['status' => 'success'];
-    }
-
-    private function shouldUseV2(Request $request): bool
-    {
-        return $request->has('payloads.resolution');
+        return [
+            'success' => true
+        ];
     }
 }

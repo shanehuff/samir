@@ -363,6 +363,9 @@ class Dealer extends Model
         return $profit;
     }
 
+    /**
+     * @throws Exception
+     */
     private function maybeTakeProfit()
     {
         if ($this->positions()['profit'] >= 0) {
