@@ -368,8 +368,10 @@ class Dealer extends Model
      */
     private function maybeTakeProfit()
     {
-        if ($this->positions()['profit'] >= 0) {
+        if (isset($this->positions()['profit']) && $this->positions()['profit'] >= 0) {
             $this->executeShortPlan(); // @TODO Should be changed to executeTakeProfitPlan later
+        } else {
+            info(sprintf('Profit Debug: %s', json_encode($this->positions())));
         }
     }
 
