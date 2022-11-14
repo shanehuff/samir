@@ -30,6 +30,6 @@ class FuturesUp extends Command
      */
     public function handle()
     {
-        Dealer::openLongOrUpdate();
+        Dealer::takeProfitOrCancel();
     }
 }

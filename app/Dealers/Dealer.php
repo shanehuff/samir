@@ -166,24 +166,36 @@ class Dealer extends Model
     {
         $orders = [];
 
-        foreach ($this->longPlan() as $order) {
-            $orders[] = $this->client->openLong($order['size'], $order['entry']);
+        try {
+            foreach ($this->longPlan() as $order) {
+                $orders[] = $this->client->openLong($order['size'], $order['entry']);
+            }
+        } catch (Exception $exception) {
+            info(sprintf('Failed creating Binance orders: %s', $exception->getMessage()));
         }
 
         if (count($orders)) {
-            $this->store($orders);
+            $this->tapDb();
+            $this->createOrders($orders);
         }
 
         return $orders;
     }
 
-    public function store(array $orders)
+    private function tapDb()
     {
-        $this->code = $orders[0]['orderId'];
+        $this->code = 0;
         $this->status = self::STATUS_NEW;
         $this->side = $this->side();
         $this->save();
         $this->refresh();
+
+        return $this;
+    }
+
+    public function createOrders(array $orders)
+    {
+        $this->code = $orders[0]['orderId'];
 
         $time = [];
 
@@ -191,6 +203,7 @@ class Dealer extends Model
             $time[] = $order['updateTime'];
             $this->orders()->upsert([
                 [
+                    'dealer_id' => $this->id,
                     'binance_order_id' => $order['orderId'],
                     'binance_client_id' => $order['clientOrderId'],
                     'status' => DealerOrder::STATUS_NEW,
@@ -441,7 +454,7 @@ class Dealer extends Model
         }
 
         if (count($orders)) {
-            $this->store($orders);
+            $this->createOrders($orders);
         }
 
         return $orders;
