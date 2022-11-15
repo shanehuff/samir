@@ -3,8 +3,10 @@
 namespace App\Dealers;
 
 use App\Binance\FuturesClient;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -54,6 +56,11 @@ class Dealer extends Model
     public function trades(): HasMany
     {
         return $this->hasMany(DealerTrade::class);
+    }
+
+    public function profit(): HasOne
+    {
+        return $this->hasOne(DealerProfit::class);
     }
 
     public static function isInactive(): bool
@@ -297,6 +304,7 @@ class Dealer extends Model
 
     private function close()
     {
+        $this->calculateProfit();
         $this->status = self::STATUS_CLOSED;
         $this->save();
     }
@@ -338,7 +346,7 @@ class Dealer extends Model
         }
     }
 
-    public function profit(): array
+    public function calculateProfit(): array
     {
         $profit = [
             'realized_profit' => 0,
@@ -347,18 +355,26 @@ class Dealer extends Model
         ];
         $total = 0;
         $this->trades->each(function ($trade) use (&$profit, &$total) {
-            $fee = -1 * ('BNB' === $trade->fee_asset ? $trade->fee * $trade->price : $trade->fee);
+            $fee = ('BNB' === $trade->fee_asset ? $trade->fee * $trade->price : $trade->fee);
 
             $profit['realized_profit'] += $trade->realized_pnl;
             $profit['fee'] += $fee;
-            $profit['net_profit'] += $fee + $trade->realized_pnl;
+            $profit['net_profit'] += $trade->realized_pnl - $fee;
 
             if ($trade->buyer) {
                 $total += $trade->total;
             }
         });
 
-        $profit['roe'] = number_format($profit['net_profit'] / $total * 100, 2) . '%';
+        $profit['roe'] = $profit['net_profit'] / ($total / 20);
+
+        $profit['duration'] = Carbon::createFromTimestamp($this->getLatestTrade()->binance_timestamp / 1000)
+            ->diffInMinutes($this->created_at);
+
+        $profit['dealer_id'] = $this->id;
+
+        $this->profit()
+            ->upsert($profit, ['dealer_id'], ['realized_profit', 'fee', 'net_profit', 'roe', 'duration']);
 
         return $profit;
     }
@@ -464,5 +480,13 @@ class Dealer extends Model
         }
 
         return $orders;
+    }
+
+    /** @noinspection PhpIncompatibleReturnTypeInspection */
+    private function getLatestTrade(): ?DealerTrade
+    {
+        return $this->trades()
+            ->orderByDesc('binance_timestamp')
+            ->first();
     }
 }
