@@ -341,35 +341,45 @@ class Dealer extends Model
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function calculateProfit(): array
     {
+        $this->updateOrderStatuses();
+        $this->collectTrades();
+
         $profit = [
             'realized_profit' => 0,
             'fee' => 0,
             'net_profit' => 0
         ];
+
         $total = 0;
-        $this->trades->each(function ($trade) use (&$profit, &$total) {
-            $fee = ('BNB' === $trade->fee_asset ? $trade->fee * $trade->price : $trade->fee);
 
-            $profit['realized_profit'] += $trade->realized_pnl;
-            $profit['fee'] += $fee;
-            $profit['net_profit'] += $trade->realized_pnl - $fee;
+        if($this->trades->count()) {
+            $this->trades->each(function ($trade) use (&$profit, &$total) {
+                $fee = ('BNB' === $trade->fee_asset ? $trade->fee * $trade->price : $trade->fee);
 
-            if ($trade->buyer) {
-                $total += $trade->total;
-            }
-        });
+                $profit['realized_profit'] += $trade->realized_pnl;
+                $profit['fee'] += $fee;
+                $profit['net_profit'] += $trade->realized_pnl - $fee;
 
-        $profit['roe'] = $profit['net_profit'] / ($total / 20);
+                if ($trade->buyer) {
+                    $total += $trade->total;
+                }
+            });
 
-        $profit['duration'] = Carbon::createFromTimestamp($this->getLatestTrade()->binance_timestamp / 1000)
-            ->diffInMinutes($this->created_at);
+            $profit['roe'] = $profit['net_profit'] / ($total / 20);
 
-        $profit['dealer_id'] = $this->id;
+            $profit['duration'] = Carbon::createFromTimestamp($this->getLatestTrade()->binance_timestamp / 1000)
+                ->diffInMinutes($this->created_at);
 
-        $this->profit()
-            ->upsert($profit, ['dealer_id'], ['realized_profit', 'fee', 'net_profit', 'roe', 'duration']);
+            $profit['dealer_id'] = $this->id;
+
+            $this->profit()
+                ->upsert($profit, ['dealer_id'], ['realized_profit', 'fee', 'net_profit', 'roe', 'duration']);
+        }
 
         return $profit;
     }
