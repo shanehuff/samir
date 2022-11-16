@@ -182,14 +182,15 @@ class Dealer extends Model
         }
 
         if (count($orders)) {
-            $this->tapDb();
+            $this->createInstance();
             $this->createOrders($orders);
         }
 
         return $orders;
     }
 
-    private function tapDb()
+    /** @noinspection PhpMissingReturnTypeInspection */
+    private function createInstance()
     {
         $this->code = 0;
         $this->status = self::STATUS_NEW;
@@ -244,12 +245,7 @@ class Dealer extends Model
             $dealer->collectTrades();
 
             if ($dealer->hasNoPositionOnBinance()) {
-                // Cancel all orders if no position created
-                try {
-                    $dealer->client->cancelAllOrders();
-                } catch (Exception $exception) {
-                    info($exception->getMessage());
-                }
+                $dealer->cancelAllOrders();
 
                 $dealer->close();
             } else {
@@ -304,7 +300,6 @@ class Dealer extends Model
 
     private function close()
     {
-        $this->calculateProfit();
         $this->status = self::STATUS_CLOSED;
         $this->save();
     }
@@ -488,5 +483,15 @@ class Dealer extends Model
         return $this->trades()
             ->orderByDesc('binance_timestamp')
             ->first();
+    }
+
+    private function cancelAllOrders()
+    {
+        // Cancel all orders if no position created
+        try {
+            $this->client->cancelAllOrders();
+        } catch (Exception $exception) {
+            info($exception->getMessage());
+        }
     }
 }
