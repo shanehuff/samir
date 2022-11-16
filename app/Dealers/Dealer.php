@@ -3,6 +3,7 @@
 namespace App\Dealers;
 
 use App\Binance\FuturesClient;
+use App\Jobs\CalculateDealerProfit;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -300,6 +301,8 @@ class Dealer extends Model
 
     private function close()
     {
+        dispatch(new CalculateDealerProfit($this));
+
         $this->status = self::STATUS_CLOSED;
         $this->save();
     }
