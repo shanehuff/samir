@@ -33,6 +33,10 @@ return [
     'binance' => [
         'key' => env('BINANCE_API_KEY'),
         'secret' => env('BINANCE_API_SECRET')
+    ],
+
+    'keisha' => [
+        'key' => env('KEISHA_API_KEY')
     ]
 
 ];
