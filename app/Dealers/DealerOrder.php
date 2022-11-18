@@ -17,7 +17,8 @@ class DealerOrder extends Model
     const STATUS = [
         'NEW' => self::STATUS_NEW,
         'FILLED' => self::STATUS_FILLED,
-        'CANCELED' => self::STATUS_CLOSED
+        'CANCELED' => self::STATUS_CLOSED,
+        'EXPIRED' => self::STATUS_CLOSED
     ];
 
     protected $table = 'dealer_orders';
