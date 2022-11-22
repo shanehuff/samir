@@ -360,7 +360,7 @@ class Dealer extends Model
 
         $total = 0;
 
-        if($this->trades->count()) {
+        if($this->trades->count() > 0) {
             $this->trades->each(function ($trade) use (&$profit, &$total) {
                 $fee = ('BNB' === $trade->fee_asset ? $trade->fee * $trade->price : $trade->fee);
 
@@ -403,16 +403,16 @@ class Dealer extends Model
     public function shortPlan(): array
     {
         $plans = [];
-        $size = $this->firstOrder()->size;
-        $count = $this->countFilledOrders();
-        $steps = $this->long['positionAmt'] / ($size ?? 0.02) / $count;
-        $startSize = 0.02;
+        $size = $this->long['positionAmt']; // $this->firstOrder()->size;
+        //$count = $this->countFilledOrders();
+        $steps = 1; // $this->long['positionAmt'] / ($size ?? 0.02) / $count;
+        //$startSize = 0.02;
         $entry = $this->short['markPrice'] + 0.1;
 
         $plans[] = [
-            'size' => $startSize,
+            'size' => $size,
             'entry' => (float)number_format($entry, 2),
-            'total' => (float)number_format($startSize * $entry, 2)
+            'total' => (float)number_format($size * $entry, 2)
         ];
 
         $planner = function ($_plans) {
