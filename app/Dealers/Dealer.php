@@ -98,7 +98,7 @@ class Dealer extends Model
         $plans = [];
         $steps = 6;
         $startSize = 0.02;
-        $entry = $this->long['markPrice'] - 0.1;
+        $entry = $this->long['markPrice'] * (1-0.0025);
 
         $plans[] = [
             'size' => $startSize,
@@ -412,7 +412,7 @@ class Dealer extends Model
         //$count = $this->countFilledOrders();
         $steps = 1; // $this->long['positionAmt'] / ($size ?? 0.02) / $count;
         //$startSize = 0.02;
-        $entry = $this->short['markPrice'] + 0.1;
+        $entry = $this->short['markPrice'] * (1+0.0025);
 
         $plans[] = [
             'size' => $size,
