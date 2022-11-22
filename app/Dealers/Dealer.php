@@ -96,7 +96,7 @@ class Dealer extends Model
     public function longPlan(): array
     {
         $plans = [];
-        $steps = 3;
+        $steps = 6;
         $startSize = 0.02;
         $entry = $this->long['markPrice'] - 0.1;
 
@@ -260,18 +260,8 @@ class Dealer extends Model
      */
     public static function openLongOrUpdate()
     {
-        // Open long if dealer is inactive
-        if (self::isInactive()) {
-            /** @var Dealer $dealer */
-            $dealer = self::query()
-                ->create([
-                    'code' => rand(),
-                    'status' => self::STATUS_NEW,
-                    'side' => 'LONG'
-                ]);
-
-            $dealer->executeLongPlan();
-        } else {
+        // Sync data
+        if (self::isActive()) {
             // Sync orders data between Samir and Binance
             /** @var Dealer $dealer */
             $dealer = self::current();
@@ -283,6 +273,21 @@ class Dealer extends Model
             if ($dealer->hasNoPositionOnBinance()) {
                 $dealer->close();
             }
+
+            usleep(100);
+        }
+
+        // Open long if dealer is inactive
+        if (self::isInactive()) {
+            /** @var Dealer $dealer */
+            $dealer = self::query()
+                ->create([
+                    'code' => rand(),
+                    'status' => self::STATUS_NEW,
+                    'side' => 'LONG'
+                ]);
+
+            $dealer->executeLongPlan();
         }
     }
 
