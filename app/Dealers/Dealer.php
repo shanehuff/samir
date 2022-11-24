@@ -98,7 +98,7 @@ class Dealer extends Model
         $plans = [];
         $steps = 6;
         $startSize = 0.02;
-        $entry = $this->long['markPrice'] * (1-0.0025);
+        $entry = $this->long['markPrice'] - 0.1;
 
         $plans[] = [
             'size' => $startSize,
@@ -271,6 +271,7 @@ class Dealer extends Model
 
             // Position closed manually or liquidated. Get orders data and update Samir database.
             if ($dealer->hasNoPositionOnBinance()) {
+                $dealer->cancelAllOrders();
                 $dealer->close();
             }
 
@@ -412,7 +413,7 @@ class Dealer extends Model
         //$count = $this->countFilledOrders();
         $steps = 1; // $this->long['positionAmt'] / ($size ?? 0.02) / $count;
         //$startSize = 0.02;
-        $entry = $this->short['markPrice'] * (1+0.0025);
+        $entry = $this->short['markPrice'] + 0.1;
 
         $plans[] = [
             'size' => $size,
