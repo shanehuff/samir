@@ -79,12 +79,17 @@ class Dealer extends Model
      */
     public static function current(): ?Dealer
     {
-        return self::query()
+        $dealer = self::query()
             ->whereIn('status', [self::STATUS_NEW, self::STATUS_ACTIVE])
             ->orderByDesc('id')
-            ->first()
-            ->withBinanceApi();
-    }
+            ->first();
+
+        if($dealer) {
+            $dealer = $dealer->withBinanceApi();
+        }
+
+        return $dealer;
+    }   
 
     public static function isActive(): bool
     {
