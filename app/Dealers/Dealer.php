@@ -374,7 +374,7 @@ class Dealer extends Model
 
         $total = 0;
 
-        if($this->trades->count() > 0) {
+        if ($this->trades->count() > 0) {
             $this->trades->each(function ($trade) use (&$profit, &$total) {
                 $fee = ('BNB' === $trade->fee_asset ? $trade->fee * $trade->price : $trade->fee);
 
@@ -406,7 +406,9 @@ class Dealer extends Model
      */
     private function maybeTakeProfit()
     {
-        if (isset($this->positions()[0]['profit']) && $this->positions()[0]['profit'] >= 0) {
+        $position = $this->positions()[0];
+        $fee = $position['entry'] * $position['size'] * 0.0001;
+        if (isset($this->positions()[0]['profit']) && $this->positions()[0]['profit'] >= $fee) {
             info('Executing short plan');
             $this->executeShortPlan(); // @TODO Should be changed to executeTakeProfitPlan later
         } else {
