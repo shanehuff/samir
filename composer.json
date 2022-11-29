@@ -10,10 +10,13 @@
     "doctrine/dbal": "^3.3",
     "fruitcake/laravel-cors": "^2.0",
     "guzzlehttp/guzzle": "^7.0.1",
+    "inertiajs/inertia-laravel": "^0.6.3",
     "jaggedsoft/php-binance-api": "master",
     "laravel/framework": "^9.0",
+    "laravel/jetstream": "^2.12",
     "laravel/sanctum": "^2.11",
-    "laravel/tinker": "^2.5"
+    "laravel/tinker": "^2.5",
+    "tightenco/ziggy": "^1.0"
   },
   "require-dev": {
     "spatie/laravel-ignition": "^1.0",
