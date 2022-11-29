@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Pages\DealsController;
+use App\Http\Controllers\Pages\StatsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,3 +35,6 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 });
+
+Route::get('/stats', StatsController::class);
+Route::get('/deals', DealsController::class);

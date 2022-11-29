@@ -32,13 +32,16 @@ class Dealer extends Model
 
     protected array $short;
 
-    /**
-     * @throws Exception
-     */
     public function __construct()
     {
         parent::__construct();
+    }
 
+    /**
+     * @throws Exception
+     */
+    private function withBinanceApi(): static
+    {
         $this->client = new FuturesClient(
             config('services.binance.key'),
             config('services.binance.secret')
@@ -47,6 +50,8 @@ class Dealer extends Model
         $this->positions = $this->client->positions();
         $this->long = $this->positions->get(0);
         $this->short = $this->positions->get(1);
+
+        return $this;
     }
 
     public function orders(): HasMany
@@ -69,13 +74,16 @@ class Dealer extends Model
         return false === self::isActive();
     }
 
-    /** @noinspection PhpIncompatibleReturnTypeInspection */
+    /** @noinspection PhpIncompatibleReturnTypeInspection
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
+     */
     public static function current(): ?Dealer
     {
         return self::query()
             ->whereIn('status', [self::STATUS_NEW, self::STATUS_ACTIVE])
             ->orderByDesc('id')
-            ->first();
+            ->first()
+            ->withBinanceApi();
     }
 
     public static function isActive(): bool
