@@ -21,4 +21,7 @@ export default defineConfig({
     ssr: {
         noExternal: ['@inertiajs/server'],
     },
+    server: {
+        host: 'samir.5oaqkapv5e-e9249vmxw3kr.p.temp-site.link'
+    }
 });
