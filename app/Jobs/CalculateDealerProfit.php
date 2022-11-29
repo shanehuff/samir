@@ -14,7 +14,7 @@ class CalculateDealerProfit implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public Dealer $dealer;
+    public ?Dealer $dealer;
 
     /**
      * Create a new job instance.
@@ -34,6 +34,8 @@ class CalculateDealerProfit implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->dealer->calculateProfit();
+        $this->dealer
+            ->withBinanceApi()
+            ->calculateProfit();
     }
 }

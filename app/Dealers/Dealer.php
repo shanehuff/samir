@@ -24,13 +24,13 @@ class Dealer extends Model
 
     protected $guarded = [];
 
-    protected FuturesClient $client;
+    protected ?FuturesClient $client;
 
     protected Collection $positions;
 
-    protected array $long;
+    protected ?array $long;
 
-    protected array $short;
+    protected ?array $short;
 
     public function __construct()
     {
@@ -40,7 +40,7 @@ class Dealer extends Model
     /**
      * @throws Exception
      */
-    private function withBinanceApi(): static
+    public function withBinanceApi(): static
     {
         $this->client = new FuturesClient(
             config('services.binance.key'),
@@ -301,7 +301,8 @@ class Dealer extends Model
                     'side' => 'LONG'
                 ]);
 
-            $dealer->executeLongPlan();
+            $dealer->withBinanceApi()
+                ->executeLongPlan();
         }
     }
 
