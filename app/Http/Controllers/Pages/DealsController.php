@@ -26,12 +26,13 @@ class DealsController
                 $query->where('net_profit', '>', 0);
             })
             ->orderByDesc('created_at')
+            ->limit(20)
             ->get();
 
         $deals->map(function ($deal) {
             if ($deal->profit) {
                 $deal->net_profit = $this->toVND($deal->profit->net_profit);
-                $deal->readable_time = $deal->created_at->diffForHumans();
+                $deal->readable_time = $deal->updated_at->diffForHumans();
             }
         });
 
