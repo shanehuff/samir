@@ -31,7 +31,6 @@ class DealsController
         $deals->map(function ($deal) {
             if ($deal->profit) {
                 $deal->net_profit = $this->toVND($deal->profit->net_profit);
-                $deal->duration = CarbonInterval::minutes($deal->profit->duration)->cascade()->forHumans();
                 $deal->readable_time = $deal->created_at->diffForHumans();
             }
         });

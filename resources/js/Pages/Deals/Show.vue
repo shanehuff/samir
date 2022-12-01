@@ -9,9 +9,11 @@ defineProps({
 <template>
   <AppLayout title="Profile">
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">
-        Deals
-      </h2>
+      <div class="flex justify-center">
+        <h2 class="text-gray-800 leading-tight dark:text-white">
+          Deals 🤝
+        </h2>
+      </div>
     </template>
 
     <div class="p-6 max-w-7xl mx-auto">
@@ -19,25 +21,14 @@ defineProps({
         <div v-for="deal in deals"
             class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
         >
-          <div class="p-4 flex items-center">
-            <div>
-              🎉
+          <div class="p-4 flex justify-between">
               <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                {{ deal.readable_time }}
+                🎉 {{ deal.readable_time }}
               </span>
-              <span class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                we earned
+
+              <span class="text-sm font-semibold text-gray-700 dark:text-green-200">
+                <span v-if="parseInt(deal.net_profit) > 0">+</span>{{ deal.net_profit }} 💰
               </span>
-              <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                💰{{ deal.net_profit }} ₫
-              </span>
-              <span class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                in
-              </span>
-              <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                ⏱{{ deal.duration }}
-              </span>
-            </div>
           </div>
         </div>
       </div>
