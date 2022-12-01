@@ -7,10 +7,10 @@ defineProps({
 </script>
 
 <template>
-  <AppLayout title="Profile">
+  <AppLayout title="Deals">
     <template #header>
       <div class="flex justify-center">
-        <h2 class="text-gray-800 leading-tight dark:text-white">
+        <h2 class="text-xl text-gray-800 leading-tight dark:text-white">
           Deals 🤝
         </h2>
       </div>
