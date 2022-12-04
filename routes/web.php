@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Pages\DealsController;
 use App\Http\Controllers\Pages\StatsController;
+use App\Http\Controllers\Pages\DailyRoiController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,3 +39,4 @@ Route::middleware([
 
 Route::get('/stats', StatsController::class);
 Route::get('/deals', DealsController::class);
+Route::get('/daily-roi', DailyRoiController::class);

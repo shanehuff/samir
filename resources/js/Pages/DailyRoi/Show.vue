@@ -7,11 +7,11 @@ defineProps({
 </script>
 
 <template>
-  <AppLayout title="Deals">
+  <AppLayout title="Daily ROI">
     <template #header>
       <div class="flex justify-center">
         <h2 class="text-xl text-gray-800 leading-tight dark:text-white">
-          Deals 🤝
+          Daily ROI 📊
         </h2>
       </div>
     </template>
@@ -19,15 +19,19 @@ defineProps({
     <div class="p-6 max-w-7xl mx-auto">
       <div class="grid gap-6 mb-8">
         <div v-for="deal in deals"
-            class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+             class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
         >
           <div class="p-4 flex justify-between">
               <span class="text-sm font-semibold text-gray-700 dark:text-gray-400">
-                🎉 {{ deal.readable_time }}
+                🗓 {{ deal.day }}
+              </span>
+
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-400">
+
               </span>
 
               <span class="text-sm font-semibold text-gray-700 dark:text-green-300">
-                <span v-if="parseInt(deal.net_profit) > 0">+</span>{{ deal.net_profit }} 💰
+                <span v-if="parseInt(deal.net_profit) > 0">+</span>{{ deal.roi }}% 📈
               </span>
           </div>
         </div>
