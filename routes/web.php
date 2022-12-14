@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\Pages\DealsController;
-use App\Http\Controllers\Pages\StatsController;
+use App\Http\Controllers\Pages\DashboardController;
 use App\Http\Controllers\Pages\DailyRoiController;
+use App\Http\Controllers\Pages\MonthlyRoiController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -18,25 +19,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
-});
-
-Route::get('/stats', StatsController::class);
+Route::get('/dashboard', DashboardController::class);
 Route::get('/deals', DealsController::class);
 Route::get('/daily-roi', DailyRoiController::class);
+Route::get('/monthly-roi', MonthlyRoiController::class);

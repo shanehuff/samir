@@ -7,11 +7,11 @@ defineProps({
 </script>
 
 <template>
-  <AppLayout title="Daily ROI">
+  <AppLayout title="Monthly ROI">
     <template #header>
       <div class="flex justify-center">
         <h2 class="text-xl text-gray-800 leading-tight dark:text-white">
-          Daily ROI 📊
+          Monthly ROI 📊
         </h2>
       </div>
     </template>
@@ -23,7 +23,7 @@ defineProps({
         >
           <div class="p-4 flex justify-between">
               <span class="text-sm font-semibold text-gray-400 dark:text-gray-400">
-                🗓 {{ deal.day }}
+                🗓 {{ deal.month }}
               </span>
 
               <span class="text-sm font-semibold text-green-600 dark:text-green-300">
