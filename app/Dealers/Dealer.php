@@ -110,7 +110,7 @@ class Dealer extends Model
     {
         $plans = [];
         $steps = 6;
-        $startSize = 0.02;
+        $startSize = 0.2;
         $entry = $this->long['markPrice'] - 0.1;
 
         $plans[] = [
