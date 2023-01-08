@@ -109,8 +109,8 @@ class Dealer extends Model
     public function longPlan(): array
     {
         $plans = [];
-        $steps = 6;
-        $startSize = 0.2;
+        $steps = 4;
+        $startSize = 0.02;
         $entry = $this->long['markPrice'] - 0.1;
 
         $plans[] = [
@@ -133,7 +133,7 @@ class Dealer extends Model
             }
 
             $output = [
-                'size' => $_size * 2,
+                'size' => $_size * 3,
                 'entry' => (float)number_format($_entry * (1 + $limitMove) + 0.02, 2)
             ];
 
