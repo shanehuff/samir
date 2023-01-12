@@ -26,6 +26,7 @@ class DailyRoiController
             ->with('profit')
             ->whereHas('profit', function ($query) {
                 $query->where('net_profit', '>', 0);
+                $query->where('id', '>=', 101);
             })
             ->orderByDesc('updated_at')
             ->get();
@@ -40,7 +41,7 @@ class DailyRoiController
                 $dailyProfits->push((object)[
                     'net_profit' => $this->toVND($deal->sum('profit.net_profit')),
                     'day' => $deal->first()->updated_at->format('d/m'),
-                    'roi' => number_format($deal->sum('profit.net_profit') / 63.0562 * 100, 2)
+                    'roi' => number_format($deal->sum('profit.net_profit') / 20 * 100, 2)
                 ]);
             }
         });
