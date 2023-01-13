@@ -21,7 +21,7 @@ class DashboardController
 
     public function __invoke(Request $request): Response
     {
-        $profits = DealerProfit::where('id', '>=', 101)->get();
+        $profits = DealerProfit::all(); // where('id', '>=', 101)->get()
 
         return Jetstream::inertia()->render($request, 'Dashboard/Show', [
             'netProfit' => $this->toVND($profits->sum('net_profit')),
