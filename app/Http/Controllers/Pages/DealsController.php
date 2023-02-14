@@ -24,10 +24,10 @@ class DealsController
         $deals = Dealer::with('profit')
             ->whereHas('profit', function ($query) {
                 $query->where('net_profit', '>', 0);
-                $query->where('id', '>=', 101);
+                $query->where('id', '>=', 236);
             })
             ->orderByDesc('created_at')
-            ->limit(20)
+            ->limit(40)
             ->get();
 
         $deals->map(function ($deal) {
