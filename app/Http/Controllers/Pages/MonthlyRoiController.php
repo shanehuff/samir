@@ -26,7 +26,7 @@ class MonthlyRoiController
             ->with('profit')
             ->whereHas('profit', function ($query) {
                 $query->where('net_profit', '>', 0);
-                $query->where('id', '>=', 236);
+                $query->where('id', '>=', 189);
             })
             ->orderByDesc('updated_at')
             ->get();
