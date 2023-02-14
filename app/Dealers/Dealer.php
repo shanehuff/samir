@@ -133,7 +133,7 @@ class Dealer extends Model
             }
 
             $output = [
-                'size' => $_size * 3,
+                'size' => $_size * 4,
                 'entry' => (float)number_format($_entry * (1 + $limitMove) + 0.02, 2)
             ];
 
