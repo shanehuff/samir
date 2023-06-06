@@ -21,13 +21,13 @@ class DashboardController
 
     public function __invoke(Request $request): Response
     {
-        $profits = DealerProfit::where('id', '>=', 189)->get();
+        $profits = DealerProfit::where('id', '>=', config('dealer.minimum_profit_id', 0))->get();
 
         return Jetstream::inertia()->render($request, 'Dashboard/Show', [
             'netProfit' => $this->toVND($profits->sum('net_profit')),
             'fee' => $this->toVND($profits->sum('fee')),
             'dealsCount' => $profits->count(),
-            'initCapital' => $this->toVND(40),
+            'initCapital' => $this->toVND(config('dealer.balance', 75)),
             'upTime' => $this->getUpTime($profits->min('created_at')),
         ]);
     }

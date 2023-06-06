@@ -25,8 +25,7 @@ class MonthlyRoiController
         $deals = Dealer::query()
             ->with('profit')
             ->whereHas('profit', function ($query) {
-                $query->where('net_profit', '>', 0);
-                $query->where('id', '>=', 189);
+                $query->where('id', '>', config('dealer.minimum_profit_id', 0));
             })
             ->orderByDesc('updated_at')
             ->get();
@@ -41,7 +40,7 @@ class MonthlyRoiController
                 $monthlyProfits->push((object)[
                     'net_profit' => $this->toVND($deal->sum('profit.net_profit')),
                     'month' => $deal->first()->updated_at->format('m/Y'),
-                    'roi' => number_format($deal->sum('profit.net_profit') / 40 * 100, 2)
+                    'roi' => number_format($deal->sum('profit.net_profit') / config('dealer.balance', 75) * 100, 2)
                 ]);
             }
         });

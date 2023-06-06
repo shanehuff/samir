@@ -120,7 +120,7 @@ class Dealer extends Model
         ];
 
         $planner = function ($_plans) {
-            $limitMove = -0.0253339459778792;
+            $limitMove = -0.03815239331;
             $_size = 0;
             $_entry = 0;
 
