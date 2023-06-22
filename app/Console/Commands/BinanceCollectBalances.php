@@ -40,7 +40,7 @@ class BinanceCollectBalances extends Command
         );
 
         // Collect futures data
-        $futures = collect($api->futures()['assets'])->where('asset', '=', 'BUSD')->sum('marginBalance');
+        $futures = collect($api->futures()['assets'])->where('asset', '=', 'USDT')->sum('marginBalance');
 
         $data['FU'] = [
             'symbol' => 'FU',
