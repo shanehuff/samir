@@ -23,6 +23,7 @@ class DealsController
     {
         $deals = Dealer::with('profit')
             ->whereHas('profit', function ($query) {
+                $query->where('id', '>', config('dealer.minimum_profit_id', 0));
             })
             ->orderByDesc('created_at')
             ->limit(40)

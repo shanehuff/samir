@@ -39,12 +39,26 @@ class BinanceCollectBalances extends Command
             config('services.binance.secret')
         );
 
-        // Collect futures data
-        $futures = collect($api->futures()['assets'])->where('asset', '=', 'USDT')->sum('marginBalance');
+        $futuresAssets = collect($api->futures()['assets']);
+
+        $riskyMargin = $futuresAssets
+            ->where('asset', '=', 'USDT')
+            ->sum('initialMargin');
 
         $data['FU'] = [
             'symbol' => 'FU',
-            'available' => $futures,
+            'available' => $riskyMargin,
+            'on_order' => 0,
+            'updated_at' => Carbon::now()
+        ];
+
+        $availableUSDT = $futuresAssets
+            ->where('asset', '=', 'USDT')
+            ->sum('availableBalance');
+
+        $data['FUSDT'] = [
+            'symbol' => 'FUSDT',
+            'available' => $availableUSDT,
             'on_order' => 0,
             'updated_at' => Carbon::now()
         ];
@@ -160,6 +174,10 @@ class BinanceCollectBalances extends Command
                 }
             });
 
+            // Truncate table balances
+            DB::table('balances')->truncate();
+
+            // Insert balances
             DB::table('balances')
                 ->upsert(
                     $data,
