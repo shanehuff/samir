@@ -25,10 +25,10 @@ class FuturesUp extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
         Dealer::takeProfitOrCancel();
     }

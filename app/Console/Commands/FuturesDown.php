@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Dealers\Dealer;
+use App\Dealers\DealerOctober;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -25,11 +25,11 @@ class FuturesDown extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
-        Dealer::openLongOrUpdate();
+        DealerOctober::handleDown();
     }
 }
