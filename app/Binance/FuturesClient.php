@@ -38,7 +38,7 @@ class FuturesClient extends API
     /**
      * @throws Exception
      */
-    public function userTrades($startTime = null): array
+    public function userTrades($orderId = null, $startTime = null): array
     {
         return $this->httpRequest(
             'fapi/v1/userTrades',
@@ -46,6 +46,7 @@ class FuturesClient extends API
             [
                 'fapi' => true,
                 'symbol' => 'BNBUSDT',
+                'orderId' => $orderId,
                 'startTime' => $startTime
             ],
             true
@@ -153,6 +154,25 @@ class FuturesClient extends API
                 'price' => $entry,
                 'timeInForce' => 'GTC',
                 'positionSide' => 'LONG'
+            ],
+            true
+        );
+    }
+
+    public function openShort(float $size, float $entry): array
+    {
+        return $this->httpRequest(
+            'fapi/v1/order',
+            'POST',
+            [
+                'fapi' => true,
+                'symbol' => 'BNBUSDT',
+                'side' => 'SELL',
+                'quantity' => $size,
+                'type' => 'LIMIT',
+                'price' => $entry,
+                'timeInForce' => 'GTC',
+                'positionSide' => 'SHORT'
             ],
             true
         );

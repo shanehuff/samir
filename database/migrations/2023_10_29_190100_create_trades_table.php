@@ -13,25 +13,23 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('dealer_trades', function (Blueprint $table) {
+        Schema::create('trades', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
-            $table->foreignId('dealer_id');
-            $table->foreignId('binance_id')->unique()->index();
-            $table->string('symbol');
-            $table->foreignId('binance_order_id');
+            $table->string('symbol')->index();
+            $table->foreignId('order_id');
             $table->string('side');
             $table->double('price');
-            $table->double('size');
+            $table->double('qty');
             $table->double('realized_pnl');
-            $table->string('pnl_asset');
-            $table->double('total');
-            $table->double('fee');
-            $table->string('fee_asset');
-            $table->unsignedBigInteger('binance_timestamp');
+            $table->string('margin_asset');
+            $table->double('quote_qty');
+            $table->double('commission');
+            $table->string('commission_asset');
+            $table->string('time');
             $table->string('position_side');
             $table->boolean('buyer');
             $table->boolean('maker');
+            $table->timestamps();
         });
     }
 
@@ -42,6 +40,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dealer_trades');
+        Schema::dropIfExists('trades');
     }
 };

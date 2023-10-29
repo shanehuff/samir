@@ -1,21 +1,16 @@
 <?php
 
-namespace App\Dealers;
+namespace App\Trading;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DealerTrade extends Model
+class Trade extends Model
 {
     use HasFactory;
 
-    protected $table = 'dealer_trades';
+    protected $table = 'trades';
 
     protected $guarded = [];
-
-    public function dealer(): BelongsTo
-    {
-        return $this->belongsTo(Dealer::class);
-    }
 }

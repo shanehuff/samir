@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Dealers\DealerProfit;
+use App\Dealers\Profit;
 use App\Services\Keisha;
 
 class ProfitController
@@ -16,7 +16,7 @@ class ProfitController
 
     public function __invoke(): array
     {
-        $profits = DealerProfit::all();
+        $profits = Profit::all();
 
         return [
             'net_profit' => $this->toVND($profits->sum('net_profit')),

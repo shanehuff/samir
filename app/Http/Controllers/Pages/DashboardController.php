@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Pages;
 
-use App\Dealers\DealerProfit;
+use App\Dealers\Profit;
 use App\Services\Keisha;
 use Carbon\CarbonInterval;
 use GuzzleHttp\Exception\GuzzleException;
@@ -21,7 +21,7 @@ class DashboardController
 
     public function __invoke(Request $request): Response
     {
-        $profits = DealerProfit::where('id', '>=', config('dealer.minimum_profit_id', 0))->get();
+        $profits = Profit::where('id', '>=', config('dealer.minimum_profit_id', 0))->get();
 
         return Jetstream::inertia()->render($request, 'Dashboard/Show', [
             'netProfit' => $this->toVND($profits->sum('net_profit')),

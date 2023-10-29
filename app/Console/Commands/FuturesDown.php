@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Dealers\DealerOctober;
+use App\Trading\TradingManager;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -30,6 +30,6 @@ class FuturesDown extends Command
      */
     public function handle(): void
     {
-        DealerOctober::handleDown();
+        TradingManager::handleDown();
     }
 }

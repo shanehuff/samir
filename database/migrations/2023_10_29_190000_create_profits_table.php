@@ -13,8 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('commander_trades', function (Blueprint $table) {
-            $table->decimal('amount', 10, 2, true)->nullable();
+        Schema::create('profits', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->double('realized_profit');
+            $table->double('fee');
+            $table->double('net_profit');
+            $table->double('roe');
+            $table->unsignedBigInteger('duration');
         });
     }
 
@@ -25,8 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('commander_trades', function (Blueprint $table) {
-            $table->dropColumn('amount');
-        });
+        Schema::dropIfExists('profits');
     }
 };

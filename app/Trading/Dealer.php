@@ -2,13 +2,13 @@
 
 namespace App\Dealers;
 
+use App\Binance\Binance;
 use App\Binance\FuturesClient;
 use App\Jobs\CalculateDealerProfit;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,53 +20,32 @@ class Dealer extends Model
     public const STATUS_ACTIVE = 1;
     public const STATUS_CLOSED = 2;
 
+    protected Binance $binance;
+
     protected $table = 'dealers';
 
     protected $guarded = [];
 
-    protected ?FuturesClient $client;
-
-    protected Collection $positions;
-
-    protected ?array $long;
-
-    protected ?array $short;
-
     public function __construct()
     {
         parent::__construct();
-    }
 
-    /**
-     * @throws Exception
-     */
-    public function withBinanceApi(): static
-    {
-        $this->client = new FuturesClient(
-            config('services.binance.key'),
-            config('services.binance.secret')
-        );
-
-        $this->positions = $this->client->positions();
-        $this->long = $this->positions->get(0);
-        $this->short = $this->positions->get(1);
-
-        return $this;
+        $this->binance = new Binance();
     }
 
     public function orders(): HasMany
     {
-        return $this->hasMany(DealerOrder::class);
+        return $this->hasMany(Order::class);
     }
 
     public function trades(): HasMany
     {
-        return $this->hasMany(DealerTrade::class);
+        return $this->hasMany(Trade::class);
     }
 
     public function profit(): HasOne
     {
-        return $this->hasOne(DealerProfit::class);
+        return $this->hasOne(Profit::class);
     }
 
     public static function isInactive(): bool
@@ -75,20 +54,13 @@ class Dealer extends Model
     }
 
     /** @noinspection PhpIncompatibleReturnTypeInspection
-     * @noinspection PhpPossiblePolymorphicInvocationInspection
      */
     public static function current(): ?Dealer
     {
-        $dealer = self::query()
+        return self::query()
             ->whereIn('status', [self::STATUS_NEW, self::STATUS_ACTIVE])
             ->orderByDesc('id')
             ->first();
-
-        if($dealer) {
-            $dealer = $dealer->withBinanceApi();
-        }
-
-        return $dealer;
     }   
 
     public static function isActive(): bool
@@ -103,7 +75,7 @@ class Dealer extends Model
      */
     public function ordersOnBinance(): array
     {
-        return $this->client->orders();
+        return $this->binance->orders();
     }
 
     public function longPlan(): array
@@ -189,7 +161,7 @@ class Dealer extends Model
 
         try {
             foreach ($this->longPlan() as $order) {
-                $orders[] = $this->client->openLong($order['size'], $order['entry']);
+                $orders[] = $this->binance->openLong($order['size'], $order['entry']);
             }
         } catch (Exception $exception) {
             info(sprintf('Failed creating Binance orders: %s', $exception->getMessage()));
@@ -228,7 +200,7 @@ class Dealer extends Model
                     'dealer_id' => $this->id,
                     'binance_order_id' => $order['orderId'],
                     'binance_client_id' => $order['clientOrderId'],
-                    'status' => DealerOrder::STATUS_NEW,
+                    'status' => Order::STATUS_NEW,
                     'price' => $order['price'],
                     'size' => $order['origQty']
                 ]
@@ -301,20 +273,19 @@ class Dealer extends Model
                     'side' => 'LONG'
                 ]);
 
-            $dealer->withBinanceApi()
-                ->executeLongPlan();
+            $dealer->executeLongPlan();
         }
     }
 
-    private function updateOrderStatuses()
+    public function updateOrderStatuses()
     {
         $this->orders->each(/**
          * @throws Exception
          */ function ($order) {
-            $binanceOrder = $this->client->getOrder($order->binance_order_id);
+            $binanceOrder = $this->binance->getOrder($order->binance_order_id);
 
             // Update status
-            $order->status = DealerOrder::STATUS[$binanceOrder['status']];
+            $order->status = Order::STATUS[$binanceOrder['status']];
             $order->save();
         });
     }
@@ -335,9 +306,9 @@ class Dealer extends Model
     /**
      * @throws Exception
      */
-    private function collectTrades()
+    public function collectTrades(): void
     {
-        $trades = collect($this->client->userTrades($this->binance_timestamp));
+        $trades = collect($this->binance->getTradesByStartTime($this->binance_timestamp));
 
         if ($trades->count()) {
             $trades->each(function ($trade) {
@@ -480,7 +451,7 @@ class Dealer extends Model
     }
 
     /** @noinspection PhpIncompatibleReturnTypeInspection */
-    private function firstOrder(): ?DealerOrder
+    private function firstOrder(): ?Order
     {
         return $this->orders()
             ->orderBy('id')
@@ -490,7 +461,7 @@ class Dealer extends Model
     private function countFilledOrders(): int
     {
         return $this->orders()
-            ->where('status', DealerOrder::STATUS_FILLED)
+            ->where('status', Order::STATUS_FILLED)
             ->count();
     }
 
@@ -502,7 +473,7 @@ class Dealer extends Model
         $orders = [];
 
         foreach ($this->shortPlan() as $order) {
-            $orders[] = $this->client->closeLong($order['size'], $order['entry']);
+            $orders[] = $this->binance->closeLong($order['size'], $order['entry']);
         }
 
         if (count($orders)) {
@@ -513,7 +484,7 @@ class Dealer extends Model
     }
 
     /** @noinspection PhpIncompatibleReturnTypeInspection */
-    private function getLatestTrade(): ?DealerTrade
+    private function getLatestTrade(): ?Trade
     {
         return $this->trades()
             ->orderByDesc('binance_timestamp')
@@ -524,9 +495,14 @@ class Dealer extends Model
     {
         // Cancel all orders if no position created
         try {
-            $this->client->cancelAllOrders();
+            $this->binance->cancelAllOrders();
         } catch (Exception $exception) {
             info($exception->getMessage());
         }
+    }
+
+    private function setBinance(Binance $binance): void
+    {
+        $this->binance = $binance;
     }
 }
