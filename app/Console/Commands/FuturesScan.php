@@ -6,14 +6,14 @@ use App\Trading\TradingManager;
 use Exception;
 use Illuminate\Console\Command;
 
-class FuturesStatus extends Command
+class FuturesScan extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'futures:status';
+    protected $signature = 'futures:scan';
 
     /**
      * The console command description.

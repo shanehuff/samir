@@ -6,14 +6,14 @@ use App\Trading\TradingManager;
 use Exception;
 use Illuminate\Console\Command;
 
-class FuturesStatus extends Command
+class FuturesImport extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'futures:status';
+    protected $signature = 'futures:import';
 
     /**
      * The console command description.
@@ -30,6 +30,6 @@ class FuturesStatus extends Command
      */
     public function handle(): void
     {
-        TradingManager::status();
+        TradingManager::import();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Trading;
 
 use App\Binance\Binance;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -27,15 +28,35 @@ class TradingManager
      */
     public static function handleUp(): void
     {
-        $activeSellingOrders = self::sellingOrders();
+        if (self::binance()->hasLongPosition()) {
+            self::maybeTakeLongProfit();
+            return;
+        }
 
-        if (0 === $activeSellingOrders->count()) {
+        if(self::shouldOpenShort()) {
             self::openShort();
         }
+    }
 
-        foreach($activeSellingOrders as $activeSellingOrder) {
-            self::collectTrades($activeSellingOrder);
+    /**
+     * @throws Exception
+     */
+    public static function import(): void
+    {
+        $orders = self::binance()->orders();
+
+        foreach ($orders as $order) {
+            $order['cumQty'] = $order['executedQty'];
+            self::upsertOrder($order);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function positions()
+    {
+        dd(self::binance()->positions());
     }
 
     /**
@@ -45,10 +66,10 @@ class TradingManager
     {
         $binanceOrder = self::binance()->openLong(
             self::minSize(),
-            self::entryPrice() - 0.1,
+            self::currentPrice() - 0.1,
         );
 
-        self::createOrder($binanceOrder);
+        self::upsertOrder($binanceOrder);
     }
 
     /**
@@ -58,18 +79,18 @@ class TradingManager
     {
         $binanceOrder = self::binance()->openShort(
             self::minSize(),
-            self::entryPrice() + 0.1,
+            self::currentPrice() + 0.1,
         );
 
-        self::createOrder($binanceOrder);
+        self::upsertOrder($binanceOrder);
     }
 
     private static function minSize(): float
     {
-        return round(6 / self::entryPrice(), 2);
+        return round(6 / self::currentPrice(), 2);
     }
 
-    private static function entryPrice(): float
+    private static function currentPrice(): float
     {
         return round(self::binance()->getMarkPrice(), 2);
     }
@@ -83,7 +104,7 @@ class TradingManager
         return self::$binance;
     }
 
-    private static function createOrder(array $data): void
+    private static function upsertOrder(array $data): void
     {
         Order::query()->upsert([
             [
@@ -143,7 +164,7 @@ class TradingManager
             $order->order_id
         );
 
-        foreach($binanceTrades as $binanceTrade) {
+        foreach ($binanceTrades as $binanceTrade) {
             self::createTrade($binanceTrade);
         }
     }
@@ -172,6 +193,86 @@ class TradingManager
             ['id'],
             ['status']
         );
+    }
+
+    public static function status()
+    {
+        $orders = Order::query()
+            ->where('status', '=', Order::STATUS_FILLED)
+            ->get();
+
+        $longs = $orders->where('position_side', '=', Order::POSITION_SIDE_LONG);
+        $shorts = $orders->where('position_side', '=', Order::POSITION_SIDE_SHORT);
+
+        dd([
+            'long' => $longs->map(function ($order) {
+                $order->cum_qty = $order->reduce_only ? $order->cum_qty * -1 : $order->cum_qty;
+                return $order;
+            })->sum('cum_qty'),
+            'short' => $shorts->map(function ($order) {
+                $order->cum_qty = $order->reduce_only ? $order->cum_qty * -1 : $order->cum_qty;
+                return $order;
+            })->sum('cum_qty'),
+        ]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private static function maybeTakeLongProfit(): void
+    {
+        if (self::binance()->hasLongProfit()) {
+            self::takeLongProfit();
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    private static function takeLongProfit(): void
+    {
+        tap(self::getClosableLongOrder(), function ($order) {
+            $binanceOrder = self::binance()->closeLong(
+                $order->orig_qty,
+                self::currentPrice() + 0.1,
+            );
+
+            self::upsertOrder($binanceOrder);
+        });
+    }
+
+    private static function getClosableLongOrder(): object
+    {
+        return Order::query()
+            ->where('status', '=', Order::STATUS_FILLED)
+            ->where('position_side', '=', Order::POSITION_SIDE_LONG)
+            ->where('avg_price', '<=', self::currentPrice())
+            ->orderByDesc('update_time')
+            ->first();
+    }
+
+    private static function shouldOpenShort(): bool
+    {
+        // Convert Carbon instance to timestamp like 1579276756075
+        $lastHour = Carbon::now()->subHour()->timestamp * 1000;
+        // Retrieve latest short order in last 1 hour
+        $noShortOrderFilledLastHour = null === Order::query()
+            ->where('status', '=', Order::STATUS_FILLED)
+            ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
+            ->where('side', '=', Order::SIDE_SELL)
+            ->where('update_time', '>=', $lastHour)
+            ->orderByDesc('update_time')
+            ->first();
+
+        // Retrieve latest short order with status NEW
+        $noPendingShortOrder = null === Order::query()
+            ->where('status', '=', Order::STATUS_NEW)
+            ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
+            ->where('side', '=', Order::SIDE_SELL)
+            ->orderByDesc('update_time')
+            ->first();
+
+        return $noShortOrderFilledLastHour && $noPendingShortOrder;
     }
 
 }

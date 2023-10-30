@@ -60,4 +60,40 @@ class Binance
     {
         return $this->client->userTrades($orderId, $startTime);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function orders(): array
+    {
+        return $this->client->allOrders();
+    }
+
+    public function positions(): Collection
+    {
+        return $this->positions;
+    }
+
+    public function hasLongPosition(): bool
+    {
+        return $this->long['positionAmt'] > 0;
+    }
+
+    public function hasShortPosition(): bool
+    {
+        return abs($this->short['positionAmt']) > 0;
+    }
+
+    public function hasLongProfit(): bool
+    {
+        return $this->long['unRealizedProfit'] > 0;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function closeLong(float $size, float $entry): array
+    {
+        return $this->client->closeLong($size, $entry);
+    }
 }

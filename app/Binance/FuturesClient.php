@@ -107,6 +107,22 @@ class FuturesClient extends API
     /**
      * @throws Exception
      */
+    public function allOrders(string $symbol = 'BNBUSDT'): array
+    {
+        return $this->httpRequest(
+            'fapi/v1/allOrders',
+            'GET',
+            [
+                'fapi' => true,
+                'symbol' => $symbol
+            ],
+            true
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
     public function cancelAllOrders(): array
     {
         return $this->httpRequest(

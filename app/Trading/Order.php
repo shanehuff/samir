@@ -15,6 +15,8 @@ class Order extends Model
     const STATUS_EXPIRED = 3;
     const SIDE_SELL = 'SELL';
     const SIDE_BUY = 'BUY';
+    const POSITION_SIDE_LONG = 'LONG';
+    const POSITION_SIDE_SHORT = 'SHORT';
 
     const STATUS = [
         'NEW' => self::STATUS_NEW,
