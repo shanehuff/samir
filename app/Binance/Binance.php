@@ -102,7 +102,10 @@ class Binance
         return $this->client->closeLong($size, $entry);
     }
 
-    public function closeShort(float $size, float $entry)
+    /**
+     * @throws Exception
+     */
+    public function closeShort(float $size, float $entry): array
     {
         return $this->client->closeShort($size, $entry);
     }

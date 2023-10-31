@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Pages;
 
-use App\Dealers\Dealer;
 use App\Services\Keisha;
-use Carbon\CarbonInterval;
+use App\Trading\Profit;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -21,23 +20,18 @@ class DealsController
 
     public function __invoke(Request $request): Response
     {
-        $deals = Dealer::with('profit')
-            ->whereHas('profit', function ($query) {
-                $query->where('id', '>', config('dealer.minimum_profit_id', 0));
-            })
-            ->orderByDesc('created_at')
+        $profits = Profit::query()
+            ->orderByDesc('id')
             ->limit(40)
             ->get();
 
-        $deals->map(function ($deal) {
-            if ($deal->profit) {
-                $deal->net_profit = $this->toVND($deal->profit->net_profit);
-                $deal->readable_time = $deal->updated_at->diffForHumans();
-            }
+        $profits->map(function ($profit) {
+            $profit->net_profit = $this->toVND($profit->net_profit);
+            $profit->readable_time = $profit->created_at->diffForHumans();
         });
 
         return Jetstream::inertia()->render($request, 'Deals/Show', [
-            'deals' => $deals
+            'deals' => $profits
         ]);
     }
 

@@ -13,4 +13,9 @@ class Profit extends Model
     protected $table = 'profits';
 
     protected $guarded = [];
+
+    public function trade(): BelongsTo
+    {
+        return $this->belongsTo(Trade::class);
+    }
 }

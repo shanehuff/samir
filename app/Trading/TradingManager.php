@@ -49,6 +49,32 @@ class TradingManager
         foreach ($orders as $order) {
             $order['cumQty'] = $order['executedQty'];
             self::upsertOrder($order);
+            self::collectTrades($order['orderId']);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function importTrades()
+    {
+        $orders = Order::all()->pluck('order_id');
+
+        $orders->each(function($orderId) {
+            self::collectTrades($orderId);
+        });
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function importOrders(): void
+    {
+        $orders = self::binance()->orders();
+
+        foreach ($orders as $order) {
+            $order['cumQty'] = $order['executedQty'];
+            self::upsertOrder($order);
         }
     }
 
@@ -150,37 +176,21 @@ class TradingManager
             ->first());
     }
 
-    private static function sellingOrders(): Collection|array
-    {
-        return Order::query()
-            ->where('status', 'IN', [Order::STATUS_NEW, Order::STATUS_FILLED])
-            ->where('side', Order::SIDE_SELL)
-            ->get();
-    }
-
-    private static function buyingOrders(): Collection|array
-    {
-        return Order::query()
-            ->where('status', 'IN', [Order::STATUS_NEW, Order::STATUS_FILLED])
-            ->where('side', Order::SIDE_BUY)
-            ->get();
-    }
-
     /**
      * @throws Exception
      */
-    private static function collectTrades(mixed $order): void
+    private static function collectTrades(mixed $orderId): void
     {
         $binanceTrades = self::binance()->collectTrades(
-            $order->order_id
+            $orderId
         );
 
         foreach ($binanceTrades as $binanceTrade) {
-            self::createTrade($binanceTrade);
+            self::upsertTrade($binanceTrade);
         }
     }
 
-    private static function createTrade(array $data): void
+    private static function upsertTrade(array $data): void
     {
         Trade::query()->upsert([
             [
@@ -202,7 +212,7 @@ class TradingManager
             ]
         ],
             ['id'],
-            ['status']
+            ['time']
         );
     }
 
@@ -348,4 +358,41 @@ class TradingManager
         return Carbon::now()->subHours(2)->timestamp * 1000;
     }
 
+    /**
+     * @throws Exception
+     */
+    public static function collectProfits(): void
+    {
+        self::importTrades();
+
+        $trades = Trade::query()
+            ->where('realized_pnl', '>', 0)
+            ->get();
+
+        if ($trades->count() > 0) {
+            $trades->each(function ($trade) {
+                $fee = 'BNB' === $trade->commission_asset ? $trade->commission * $trade->price : $trade->commission;
+
+                $profit = [
+                    'trade_id' => $trade->id,
+                    'realized_profit' => $trade->realized_pnl,
+                    'fee' => $fee,
+                    'net_profit' => $trade->realized_pnl - $fee,
+                    'roe' => $trade->realized_pnl / $trade->quote_qty / 4 * 100,
+                    'created_at' => Carbon::createFromTimestampMs($trade->time)->toDateTimeString(),
+                ];
+
+                self::upsertProfit($profit);
+            });
+        }
+    }
+
+    private static function upsertProfit(array $data): void
+    {
+        Profit::query()->upsert(
+            $data,
+            ['trade_id'],
+            ['realized_profit', 'fee', 'net_profit', 'roe', 'created_at']
+        );
+    }
 }

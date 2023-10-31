@@ -213,7 +213,7 @@ class FuturesClient extends API
                 'type' => 'LIMIT',
                 'price' => $entry,
                 'timeInForce' => 'GTC',
-                'positionSide' => 'LONG'
+                'positionSide' => 'SHORT'
             ],
             true
         );
