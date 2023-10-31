@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Pages;
 
-use App\Dealers\Dealer;
 use App\Services\Keisha;
-use Carbon\CarbonInterval;
+use App\Trading\Profit;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Response;
 use Laravel\Jetstream\Jetstream;
 
@@ -22,25 +20,21 @@ class DailyRoiController
 
     public function __invoke(Request $request): Response
     {
-        $deals = Dealer::query()
-            ->with('profit')
-            ->whereHas('profit', function ($query) {
-                $query->where('id', '>', config('dealer.minimum_profit_id', 0));
-            })
-            ->orderByDesc('updated_at')
+        $profits = Profit::query()
+            ->orderByDesc('id')
             ->get();
 
-        $groupedDeals = $deals->groupBy(function ($deal) {
-            return $deal->updated_at->format('Y-m-d');
+        $groupedProfits = $profits->groupBy(function ($profit) {
+            return $profit->created_at->format('Y-m-d');
         });
 
         $dailyProfits = collect();
-        $groupedDeals->each(function ($deal) use (&$dailyProfits) {
-            if ($deal->count() > 0) {
+        $groupedProfits->each(function ($profit) use (&$dailyProfits) {
+            if ($profit->count() > 0) {
                 $dailyProfits->push((object)[
-                    'net_profit' => $this->toVND($deal->sum('profit.net_profit')),
-                    'day' => $deal->first()->updated_at->format('d/m'),
-                    'roi' => number_format($deal->sum('profit.net_profit') / config('dealer.balance', 75) * 100, 2)
+                    'net_profit' => $this->toVND($profit->sum('net_profit')),
+                    'day' => $profit->first()->created_at->format('d/m'),
+                    'roi' => number_format($profit->sum('net_profit') / 489.05 * 100, 2)
                 ]);
             }
         });
