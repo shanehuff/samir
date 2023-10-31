@@ -30,6 +30,7 @@ class FuturesPositions extends Command
      */
     public function handle(): void
     {
-        TradingManager::positions();
+        //TradingManager::positions();
+        TradingManager::test();
     }
 }

@@ -136,8 +136,18 @@ class TradingManager
             ]
         ],
             ['id'],
-            ['status']
+            ['status', 'avg_price', 'cum_qty', 'cum_quote', 'executed_qty', 'update_time']
         );
+    }
+
+    public static function test(): void
+    {
+        dd(Order::query()
+            ->where('status', '=', Order::STATUS_FILLED)
+            ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
+            ->where('avg_price', '>=', self::currentPrice())
+            ->orderByDesc('update_time')
+            ->first());
     }
 
     private static function sellingOrders(): Collection|array
@@ -267,7 +277,7 @@ class TradingManager
         });
     }
 
-    private static function getClosableLongOrder(): object
+    private static function getClosableLongOrder(): ?object
     {
         return Order::query()
             ->where('status', '=', Order::STATUS_FILLED)
@@ -277,7 +287,7 @@ class TradingManager
             ->first();
     }
 
-    private static function getClosableShortOrder(): object
+    private static function getClosableShortOrder(): ?object
     {
         return Order::query()
             ->where('status', '=', Order::STATUS_FILLED)
