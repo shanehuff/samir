@@ -16,9 +16,11 @@ class TradingManager
      */
     public static function handleDown(): void
     {
-        $activeBuyingOrders = self::buyingOrders();
+        if (self::binance()->hasShortPosition()) {
+            self::maybeTakeShortProfit();
+        }
 
-        if (0 === $activeBuyingOrders->count()) {
+        if(self::shouldOpenLong()) {
             self::openLong();
         }
     }
@@ -30,7 +32,6 @@ class TradingManager
     {
         if (self::binance()->hasLongPosition()) {
             self::maybeTakeLongProfit();
-            return;
         }
 
         if(self::shouldOpenShort()) {
@@ -229,12 +230,37 @@ class TradingManager
     /**
      * @throws Exception
      */
+    private static function maybeTakeShortProfit(): void
+    {
+        if (self::binance()->hasShortProfit()) {
+            self::takeShortProfit();
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     private static function takeLongProfit(): void
     {
         tap(self::getClosableLongOrder(), function ($order) {
             $binanceOrder = self::binance()->closeLong(
                 $order->orig_qty,
                 self::currentPrice() + 0.1,
+            );
+
+            self::upsertOrder($binanceOrder);
+        });
+    }
+
+    /**
+     * @throws Exception
+     */
+    private static function takeShortProfit(): void
+    {
+        tap(self::getClosableShortOrder(), function ($order) {
+            $binanceOrder = self::binance()->closeShort(
+                $order->orig_qty,
+                self::currentPrice() - 0.1,
             );
 
             self::upsertOrder($binanceOrder);
@@ -251,16 +277,25 @@ class TradingManager
             ->first();
     }
 
+    private static function getClosableShortOrder(): object
+    {
+        return Order::query()
+            ->where('status', '=', Order::STATUS_FILLED)
+            ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
+            ->where('avg_price', '>=', self::currentPrice())
+            ->orderByDesc('update_time')
+            ->first();
+    }
+
+    /** @noinspection DuplicatedCode */
     private static function shouldOpenShort(): bool
     {
-        // Convert Carbon instance to timestamp like 1579276756075
-        $lastHour = Carbon::now()->subHour()->timestamp * 1000;
-        // Retrieve latest short order in last 1 hour
+        // Retrieve latest short order in last 2 hours
         $noShortOrderFilledLastHour = null === Order::query()
             ->where('status', '=', Order::STATUS_FILLED)
             ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
             ->where('side', '=', Order::SIDE_SELL)
-            ->where('update_time', '>=', $lastHour)
+            ->where('update_time', '>=', self::last2Hours())
             ->orderByDesc('update_time')
             ->first();
 
@@ -273,6 +308,34 @@ class TradingManager
             ->first();
 
         return $noShortOrderFilledLastHour && $noPendingShortOrder;
+    }
+
+    /** @noinspection DuplicatedCode */
+    private static function shouldOpenLong(): bool
+    {
+        // Retrieve latest long order in last 2 hours
+        $noLongOrderFilledLastHour = null === Order::query()
+                ->where('status', '=', Order::STATUS_FILLED)
+                ->where('position_side', '=', Order::POSITION_SIDE_LONG)
+                ->where('side', '=', Order::SIDE_BUY)
+                ->where('update_time', '>=', self::last2Hours())
+                ->orderByDesc('update_time')
+                ->first();
+
+        // Retrieve latest long order with status NEW
+        $noPendingLongOrder = null === Order::query()
+                ->where('status', '=', Order::STATUS_NEW)
+                ->where('position_side', '=', Order::POSITION_SIDE_LONG)
+                ->where('side', '=', Order::SIDE_BUY)
+                ->orderByDesc('update_time')
+                ->first();
+
+        return $noLongOrderFilledLastHour && $noPendingLongOrder;
+    }
+
+    private static function last2Hours(): int
+    {
+        return Carbon::now()->subHours(2)->timestamp * 1000;
     }
 
 }

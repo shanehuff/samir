@@ -175,6 +175,9 @@ class FuturesClient extends API
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function openShort(float $size, float $entry): array
     {
         return $this->httpRequest(
@@ -189,6 +192,28 @@ class FuturesClient extends API
                 'price' => $entry,
                 'timeInForce' => 'GTC',
                 'positionSide' => 'SHORT'
+            ],
+            true
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function closeShort(float $size, float $entry): array
+    {
+        return $this->httpRequest(
+            'fapi/v1/order',
+            'POST',
+            [
+                'fapi' => true,
+                'symbol' => 'BNBUSDT',
+                'side' => 'BUY',
+                'quantity' => $size,
+                'type' => 'LIMIT',
+                'price' => $entry,
+                'timeInForce' => 'GTC',
+                'positionSide' => 'LONG'
             ],
             true
         );

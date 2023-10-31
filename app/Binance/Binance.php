@@ -89,11 +89,21 @@ class Binance
         return $this->long['unRealizedProfit'] > 0;
     }
 
+    public function hasShortProfit(): bool
+    {
+        return $this->short['unRealizedProfit'] > 0;
+    }
+
     /**
      * @throws Exception
      */
     public function closeLong(float $size, float $entry): array
     {
         return $this->client->closeLong($size, $entry);
+    }
+
+    public function closeShort(float $size, float $entry)
+    {
+        return $this->client->closeShort($size, $entry);
     }
 }
