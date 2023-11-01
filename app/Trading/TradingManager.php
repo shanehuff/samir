@@ -5,7 +5,6 @@ namespace App\Trading;
 use App\Binance\Binance;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
 
 class TradingManager
 {
@@ -56,7 +55,7 @@ class TradingManager
     /**
      * @throws Exception
      */
-    public static function importTrades()
+    public static function importTrades(): void
     {
         $orders = Order::all()->pluck('order_id');
 
@@ -114,7 +113,7 @@ class TradingManager
 
     private static function minSize(): float
     {
-        return round(6 / self::currentPrice(), 2);
+        return round(24 / self::currentPrice(), 2);
     }
 
     private static function currentPrice(): float
@@ -292,6 +291,7 @@ class TradingManager
         return Order::query()
             ->where('status', '=', Order::STATUS_FILLED)
             ->where('position_side', '=', Order::POSITION_SIDE_LONG)
+            ->where('side', '=', Order::SIDE_BUY)
             ->where('avg_price', '<=', self::currentPrice())
             ->orderByDesc('update_time')
             ->first();
@@ -302,6 +302,7 @@ class TradingManager
         return Order::query()
             ->where('status', '=', Order::STATUS_FILLED)
             ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
+            ->where('side', '=', Order::SIDE_SELL)
             ->where('avg_price', '>=', self::currentPrice())
             ->orderByDesc('update_time')
             ->first();

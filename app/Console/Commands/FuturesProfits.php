@@ -30,6 +30,7 @@ class FuturesProfits extends Command
      */
     public function handle(): void
     {
+        info('Collect profits');
         TradingManager::collectProfits();
     }
 }

@@ -33,8 +33,7 @@ class MonthlyRoiController
             if ($profit->count() > 0) {
                 $monthlyProfits->push((object)[
                     'net_profit' => $this->toVND($profit->sum('net_profit')),
-                    'day' => $profit->first()->created_at->format('d/m'),
-                    'roi' => number_format($profit->sum('net_profit') / 489.05 * 100, 2)
+                    'month' => $profit->first()->created_at->format('m/Y')
                 ]);
             }
         });

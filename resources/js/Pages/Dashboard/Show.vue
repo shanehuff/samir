@@ -27,21 +27,6 @@ defineProps({
           <div class="p-4 flex items-center">
             <div>
               <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                Initial Capital (VND)
-              </p>
-              <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                {{ initCapital }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div
-            class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
-        >
-          <div class="p-4 flex items-center">
-            <div>
-              <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                 Net Profit (VND)
               </p>
               <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">

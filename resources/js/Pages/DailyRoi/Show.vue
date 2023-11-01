@@ -11,7 +11,7 @@ defineProps({
     <template #header>
       <div class="flex justify-center">
         <h2 class="text-xl text-gray-800 leading-tight dark:text-white">
-          Daily ROI 📊
+          Daily Income 📊
         </h2>
       </div>
     </template>
@@ -27,7 +27,8 @@ defineProps({
               </span>
 
               <span class="text-sm font-semibold text-green-600 dark:text-green-300">
-                <span v-if="parseInt(deal.net_profit) > 0">+</span>{{ deal.roi }}% 📈
+                  <span v-if="parseInt(deal.net_profit) > 0">+</span>{{ deal.net_profit }} 💰
+                  <span class="text-gray-400">{{ deal.count }} 🤝</span>
               </span>
           </div>
         </div>

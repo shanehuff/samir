@@ -34,7 +34,7 @@ class DailyRoiController
                 $dailyProfits->push((object)[
                     'net_profit' => $this->toVND($profit->sum('net_profit')),
                     'day' => $profit->first()->created_at->format('d/m'),
-                    'roi' => number_format($profit->sum('net_profit') / 489.05 * 100, 2)
+                    'count' => $profit->count(),
                 ]);
             }
         });
