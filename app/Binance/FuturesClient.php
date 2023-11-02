@@ -218,4 +218,21 @@ class FuturesClient extends API
             true
         );
     }
+
+    /**
+     * @throws Exception
+     */
+    public function income(): array
+    {
+        return $this->httpRequest(
+            'fapi/v1/income',
+            'GET',
+            [
+                'fapi' => true,
+                'symbol' => 'BNBUSDT',
+                'incomeType' => 'FUNDING_FEE',
+            ],
+            true
+        );
+    }
 }

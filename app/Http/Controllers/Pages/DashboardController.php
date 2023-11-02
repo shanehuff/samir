@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Pages;
 
 use App\Services\Keisha;
+use App\Trading\Income;
 use App\Trading\Profit;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
@@ -24,12 +25,14 @@ class DashboardController
             ->orderByDesc('id')
             ->get();
 
+        $incomes = Income::all();
+
         return Jetstream::inertia()->render($request, 'Dashboard/Show', [
             'netProfit' => $this->toVND($profits->sum('net_profit')),
             'fee' => $this->toVND($profits->sum('fee')),
             'dealsCount' => $profits->count(),
-            'initCapital' => $this->toVND(488.95),
             'upTime' => $this->getUpTime($profits->min('created_at')),
+            'incomes' => $this->toVND($incomes->sum('income'))
         ]);
     }
 

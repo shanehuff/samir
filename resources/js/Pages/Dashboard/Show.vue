@@ -7,7 +7,8 @@ defineProps({
   dealsCount: Number,
   avgDuration: Number,
   initCapital: Number,
-  upTime: String
+  upTime: String,
+  incomes: Number,
 })
 </script>
 
@@ -42,10 +43,11 @@ defineProps({
           <div class="p-4 flex items-center">
             <div>
               <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                Fee (VND)
+                Fee & Income (VND)
               </p>
               <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                {{ fee }}
+                  <span class="text-red-500">{{ fee }}</span> &
+                  <span class="text-green-500">{{ incomes }}</span>
               </p>
             </div>
           </div>

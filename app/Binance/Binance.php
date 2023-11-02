@@ -109,4 +109,12 @@ class Binance
     {
         return $this->client->closeShort($size, $entry);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function income(): array
+    {
+        return $this->client->income();
+    }
 }

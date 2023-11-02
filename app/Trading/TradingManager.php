@@ -19,7 +19,7 @@ class TradingManager
             self::maybeTakeShortProfit();
         }
 
-        if(self::shouldOpenLong()) {
+        if (self::shouldOpenLong()) {
             self::openLong();
         }
     }
@@ -33,7 +33,7 @@ class TradingManager
             self::maybeTakeLongProfit();
         }
 
-        if(self::shouldOpenShort()) {
+        if (self::shouldOpenShort()) {
             self::openShort();
         }
     }
@@ -59,7 +59,7 @@ class TradingManager
     {
         $orders = Order::all()->pluck('order_id');
 
-        $orders->each(function($orderId) {
+        $orders->each(function ($orderId) {
             self::collectTrades($orderId);
         });
     }
@@ -313,20 +313,20 @@ class TradingManager
     {
         // Retrieve latest short order in last 2 hours
         $noShortOrderFilledLastHour = null === Order::query()
-            ->where('status', '=', Order::STATUS_FILLED)
-            ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
-            ->where('side', '=', Order::SIDE_SELL)
-            ->where('update_time', '>=', self::last2Hours())
-            ->orderByDesc('update_time')
-            ->first();
+                ->where('status', '=', Order::STATUS_FILLED)
+                ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
+                ->where('side', '=', Order::SIDE_SELL)
+                ->where('update_time', '>=', self::last2Hours())
+                ->orderByDesc('update_time')
+                ->first();
 
         // Retrieve latest short order with status NEW
         $noPendingShortOrder = null === Order::query()
-            ->where('status', '=', Order::STATUS_NEW)
-            ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
-            ->where('side', '=', Order::SIDE_SELL)
-            ->orderByDesc('update_time')
-            ->first();
+                ->where('status', '=', Order::STATUS_NEW)
+                ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
+                ->where('side', '=', Order::SIDE_SELL)
+                ->orderByDesc('update_time')
+                ->first();
 
         return $noShortOrderFilledLastHour && $noPendingShortOrder;
     }
@@ -394,6 +394,38 @@ class TradingManager
             $data,
             ['trade_id'],
             ['realized_profit', 'fee', 'net_profit', 'roe', 'created_at']
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function collectIncomes(): void
+    {
+        $incomes = self::binance()->income();
+
+        foreach ($incomes as $income) {
+            $income = [
+                'tran_id' => $income['tranId'],
+                'symbol' => $income['symbol'],
+                'income_type' => $income['incomeType'],
+                'income' => $income['income'],
+                'asset' => $income['asset'],
+                'time' => $income['time'],
+                'trade_id' => $income['tradeId'] ?? null,
+                'info' => $income['info'] ?? null,
+            ];
+
+            self::upsertIncome($income);
+        }
+    }
+
+    private static function upsertIncome(array $income): void
+    {
+        Income::query()->upsert(
+            $income,
+            ['tran_id'],
+            ['symbol', 'income_type', 'income', 'asset', 'time']
         );
     }
 }
