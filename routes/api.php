@@ -19,9 +19,5 @@ use App\Http\Controllers\Api\ProfitController;
 */
 
 Route::middleware('auth.tradingview')->post('/tradingview', HandleTradingviewHookController::class);
-Route::get('/commanders/{id}/profit', GetCommanderProfitController::class);
-Route::get('/commanders/{id}/risk', GetCommanderRiskController::class);
 Route::middleware('auth.tradingview')
     ->post('/balances', GetBalancesController::class);
-
-Route::get('/profit', ProfitController::class);

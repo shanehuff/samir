@@ -19,6 +19,7 @@ use Inertia\Inertia;
 |
 */
 
+Route::get('/', DashboardController::class);
 Route::get('/dashboard', DashboardController::class);
 Route::get('/deals', DealsController::class);
 Route::get('/daily-roi', DailyRoiController::class);

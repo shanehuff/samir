@@ -21,17 +21,19 @@ defineProps({
     </template>
 
     <div class="p-6 max-w-7xl mx-auto">
-      <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
+      <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-3">
         <div
             class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
         >
-          <div class="p-4 flex items-center">
+          <div class="p-4">
             <div>
               <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                 Net Profit (VND)
               </p>
-              <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                {{ netProfit }}
+              <p class="text-center text-lg font-semibold text-gray-700 dark:text-gray-200">
+                  <a href="/deals">
+                      <span class="text-green-500">+{{ netProfit }} 💰</span>
+                  </a>
               </p>
             </div>
           </div>
@@ -40,14 +42,14 @@ defineProps({
         <div
             class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
         >
-          <div class="p-4 flex items-center">
+          <div class="p-4">
             <div>
               <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                 Fee & Income (VND)
               </p>
-              <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                  <span class="text-red-500">{{ fee }}</span> &
-                  <span class="text-green-500">{{ incomes }}</span>
+              <p class="flex justify-between text-lg font-semibold text-gray-700 dark:text-gray-200">
+                  <span class="text-red-500 flex-shrink-0">{{ fee }} 💸</span>
+                  <span class="text-green-500 flex-shrink-0">{{ incomes }} 💰</span>
               </p>
             </div>
           </div>
@@ -56,28 +58,14 @@ defineProps({
         <div
             class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
         >
-          <div class="p-4 flex items-center">
+          <div class="p-4">
             <div>
               <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                Deals
+                Deals & Uptime
               </p>
-              <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                {{ dealsCount }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div
-            class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
-        >
-          <div class="p-4 flex items-center">
-            <div>
-              <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                Up Time
-              </p>
-              <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                {{ upTime }}
+              <p class="flex justify-between text-lg font-semibold text-gray-700 dark:text-gray-200">
+                  <span class="flex-shrink-0">{{ dealsCount }} 🤝</span>
+                  <span class="flex-shrink-0">{{ upTime }} ⏱️</span>
               </p>
             </div>
           </div>
