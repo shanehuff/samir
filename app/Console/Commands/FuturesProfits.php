@@ -32,6 +32,6 @@ class FuturesProfits extends Command
     {
         info('Collect profits & incomes');
         TradingManager::collectProfits();
-        TradingManager::collectIncomes();
+        TradingManager::collectRecentIncomes();
     }
 }

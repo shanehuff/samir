@@ -67,6 +67,20 @@ class TradingManager
     /**
      * @throws Exception
      */
+    public static function importRecentTrades(): void
+    {
+        tap(Trade::query()
+            ->orderByDesc('time')
+            ->first(),
+            function ($latestTrade) {
+                self::collectTrades($latestTrade->time);
+            }
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
     public static function importOrders(): void
     {
         $orders = self::binance()->orders();
@@ -75,6 +89,28 @@ class TradingManager
             $order['cumQty'] = $order['executedQty'];
             self::upsertOrder($order);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function importRecentOrders(): void
+    {
+        tap(
+            Order::query()
+                ->where('status', '=', Order::STATUS_NEW)
+                ->orderBy('update_time')
+                ->first(),
+
+            function ($latestOrder) {
+                $orders = self::binance()->orders('BNBUSDT', $latestOrder->update_time);
+
+                foreach ($orders as $order) {
+                    $order['cumQty'] = $order['executedQty'];
+                    self::upsertOrder($order);
+                }
+            }
+        );
     }
 
     /**
@@ -178,10 +214,10 @@ class TradingManager
     /**
      * @throws Exception
      */
-    private static function collectTrades(mixed $orderId): void
+    private static function collectTrades(string $time): void
     {
         $binanceTrades = self::binance()->collectTrades(
-            $orderId
+            $time
         );
 
         foreach ($binanceTrades as $binanceTrade) {
@@ -364,10 +400,11 @@ class TradingManager
      */
     public static function collectProfits(): void
     {
-        self::importTrades();
+        self::importRecentTrades();
 
         $trades = Trade::query()
             ->where('realized_pnl', '>', 0)
+            ->where('is_profit_collected', '=', false)
             ->get();
 
         if ($trades->count() > 0) {
@@ -384,6 +421,7 @@ class TradingManager
                 ];
 
                 self::upsertProfit($profit);
+                $trade->update(['is_profit_collected' => true]);
             });
         }
     }
@@ -418,6 +456,35 @@ class TradingManager
 
             self::upsertIncome($income);
         }
+    }
+
+    /**
+     * @throws Exception
+     * @noinspection DuplicatedCode
+     */
+    public static function collectRecentIncomes(): void
+    {
+        tap(Income::query()
+            ->orderByDesc('time')
+            ->first(), function ($latestIncome) {
+            $incomes = self::binance()->income($latestIncome->time);
+
+            foreach ($incomes as $income) {
+                $income = [
+                    'tran_id' => $income['tranId'],
+                    'symbol' => $income['symbol'],
+                    'income_type' => $income['incomeType'],
+                    'income' => $income['income'],
+                    'asset' => $income['asset'],
+                    'time' => $income['time'],
+                    'trade_id' => $income['tradeId'] ?? null,
+                    'info' => $income['info'] ?? null,
+                ];
+
+                self::upsertIncome($income);
+            }
+        });
+
     }
 
     private static function upsertIncome(array $income): void

@@ -23,7 +23,7 @@ class HandleTradingviewHookController extends Controller
 
         info(json_encode($request->payloads));
 
-        TradingManager::importOrders();
+        TradingManager::importRecentOrders();
 
         if('down' === $request->payloads['direction']) {
             TradingManager::handleDown();

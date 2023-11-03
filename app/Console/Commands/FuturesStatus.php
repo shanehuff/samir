@@ -30,6 +30,6 @@ class FuturesStatus extends Command
      */
     public function handle(): void
     {
-        TradingManager::status();
+        TradingManager::importRecentTrades();
     }
 }

@@ -56,17 +56,17 @@ class Binance
     /**
      * @throws Exception
      */
-    public function collectTrades($orderId = null, $startTime = null): array
+    public function collectTrades($startTime = null): array
     {
-        return $this->client->userTrades($orderId, $startTime);
+        return $this->client->userTrades($startTime);
     }
 
     /**
      * @throws Exception
      */
-    public function orders(): array
+    public function orders(string $symbol = 'BNBUSDT', ?string $updateTime = null): array
     {
-        return $this->client->allOrders();
+        return $this->client->allOrders($symbol, $updateTime);
     }
 
     public function positions(): Collection
@@ -113,8 +113,8 @@ class Binance
     /**
      * @throws Exception
      */
-    public function income(): array
+    public function income($time = null): array
     {
-        return $this->client->income();
+        return $this->client->income($time);
     }
 }

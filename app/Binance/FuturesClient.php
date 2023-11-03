@@ -38,7 +38,7 @@ class FuturesClient extends API
     /**
      * @throws Exception
      */
-    public function userTrades($orderId = null, $startTime = null): array
+    public function userTrades($startTime = null): array
     {
         return $this->httpRequest(
             'fapi/v1/userTrades',
@@ -46,7 +46,6 @@ class FuturesClient extends API
             [
                 'fapi' => true,
                 'symbol' => 'BNBUSDT',
-                'orderId' => $orderId,
                 'startTime' => $startTime
             ],
             true
@@ -107,14 +106,15 @@ class FuturesClient extends API
     /**
      * @throws Exception
      */
-    public function allOrders(string $symbol = 'BNBUSDT'): array
+    public function allOrders(string $symbol = 'BNBUSDT', ?string $updateTime = null): array
     {
         return $this->httpRequest(
             'fapi/v1/allOrders',
             'GET',
             [
                 'fapi' => true,
-                'symbol' => $symbol
+                'symbol' => $symbol,
+                'startTime' => $updateTime
             ],
             true
         );
@@ -222,7 +222,7 @@ class FuturesClient extends API
     /**
      * @throws Exception
      */
-    public function income(): array
+    public function income($time = null): array
     {
         return $this->httpRequest(
             'fapi/v1/income',
@@ -231,6 +231,7 @@ class FuturesClient extends API
                 'fapi' => true,
                 'symbol' => 'BNBUSDT',
                 'incomeType' => 'FUNDING_FEE',
+                'startTime' => $time
             ],
             true
         );
