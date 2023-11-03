@@ -19,26 +19,30 @@ class DashboardController
         $this->tryToLoadVND();
     }
 
+    /** @noinspection PhpWrongStringConcatenationInspection */
     public function __invoke(Request $request): Response
     {
         $profits = Profit::query()
             ->orderByDesc('id')
             ->get();
 
-        $incomes = Income::all();
+        $incomes = (float)$this->toVND(Income::all()->sum('income'));
+        $netProfit = (float)$this->toVND($profits->sum('net_profit'));
+        $fee = (float)$this->toVND($profits->sum('fee'));
 
         return Jetstream::inertia()->render($request, 'Dashboard/Show', [
-            'netProfit' => $this->toVND($profits->sum('net_profit')),
-            'fee' => $this->toVND($profits->sum('fee')),
+            'netProfit' => number_format($netProfit),
+            'fee' => number_format($fee),
             'dealsCount' => $profits->count(),
             'upTime' => $this->getUpTime($profits->min('created_at')),
-            'incomes' => $this->toVND($incomes->sum('income'))
+            'incomes' => number_format($incomes),
+            'incomesPerHour' => number_format(($netProfit - $fee + $incomes) / $this->uptimeInHours($profits->min('created_at'))),
         ]);
     }
 
     private function toVND($amount): string
     {
-        return number_format($amount * $this->vnd, 0);
+        return $amount * $this->vnd;
     }
 
     private function tryToLoadVND(): void
@@ -53,5 +57,10 @@ class DashboardController
     private function getUpTime($date): string
     {
         return $date->diffForHumans();
+    }
+
+    private function uptimeInHours(mixed $min)
+    {
+        return $min->diffInHours(now());
     }
 }

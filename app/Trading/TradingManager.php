@@ -15,13 +15,17 @@ class TradingManager
      */
     public static function handleDown(): void
     {
+        info('Handle Down');
         if (self::binance()->hasShortPosition()) {
+            info('Has short position');
             self::maybeTakeShortProfit();
         }
 
         if (self::shouldOpenLong()) {
+            info('Should open long');
             self::openLong();
         }
+        info('Handle Down End');
     }
 
     /**
@@ -29,13 +33,19 @@ class TradingManager
      */
     public static function handleUp(): void
     {
+        info('Handle Up');
+
         if (self::binance()->hasLongPosition()) {
+            info('Has long position');
             self::maybeTakeLongProfit();
         }
 
         if (self::shouldOpenShort()) {
+            info('Should open short');
             self::openShort();
         }
+
+        info('Handle Up End');
     }
 
     /**
@@ -277,6 +287,7 @@ class TradingManager
     private static function maybeTakeLongProfit(): void
     {
         if (self::binance()->hasLongProfit()) {
+            info('long profit');
             self::takeLongProfit();
         }
     }
@@ -287,6 +298,7 @@ class TradingManager
     private static function maybeTakeShortProfit(): void
     {
         if (self::binance()->hasShortProfit()) {
+            info('short profit');
             self::takeShortProfit();
         }
     }

@@ -9,6 +9,7 @@ defineProps({
   initCapital: Number,
   upTime: String,
   incomes: Number,
+  incomesPerHour: Number,
 })
 </script>
 
@@ -28,12 +29,13 @@ defineProps({
           <div class="p-4">
             <div>
               <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                Net Profit (VND)
+                Net Profit & Income Per Hour (VND)
               </p>
-              <p class="text-center text-lg font-semibold text-gray-700 dark:text-gray-200">
-                  <a href="/deals">
+              <p class="flex justify-between text-lg font-semibold text-gray-700 dark:text-gray-200">
+                  <a href="/deals" class="flex-shrink-0">
                       <span class="text-green-500">+{{ netProfit }} 💰</span>
                   </a>
+                  <span class="text-blue-500 flex-shrink-0">+{{ incomesPerHour }} 💨</span>
               </p>
             </div>
           </div>
