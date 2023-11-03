@@ -98,8 +98,7 @@ class TradingManager
     {
         tap(
             Order::query()
-                ->where('status', '=', Order::STATUS_NEW)
-                ->orderBy('update_time')
+                ->orderByDesc('update_time')
                 ->first(),
 
             function ($latestOrder) {
