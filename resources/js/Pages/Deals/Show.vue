@@ -1,5 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/HeadlessAppLayout.vue';
+import NavLink from "../../Components/NavLink.vue";
 
 defineProps({
   deals: Array
@@ -27,7 +28,9 @@ defineProps({
               </span>
 
               <span class="text-sm font-semibold text-gray-700 dark:text-green-300">
-                <span v-if="parseInt(deal.net_profit) > 0">+</span>{{ deal.net_profit }} 💰
+                  <a :href="route('profits.show', deal.id)">
+                      <span v-if="parseInt(deal.net_profit) > 0">+</span>{{ deal.net_profit }} 💰
+                  </a>
               </span>
           </div>
         </div>

@@ -1,0 +1,100 @@
+<script setup>
+import AppLayout from '@/Layouts/HeadlessAppLayout.vue';
+
+defineProps({
+    profit: Object,
+    buy: Object,
+    sell: Object,
+    vnd: Number,
+    duration: Number
+})
+
+const formatToVND = number => {
+    return number.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+}
+
+</script>
+
+<template>
+    <AppLayout title="Dashboard">
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white text-center">
+                Profit #{{ profit.id }}
+            </h2>
+        </template>
+
+        <div class="p-6 max-w-7xl mx-auto">
+            <div class="gap-6 mb-8">
+                <div
+                        class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
+                            Buy <span class="text-green-500">{{ formatToVND(buy.price * vnd) }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
+                            Sell <span class="text-red-500">{{ formatToVND(sell.price * vnd) }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
+                            Size <span class="">{{ buy.qty }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
+                            Duration <span class="text-white">{{ duration }} hours</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
+                            Profit <span class="text-green-500">{{ formatToVND((buy.realized_pnl > 0 ? buy.realized_pnl : sell.realized_pnl) * vnd) }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
+                            Fee <span class="text-red-500">{{ formatToVND((sell.commission + buy.commission) * vnd) }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
+                            Net Profit <span class="text-green-500">{{ formatToVND(((buy.realized_pnl > 0 ? buy.realized_pnl : sell.realized_pnl) - (sell.commission + buy.commission)) * vnd) }}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </AppLayout>
+</template>

@@ -19,7 +19,6 @@ class DashboardController
         $this->tryToLoadVND();
     }
 
-    /** @noinspection PhpWrongStringConcatenationInspection */
     public function __invoke(Request $request): Response
     {
         $profits = Profit::query()

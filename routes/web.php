@@ -4,9 +4,9 @@ use App\Http\Controllers\Pages\DealsController;
 use App\Http\Controllers\Pages\DashboardController;
 use App\Http\Controllers\Pages\DailyRoiController;
 use App\Http\Controllers\Pages\MonthlyRoiController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\Pages\ShowProfitController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +24,4 @@ Route::get('/dashboard', DashboardController::class);
 Route::get('/deals', DealsController::class);
 Route::get('/daily-roi', DailyRoiController::class);
 Route::get('/monthly-roi', MonthlyRoiController::class);
+Route::get('/profits/{profitId}', ShowProfitController::class)->name('profits.show');
