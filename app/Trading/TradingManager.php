@@ -108,15 +108,18 @@ class TradingManager
     {
         tap(
             Order::query()
-                ->orderByDesc('update_time')
+                ->where('status', '=', Order::STATUS_NEW)
+                ->orderBy('update_time')
                 ->first(),
 
             function ($latestOrder) {
-                $orders = self::binance()->orders('BNBUSDT', $latestOrder->update_time);
+                if ($latestOrder) {
+                    $orders = self::binance()->orders('BNBUSDT', $latestOrder->update_time);
 
-                foreach ($orders as $order) {
-                    $order['cumQty'] = $order['executedQty'];
-                    self::upsertOrder($order);
+                    foreach ($orders as $order) {
+                        $order['cumQty'] = $order['executedQty'];
+                        self::upsertOrder($order);
+                    }
                 }
             }
         );
