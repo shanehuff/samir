@@ -424,7 +424,7 @@ class TradingManager
         if ($trades->count() > 0) {
             $trades->each(function ($trade) {
                 $fee = 'BNB' === $trade->commission_asset ? $trade->commission * $trade->price : $trade->commission;
-                $counterTradeFee = 'BNB' === $trade->counterTrade->commission_asset ? $trade->counterTrade->commission * $trade->counterTrade->price : $trade->counterTrade->commission;
+                $counterTradeFee = 'BNB' === $trade->counterTrade()->commission_asset ? $trade->counterTrade()->commission * $trade->counterTrade()->price : $trade->counterTrade()->commission;
 
                 $profit = [
                     'trade_id' => $trade->id,
