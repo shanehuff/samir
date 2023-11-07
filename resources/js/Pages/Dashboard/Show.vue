@@ -50,8 +50,8 @@ defineProps({
                 Fee & Income (VND)
               </p>
               <p class="flex justify-between text-lg font-semibold text-gray-700 dark:text-gray-200">
-                  <span class="text-red-500 flex-shrink-0">{{ fee }} 💸</span>
-                  <span class="text-green-500 flex-shrink-0">{{ incomes }} 💰</span>
+                  <span class="text-red-500 flex-shrink-0">-{{ fee }} 💸</span>
+                  <span class="text-green-500 flex-shrink-0">+{{ incomes }} 💰</span>
               </p>
             </div>
           </div>

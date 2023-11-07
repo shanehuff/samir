@@ -424,12 +424,13 @@ class TradingManager
         if ($trades->count() > 0) {
             $trades->each(function ($trade) {
                 $fee = 'BNB' === $trade->commission_asset ? $trade->commission * $trade->price : $trade->commission;
+                $counterTradeFee = 'BNB' === $trade->counterTrade->commission_asset ? $trade->counterTrade->commission * $trade->counterTrade->price : $trade->counterTrade->commission;
 
                 $profit = [
                     'trade_id' => $trade->id,
                     'realized_profit' => $trade->realized_pnl,
-                    'fee' => $fee,
-                    'net_profit' => $trade->realized_pnl - $fee,
+                    'fee' => $fee + $counterTradeFee,
+                    'net_profit' => $trade->realized_pnl - $fee - $counterTradeFee,
                     'roe' => $trade->realized_pnl / $trade->quote_qty / 4 * 100,
                     'created_at' => Carbon::createFromTimestampMs($trade->time)->toDateTimeString(),
                 ];
