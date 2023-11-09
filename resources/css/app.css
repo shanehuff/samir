@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    background-color: #4a5568;
+}
+
 /* -----
 SVG Icons - svgicons.sparkk.fr
 ----- */
