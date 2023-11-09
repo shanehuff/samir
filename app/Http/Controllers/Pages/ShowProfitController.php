@@ -17,6 +17,7 @@ class ShowProfitController
     {
         $this->tryToLoadVND();
     }
+
     public function __invoke($profitId): Response
     {
         $profit = Profit::query()
@@ -52,7 +53,17 @@ class ShowProfitController
     {
         $duration = number_format(abs($created_at - $created_at1) / 1000 / 60 / 60, 2);
 
+        $h = floor($duration);
+        $m = floor(($duration - $h) * 60);
+
         // convert $duration to readable format like 1h 30m
-        return floor($duration) . 'h ' . floor(($duration - floor($duration)) * 60) . 'm';
+        $duration = $h . 'h ' . $m . 'm';
+
+        // if duration is less than 1 hour, then return only minutes
+        if ((int)$h === 0) {
+            $duration = $m . 'm';
+        }
+
+        return $duration;
     }
 }
