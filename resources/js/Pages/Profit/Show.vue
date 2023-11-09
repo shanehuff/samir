@@ -6,7 +6,7 @@ defineProps({
     buy: Object,
     sell: Object,
     vnd: Number,
-    duration: Number
+    duration: String
 })
 
 const formatToVND = number => {
@@ -30,7 +30,7 @@ const formatToVND = number => {
                 >
                     <div class="p-4">
                         <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Buy <span class="text-green-500">{{ formatToVND(buy.price * vnd) }}</span>
+                            Buy <span class="text-green-500">{{ formatToVND(buy.price * buy.qty * vnd) }}</span>
                         </p>
                     </div>
                 </div>
@@ -40,7 +40,7 @@ const formatToVND = number => {
                 >
                     <div class="p-4">
                         <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Sell <span class="text-red-500">{{ formatToVND(sell.price * vnd) }}</span>
+                            Sell <span class="text-red-500">{{ formatToVND(sell.price * sell.qty * vnd) }}</span>
                         </p>
                     </div>
                 </div>
@@ -50,17 +50,7 @@ const formatToVND = number => {
                 >
                     <div class="p-4">
                         <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Size <span class="">{{ buy.qty }}</span>
-                        </p>
-                    </div>
-                </div>
-
-                <div
-                    class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
-                >
-                    <div class="p-4">
-                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Duration <span class="text-white">{{ duration }} hours</span>
+                            Duration <span class="text-white">{{ duration }}</span>
                         </p>
                     </div>
                 </div>

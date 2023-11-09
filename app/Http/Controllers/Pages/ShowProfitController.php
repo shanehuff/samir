@@ -27,8 +27,8 @@ class ShowProfitController
         $buy = $profit->trade->side === Order::SIDE_BUY ? $profit->trade : $profit->trade->counterTrade();
         $sell = $profit->trade->side === Order::SIDE_SELL ? $profit->trade : $profit->trade->counterTrade();
 
-        // convert microsecond to duration in hours
-        $duration = number_format(abs($buy->time - $sell->time) / 1000 / 60 / 60, 2);
+        // get readable duration from buy to sell
+        $duration = $this->getReadableDuration($buy->time, $sell->time);
 
         return Inertia::render('Profit/Show', [
             'profit' => $profit,
@@ -46,5 +46,13 @@ class ShowProfitController
         } catch (GuzzleException $exception) {
             report($exception);
         }
+    }
+
+    private function getReadableDuration(mixed $created_at, mixed $created_at1): string
+    {
+        $duration = number_format(abs($created_at - $created_at1) / 1000 / 60 / 60, 2);
+
+        // convert $duration to readable format like 1h 30m
+        return floor($duration) . 'h ' . floor(($duration - floor($duration)) * 60) . 'm';
     }
 }
