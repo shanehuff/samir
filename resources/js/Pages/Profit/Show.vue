@@ -1,3 +1,4 @@
+<!--suppress JSUnresolvedReference -->
 <script setup>
 import AppLayout from '@/Layouts/HeadlessAppLayout.vue';
 
@@ -18,9 +19,15 @@ const formatToVND = number => {
 <template>
     <AppLayout title="Dashboard">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white text-center">
-                Profit #{{ profit.id }}
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white text-center flex justify-between">
+                <a :href="route('profits.show', (profit.id - 1))" class="text-sm text-gray-700 underline">&lt; bacK</a>
+                <span>Profit #{{ profit.id }}</span>
+                <a :href="route('profits.show', (profit.id + 1))" class="text-sm text-gray-700 underline">Next &gt;</a>
             </h2>
+
+            <div class="flex justify-center">
+
+            </div>
         </template>
 
         <div class="p-6 max-w-7xl mx-auto">
