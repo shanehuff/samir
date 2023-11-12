@@ -36,6 +36,7 @@ class DashboardController
             'upTime' => $this->getUpTime($profits->min('created_at')),
             'incomes' => number_format($incomes),
             'incomesPerHour' => number_format(($netProfit - $fee + $incomes) / $this->uptimeInHours($profits->min('created_at'))),
+            'revenue' => number_format($netProfit + $fee + $incomes),
         ]);
     }
 
