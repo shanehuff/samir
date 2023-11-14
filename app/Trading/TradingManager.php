@@ -391,7 +391,7 @@ class TradingManager
         if(self::binance()->hasLongProfit()) {
             return false;
         }
-        
+
         // Retrieve latest long order in last 2 hours
         $noLongOrderFilledLastHour = null === Order::query()
                 ->where('status', '=', Order::STATUS_FILLED)
@@ -431,31 +431,10 @@ class TradingManager
 
         if ($trades->count() > 0) {
             $trades->each(function ($trade) {
-                $fee = 'BNB' === $trade->commission_asset ? $trade->commission * $trade->price : $trade->commission;
-                $counterTradeFee = 'BNB' === $trade->counterTrade()->commission_asset ? $trade->counterTrade()->commission * $trade->counterTrade()->price : $trade->counterTrade()->commission;
-
-                $profit = [
-                    'trade_id' => $trade->id,
-                    'realized_profit' => $trade->realized_pnl,
-                    'fee' => $fee + $counterTradeFee,
-                    'net_profit' => $trade->realized_pnl - $fee - $counterTradeFee,
-                    'roe' => $trade->realized_pnl / $trade->quote_qty / 4 * 100,
-                    'created_at' => Carbon::createFromTimestampMs($trade->time)->toDateTimeString(),
-                ];
-
-                self::upsertProfit($profit);
+                ProfitManager::makeFromTrade($trade);
                 $trade->update(['is_profit_collected' => true]);
             });
         }
-    }
-
-    private static function upsertProfit(array $data): void
-    {
-        Profit::query()->upsert(
-            $data,
-            ['trade_id'],
-            ['realized_profit', 'fee', 'net_profit', 'roe', 'created_at']
-        );
     }
 
     /**

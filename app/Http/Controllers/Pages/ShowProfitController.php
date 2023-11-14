@@ -25,18 +25,10 @@ class ShowProfitController
             ->where('id', $profitId)
             ->firstOrFail();
 
-        $buy = $profit->trade->side === Order::SIDE_BUY ? $profit->trade : $profit->trade->counterTrade();
-        $sell = $profit->trade->side === Order::SIDE_SELL ? $profit->trade : $profit->trade->counterTrade();
-
-        // get readable duration from buy to sell
-        $duration = $this->getReadableDuration($buy->time, $sell->time);
-
         return Inertia::render('Profit/Show', [
             'profit' => $profit,
-            'buy' => $buy,
-            'sell' => $sell,
             'vnd' => $this->vnd,
-            'duration' => $duration,
+            'roi' => number_format($profit->roe, 2) . '%',
         ]);
     }
 
@@ -47,23 +39,5 @@ class ShowProfitController
         } catch (GuzzleException $exception) {
             report($exception);
         }
-    }
-
-    private function getReadableDuration(mixed $created_at, mixed $created_at1): string
-    {
-        $duration = number_format(abs($created_at - $created_at1) / 1000 / 60 / 60, 2);
-
-        $h = floor($duration);
-        $m = floor(($duration - $h) * 60);
-
-        // convert $duration to readable format like 1h 30m
-        $duration = $h . 'h ' . $m . 'm';
-
-        // if duration is less than 1 hour, then return only minutes
-        if ((int)$h === 0) {
-            $duration = $m . 'm';
-        }
-
-        return $duration;
     }
 }

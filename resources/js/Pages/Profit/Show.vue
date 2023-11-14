@@ -4,10 +4,8 @@ import AppLayout from '@/Layouts/HeadlessAppLayout.vue';
 
 defineProps({
     profit: Object,
-    buy: Object,
-    sell: Object,
     vnd: Number,
-    duration: String
+    roi: String
 })
 
 const formatToVND = number => {
@@ -37,7 +35,7 @@ const formatToVND = number => {
                 >
                     <div class="p-4">
                         <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Buy <span class="text-green-500">{{ formatToVND(buy.price * buy.qty * vnd) }}</span>
+                            Buy <span class="text-green-500">{{ formatToVND(profit.buy_price * profit.trade.qty * vnd) }}</span>
                         </p>
                     </div>
                 </div>
@@ -47,7 +45,7 @@ const formatToVND = number => {
                 >
                     <div class="p-4">
                         <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Sell <span class="text-red-500">{{ formatToVND(sell.price * sell.qty * vnd) }}</span>
+                            Sell <span class="text-red-500">{{ formatToVND(profit.sell_price * profit.trade.qty * vnd) }}</span>
                         </p>
                     </div>
                 </div>
@@ -57,7 +55,7 @@ const formatToVND = number => {
                 >
                     <div class="p-4">
                         <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Duration <span class="text-white">{{ duration }}</span>
+                            Duration <span class="text-white">{{ profit.duration_readable }}</span>
                         </p>
                     </div>
                 </div>
@@ -67,7 +65,7 @@ const formatToVND = number => {
                 >
                     <div class="p-4">
                         <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Profit <span class="text-green-500">{{ formatToVND((buy.realized_pnl > 0 ? buy.realized_pnl : sell.realized_pnl) * vnd) }}</span>
+                            Profit <span class="text-green-500">{{ formatToVND(profit.realized_profit * vnd) }}</span>
                         </p>
                     </div>
                 </div>
@@ -77,7 +75,7 @@ const formatToVND = number => {
                 >
                     <div class="p-4">
                         <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Fee <span class="text-red-500">{{ formatToVND((sell.commission + buy.commission) * vnd) }}</span>
+                            Fee <span class="text-red-500">{{ formatToVND(profit.fee * vnd) }}</span>
                         </p>
                     </div>
                 </div>
@@ -87,7 +85,17 @@ const formatToVND = number => {
                 >
                     <div class="p-4">
                         <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Net Profit <span class="text-green-500">{{ formatToVND(((buy.realized_pnl > 0 ? buy.realized_pnl : sell.realized_pnl) - (sell.commission + buy.commission)) * vnd) }}</span>
+                            Net Profit <span class="text-green-500">{{ formatToVND(profit.net_profit * vnd) }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
+                            ROI <span class="text-green-500">{{ roi }}</span>
                         </p>
                     </div>
                 </div>
