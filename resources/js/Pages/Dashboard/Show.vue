@@ -36,7 +36,7 @@ const isShowIncomes = ref(false);
                             <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                                 Revenue & Income Per Hour (VND)
                             </p>
-                            <p class="flex justify-between text-lg font-semibold text-gray-700 dark:text-gray-200">
+                            <p class="flex justify-between font-semibold text-gray-700 dark:text-gray-200">
                                 <span @click="isShowIncomes = true" class="cursor-pointer text-green-500">+{{ revenue }} 💰</span>
 
                                 <span class="text-blue-500 flex-shrink-0">+{{ incomesPerHour }} 💨</span>
@@ -53,7 +53,7 @@ const isShowIncomes = ref(false);
                             <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                                 Deals & Uptime
                             </p>
-                            <p class="flex justify-between text-lg font-semibold text-gray-700 dark:text-gray-200">
+                            <p class="flex justify-between font-semibold text-gray-700 dark:text-gray-200">
                                 <span class="flex-shrink-0">{{ dealsCount }} 🤝</span>
                                 <span class="flex-shrink-0">{{ upTime }} ⏱️</span>
                             </p>
@@ -74,7 +74,7 @@ const isShowIncomes = ref(false);
                             <p class="mb-2 text-sm font-medium text-gray-600">
                                 Trading Net Profits
                             </p>
-                            <p class="text-lg font-semibold text-gray-700">
+                            <p class="font-semibold text-gray-700">
                                 <a href="/deals">
                                     <span class="text-green-500">+{{ netProfit }} 💰</span>
                                 </a>
@@ -87,7 +87,7 @@ const isShowIncomes = ref(false);
                             <p class="mb-2 text-sm font-medium text-gray-600">
                                 Trading Fees
                             </p>
-                            <p class="text-lg font-semibold text-gray-700">
+                            <p class="font-semibold text-gray-700">
                                 <span class="text-red-500">-{{ fee }} 💸</span>
                             </p>
                         </div>
@@ -98,8 +98,10 @@ const isShowIncomes = ref(false);
                             <p class="mb-2 text-sm font-medium text-gray-600">
                                 Funding Fees
                             </p>
-                            <p class="text-lg font-semibold text-gray-700">
-                                <span class="text-green-500">+{{ incomes }} 💰</span>
+                            <p class="font-semibold text-gray-700">
+                                <a href="/incomes">
+                                    <span class="text-green-500">+{{ incomes }} 💰</span>
+                                </a>
                             </p>
                         </div>
                     </div>

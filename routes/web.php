@@ -6,6 +6,7 @@ use App\Http\Controllers\Pages\DailyRoiController;
 use App\Http\Controllers\Pages\MonthlyRoiController;
 use App\Http\Controllers\Pages\ShowProfitController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Pages\IncomesController;
 
 
 /*
@@ -25,3 +26,4 @@ Route::get('/deals', DealsController::class);
 Route::get('/daily-roi', DailyRoiController::class);
 Route::get('/monthly-roi', MonthlyRoiController::class);
 Route::get('/profits/{profitId}', ShowProfitController::class)->name('profits.show');
+Route::get('/incomes', IncomesController::class);

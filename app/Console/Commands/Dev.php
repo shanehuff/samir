@@ -30,6 +30,6 @@ class Dev extends Command
      */
     public function handle(): void
     {
-        TradingManager::collectProfits();
+        TradingManager::collectIncomes();
     }
 }

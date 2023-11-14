@@ -454,6 +454,7 @@ class TradingManager
                 'time' => $income['time'],
                 'trade_id' => $income['tradeId'] ?? null,
                 'info' => $income['info'] ?? null,
+                'created_at' => Carbon::createFromTimestampMs($income['time'])->toDateTimeString(),
             ];
 
             self::upsertIncome($income);
@@ -494,7 +495,7 @@ class TradingManager
         Income::query()->upsert(
             $income,
             ['tran_id'],
-            ['symbol', 'income_type', 'income', 'asset', 'time']
+            ['symbol', 'income_type', 'income', 'asset', 'time', 'trade_id', 'info', 'created_at']
         );
     }
 }
