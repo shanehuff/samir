@@ -1,64 +1,116 @@
 <script setup>
 import AppLayout from '@/Layouts/HeadlessAppLayout.vue';
+import {ref} from "vue";
+import DialogModal from "../../Components/DialogModal.vue";
+import SecondaryButton from "../../Components/SecondaryButton.vue";
 
 defineProps({
-  netProfit: Number,
-  fee: Number,
-  dealsCount: Number,
-  avgDuration: Number,
-  initCapital: Number,
-  upTime: String,
-  incomes: Number,
-  incomesPerHour: Number,
+    netProfit: Number,
+    fee: Number,
+    dealsCount: Number,
+    upTime: String,
+    incomes: Number,
+    incomesPerHour: Number,
     revenue: Number,
 })
+
+const isShowIncomes = ref(false);
+
 </script>
 
 <template>
-  <AppLayout title="Dashboard">
-    <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white text-center">
-        Dashboard
-      </h2>
-    </template>
+    <AppLayout title="Dashboard">
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white text-center">
+                Dashboard
+            </h2>
+        </template>
 
-    <div class="p-6 max-w-7xl mx-auto">
-      <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-2">
-        <div
-            class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
-        >
-          <div class="p-4">
-            <div>
-              <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                Revenue & Income Per Hour (VND)
-              </p>
-              <p class="flex justify-between text-lg font-semibold text-gray-700 dark:text-gray-200">
-                  <a href="/deals" class="flex-shrink-0">
-                      <span class="text-green-500">+{{ revenue }} 💰</span>
-                  </a>
-                  <span class="text-blue-500 flex-shrink-0">+{{ incomesPerHour }} 💨</span>
-              </p>
+        <div class="p-6 max-w-7xl mx-auto">
+            <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-2">
+                <div
+                        class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <div>
+                            <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                Revenue & Income Per Hour (VND)
+                            </p>
+                            <p class="flex justify-between text-lg font-semibold text-gray-700 dark:text-gray-200">
+                                <span @click="isShowIncomes = true" class="cursor-pointer text-green-500">+{{ revenue }} 💰</span>
+
+                                <span class="text-blue-500 flex-shrink-0">+{{ incomesPerHour }} 💨</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                        class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <div>
+                            <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                Deals & Uptime
+                            </p>
+                            <p class="flex justify-between text-lg font-semibold text-gray-700 dark:text-gray-200">
+                                <span class="flex-shrink-0">{{ dealsCount }} 🤝</span>
+                                <span class="flex-shrink-0">{{ upTime }} ⏱️</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-          </div>
         </div>
 
-        <div
-            class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
-        >
-          <div class="p-4">
-            <div>
-              <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                Deals & Uptime
-              </p>
-              <p class="flex justify-between text-lg font-semibold text-gray-700 dark:text-gray-200">
-                  <span class="flex-shrink-0">{{ dealsCount }} 🤝</span>
-                  <span class="flex-shrink-0">{{ upTime }} ⏱️</span>
-              </p>
-            </div>
-          </div>
-        </div>
+        <DialogModal :show="isShowIncomes">
+            <template #content>
+                <div
+                    class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white"
+                >
+                    <div class="p-2">
+                        <div>
+                            <p class="mb-2 text-sm font-medium text-gray-600">
+                                Trading Net Profits
+                            </p>
+                            <p class="text-lg font-semibold text-gray-700">
+                                <a href="/deals">
+                                    <span class="text-green-500">+{{ netProfit }} 💰</span>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
 
-      </div>
-    </div>
-  </AppLayout>
+                    <div class="p-2">
+                        <div>
+                            <p class="mb-2 text-sm font-medium text-gray-600">
+                                Trading Fees
+                            </p>
+                            <p class="text-lg font-semibold text-gray-700">
+                                <span class="text-red-500">-{{ fee }} 💸</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="p-2">
+                        <div>
+                            <p class="mb-2 text-sm font-medium text-gray-600">
+                                Funding Fees
+                            </p>
+                            <p class="text-lg font-semibold text-gray-700">
+                                <span class="text-green-500">+{{ incomes }} 💰</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template #footer>
+                <SecondaryButton @click="isShowIncomes = false">
+                    Close
+                </SecondaryButton>
+            </template>
+        </DialogModal>
+    </AppLayout>
 </template>
