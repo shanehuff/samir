@@ -361,6 +361,10 @@ class TradingManager
     /** @noinspection DuplicatedCode */
     private static function shouldOpenShort(): bool
     {
+        if(self::binance()->hasShortProfit()) {
+            return false;
+        }
+
         // Retrieve latest short order in last 2 hours
         $noShortOrderFilledLastHour = null === Order::query()
                 ->where('status', '=', Order::STATUS_FILLED)
@@ -384,6 +388,10 @@ class TradingManager
     /** @noinspection DuplicatedCode */
     private static function shouldOpenLong(): bool
     {
+        if(self::binance()->hasLongProfit()) {
+            return false;
+        }
+        
         // Retrieve latest long order in last 2 hours
         $noLongOrderFilledLastHour = null === Order::query()
                 ->where('status', '=', Order::STATUS_FILLED)
