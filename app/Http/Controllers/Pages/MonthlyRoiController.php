@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Pages;
 
 use App\Services\Keisha;
+use App\Trading\Income;
 use App\Trading\Profit;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
@@ -28,11 +29,21 @@ class MonthlyRoiController
             return $profit->created_at->format('Y-m');
         });
 
+        $groupedIncomes = Income::query()
+            ->orderByDesc('id')
+            ->get()
+            ->groupBy(function ($income) {
+                return $income->created_at->format('Y-m');
+            });
+
         $monthlyProfits = collect();
-        $groupedProfits->each(function ($profit) use (&$monthlyProfits) {
+        $groupedProfits->each(function ($profit) use (&$monthlyProfits, $groupedIncomes) {
             if ($profit->count() > 0) {
+                $income = $groupedIncomes->get($profit->first()->created_at->format('Y-m'));
+                $income = $income ? $income->sum('income') : 0;
+                
                 $monthlyProfits->push((object)[
-                    'net_profit' => $this->toVND($profit->sum('net_profit')),
+                    'net_profit' => $this->toVND($profit->sum('net_profit') + $income),
                     'month' => $profit->first()->created_at->format('m/Y')
                 ]);
             }

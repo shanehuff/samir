@@ -12,7 +12,7 @@ defineProps({
     <template #header>
       <div class="flex justify-center">
         <h2 class="text-xl text-gray-800 leading-tight dark:text-white">
-          Deals 🤝
+          Trading Profits 🤑
         </h2>
       </div>
     </template>
