@@ -161,7 +161,7 @@ class TradingManager
 
     private static function minSize(): float
     {
-        return round(24 / self::currentPrice(), 2);
+        return round(6 / self::currentPrice(), 2);
     }
 
     private static function currentPrice(): float
