@@ -114,7 +114,7 @@ class FuturesClient extends API
             [
                 'fapi' => true,
                 'symbol' => $symbol,
-                'startTime' => $updateTime
+                'startTime' => $updateTime - 1000
             ],
             true
         );
