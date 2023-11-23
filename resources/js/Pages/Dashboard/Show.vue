@@ -5,13 +5,13 @@ import DialogModal from "../../Components/DialogModal.vue";
 import SecondaryButton from "../../Components/SecondaryButton.vue";
 
 defineProps({
-    netProfit: Number,
-    fee: Number,
+    netProfit: String,
+    fee: String,
     dealsCount: Number,
     upTime: String,
-    incomes: Number,
-    incomesPerHour: Number,
-    revenue: Number,
+    incomes: String,
+    incomesPerYear: String,
+    revenue: String,
 })
 
 const isShowIncomes = ref(false);
@@ -34,12 +34,12 @@ const isShowIncomes = ref(false);
                     <div class="p-4">
                         <div>
                             <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                                Revenue & Income Per Hour (VND)
+                                Revenue & Estimated incomes per year (VND)
                             </p>
                             <p class="flex justify-between font-semibold text-gray-700 dark:text-gray-200">
                                 <span @click="isShowIncomes = true" class="cursor-pointer text-green-500">+{{ revenue }} 💰</span>
 
-                                <span class="text-blue-500 flex-shrink-0">+{{ incomesPerHour }} 💨</span>
+                                <span class="text-blue-500 flex-shrink-0">+{{ incomesPerYear }} 💨</span>
                             </p>
                         </div>
                     </div>

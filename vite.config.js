@@ -16,13 +16,12 @@ export default defineConfig({
                     includeAbsolute: false,
                 },
             },
-        }),
+        })
     ],
     ssr: {
         noExternal: ['@inertiajs/server'],
     },
     server: {
-        host: 'samir.chillbits.com',
-        https: true
+        host: 'samir.chillbits.com'
     }
 });

@@ -115,7 +115,7 @@ class TradingManager
             function ($latestOrder) {
                 if ($latestOrder) {
                     $orders = self::binance()->orders('BNBUSDT', $latestOrder->update_time);
-                    
+
                     foreach ($orders as $order) {
                         $order['cumQty'] = $order['executedQty'];
                         self::upsertOrder($order);

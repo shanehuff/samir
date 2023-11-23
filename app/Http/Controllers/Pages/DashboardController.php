@@ -35,7 +35,7 @@ class DashboardController
             'dealsCount' => $profits->count(),
             'upTime' => $this->getUpTime($profits->min('created_at')),
             'incomes' => number_format($incomes),
-            'incomesPerHour' => number_format(($netProfit - $fee + $incomes) / $this->uptimeInHours($profits->min('created_at'))),
+            'incomesPerYear' => number_format(($netProfit - $fee + $incomes) / $this->uptimeInHours($profits->min('created_at')) * 24 * 365),
             'revenue' => number_format($netProfit + $fee + $incomes),
         ]);
     }
