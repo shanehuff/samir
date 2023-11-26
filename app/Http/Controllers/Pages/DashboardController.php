@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Pages;
 
 use App\Services\Keisha;
 use App\Trading\Income;
+use App\Trading\Order;
 use App\Trading\Profit;
+use App\Trading\Trade;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -25,6 +27,14 @@ class DashboardController
             ->orderByDesc('id')
             ->get();
 
+        $buys = Trade::query()
+            ->where('side', Order::SIDE_BUY)
+            ->get();
+
+        $sells = Trade::query()
+            ->where('side', Order::SIDE_SELL)
+            ->get();
+
         $incomes = (float)$this->toVND(Income::all()->sum('income'));
         $netProfit = (float)$this->toVND($profits->sum('net_profit'));
         $fee = (float)$this->toVND($profits->sum('fee'));
@@ -37,6 +47,9 @@ class DashboardController
             'incomes' => number_format($incomes),
             'incomesPerYear' => number_format(($netProfit - $fee + $incomes) / $this->uptimeInHours($profits->min('created_at')) * 24 * 365),
             'revenue' => number_format($netProfit + $fee + $incomes),
+            'avgRoe' => number_format($profits->avg('roe'), 2) . '%',
+            'totalBuy' => number_format($this->toVND($buys->sum('quote_qty'))),
+            'totalSell' => number_format($this->toVND($sells->sum('quote_qty'))),
         ]);
     }
 

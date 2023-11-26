@@ -12,6 +12,9 @@ defineProps({
     incomes: String,
     incomesPerYear: String,
     revenue: String,
+    avgRoe: String,
+    totalBuy: String,
+    totalSell: String,
 })
 
 const isShowIncomes = ref(false);
@@ -40,6 +43,37 @@ const isShowIncomes = ref(false);
                                 <span @click="isShowIncomes = true" class="cursor-pointer text-green-500">+{{ revenue }} 💰</span>
 
                                 <span class="text-blue-500 flex-shrink-0">+{{ incomesPerYear }} 💨</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <div>
+                            <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                Average ROI per deal
+                            </p>
+                            <p class="flex justify-between font-semibold text-gray-700 dark:text-gray-200">
+                                <span class="text-green-500">{{ avgRoe }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
+                >
+                    <div class="p-4">
+                        <div>
+                            <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                Total Buy & Total Sell
+                            </p>
+                            <p class="flex justify-between font-semibold text-gray-700 dark:text-gray-200">
+                                <span class="text-green-500">{{ totalBuy }} </span>
+                                <span class="text-red-500">{{ totalSell }}</span>
                             </p>
                         </div>
                     </div>

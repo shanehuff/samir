@@ -31,36 +31,6 @@ const formatToVND = number => {
         <div class="p-6 max-w-7xl mx-auto">
             <div class="gap-6 mb-8">
                 <div
-                        class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
-                >
-                    <div class="p-4">
-                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Buy <span class="text-green-500">{{ formatToVND(profit.buy_price * profit.trade.qty * vnd) }}</span>
-                        </p>
-                    </div>
-                </div>
-
-                <div
-                    class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
-                >
-                    <div class="p-4">
-                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Sell <span class="text-red-500">{{ formatToVND(profit.sell_price * profit.trade.qty * vnd) }}</span>
-                        </p>
-                    </div>
-                </div>
-
-                <div
-                    class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
-                >
-                    <div class="p-4">
-                        <p class="flex justify-between text-md font-semibold text-gray-700 dark:text-gray-200">
-                            Duration <span class="text-white">{{ profit.duration_readable }}</span>
-                        </p>
-                    </div>
-                </div>
-
-                <div
                     class="mb-4 min-w-0 rounded-lg shadow-xs overflow-hidden bg-white dark:bg-gray-800"
                 >
                     <div class="p-4">
