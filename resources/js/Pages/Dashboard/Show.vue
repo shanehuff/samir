@@ -10,7 +10,7 @@ defineProps({
     dealsCount: Number,
     upTime: String,
     incomes: String,
-    incomesPerYear: String,
+    apy: String,
     revenue: String,
     avgRoe: String,
     totalBuy: String,
@@ -37,12 +37,12 @@ const isShowIncomes = ref(false);
                     <div class="p-4">
                         <div>
                             <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-                                Revenue & Estimated incomes per year (VND)
+                                Revenue & APY
                             </p>
                             <p class="flex justify-between font-semibold text-gray-700 dark:text-gray-200">
                                 <span @click="isShowIncomes = true" class="cursor-pointer text-green-500">+{{ revenue }} 💰</span>
 
-                                <span class="text-blue-500 flex-shrink-0">+{{ incomesPerYear }} 💨</span>
+                                <span class="text-blue-500 flex-shrink-0">+{{ apy }} 📈</span>
                             </p>
                         </div>
                     </div>

@@ -38,6 +38,7 @@ class DashboardController
         $incomes = (float)$this->toVND(Income::all()->sum('income'));
         $netProfit = (float)$this->toVND($profits->sum('net_profit'));
         $fee = (float)$this->toVND($profits->sum('fee'));
+        $apy = (($profits->sum('net_profit') + Income::all()->sum('income')) / $buys->sum('quote_qty') * 100)  / $this->getDays($profits->min('created_at')) * 365;
 
         return Jetstream::inertia()->render($request, 'Dashboard/Show', [
             'netProfit' => number_format($netProfit),
@@ -45,7 +46,7 @@ class DashboardController
             'dealsCount' => $profits->count(),
             'upTime' => $this->getUpTime($profits->min('created_at')),
             'incomes' => number_format($incomes),
-            'incomesPerYear' => number_format(($netProfit - $fee + $incomes) / $this->uptimeInHours($profits->min('created_at')) * 24 * 365),
+            'apy' => number_format($apy, 2) . '%',
             'revenue' => number_format($netProfit + $fee + $incomes),
             'avgRoe' => number_format($profits->avg('roe'), 2) . '%',
             'totalBuy' => number_format($this->toVND($buys->sum('quote_qty'))),
@@ -75,5 +76,10 @@ class DashboardController
     private function uptimeInHours(mixed $min)
     {
         return $min->diffInHours(now());
+    }
+
+    private function getDays(mixed $min): float
+    {
+        return ceil($min->diffInDays(now()));
     }
 }
