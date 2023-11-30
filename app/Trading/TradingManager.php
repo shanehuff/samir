@@ -161,7 +161,7 @@ class TradingManager
 
     private static function minSize(): float
     {
-        return round(6 / self::currentPrice(), 2);
+        return round(12 / self::currentPrice(), 2);
     }
 
     private static function currentPrice(): float
@@ -386,7 +386,7 @@ class TradingManager
     }
 
     /** @noinspection DuplicatedCode */
-    private static function shouldOpenLong(): bool
+    public static function shouldOpenLong(): bool
     {
         if(self::binance()->hasLongProfit()) {
             return false;
