@@ -11,6 +11,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Inertia\Response;
 use Laravel\Jetstream\Jetstream;
+use Illuminate\Support\Number;
 
 class DashboardController
 {
@@ -35,28 +36,28 @@ class DashboardController
             ->where('side', Order::SIDE_SELL)
             ->get();
 
-        $incomes = (float)$this->toVND(Income::all()->sum('income'));
-        $netProfit = (float)$this->toVND($profits->sum('net_profit'));
-        $fee = (float)$this->toVND($profits->sum('fee'));
+        $incomes = Income::all()->sum('income');
+        $netProfit = $profits->sum('net_profit');
+        $fee = $profits->sum('fee');
         $apy = (($profits->sum('net_profit') + Income::all()->sum('income')) / $buys->sum('quote_qty') * 100)  / $this->getDays($profits->min('created_at')) * 365;
 
         return Jetstream::inertia()->render($request, 'Dashboard/Show', [
-            'netProfit' => number_format($netProfit),
-            'fee' => number_format($fee),
+            'netProfit' => $this->toVND($netProfit),
+            'fee' => $this->toVND($fee),
             'dealsCount' => $profits->count(),
             'upTime' => $this->getUpTime($profits->min('created_at')),
-            'incomes' => number_format($incomes),
+            'incomes' => $this->toVND($incomes),
             'apy' => number_format($apy, 2) . '%',
-            'revenue' => number_format($netProfit + $fee + $incomes),
+            'revenue' => $this->toVND($netProfit + $fee + $incomes),
             'avgRoe' => number_format($profits->avg('roe'), 2) . '%',
-            'totalBuy' => number_format($this->toVND($buys->sum('quote_qty'))),
-            'totalSell' => number_format($this->toVND($sells->sum('quote_qty'))),
+            'totalBuy' => $this->toVND($buys->sum('quote_qty')),
+            'totalSell' => $this->toVND($sells->sum('quote_qty')),
         ]);
     }
 
     private function toVND($amount): string
     {
-        return $amount * $this->vnd;
+        return Number::abbreviate($amount * $this->vnd);
     }
 
     private function tryToLoadVND(): void

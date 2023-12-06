@@ -6,6 +6,7 @@ use App\Services\Keisha;
 use App\Trading\Profit;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Number;
 use Inertia\Response;
 use Laravel\Jetstream\Jetstream;
 
@@ -37,7 +38,7 @@ class DealsController
 
     private function toVND($amount): string
     {
-        return number_format($amount * $this->vnd, 0);
+        return Number::abbreviate($amount * $this->vnd);
     }
 
     private function tryToLoadVND(): void
