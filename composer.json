@@ -13,6 +13,7 @@
     "jaggedsoft/php-binance-api": "master",
     "laravel/framework": "^10.10",
     "laravel/jetstream": "^4.1.2",
+    "laravel/pulse": "^1.0@beta",
     "laravel/sanctum": "^3.3",
     "laravel/tinker": "^2.8",
     "tightenco/ziggy": "^1.8.1"
