@@ -162,7 +162,7 @@ return [
         ],
 
         Recorders\Servers::class => [
-            'server_name' => env('PULSE_SERVER_NAME', gethostname()),
+            'server_name' => env('PULSE_SERVER_NAME', env('PULSE_DOMAIN', gethostname())),
             'directories' => explode(':', env('PULSE_SERVER_DIRECTORIES', '/')),
         ],
 
