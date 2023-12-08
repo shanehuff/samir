@@ -3,9 +3,7 @@
 use App\Http\Controllers\Api\GetBalancesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HandleTradingviewHookController;
-use App\Http\Controllers\Api\GetCommanderProfitController;
-use App\Http\Controllers\Api\GetCommanderRiskController;
-use App\Http\Controllers\Api\ProfitController;
+use App\Http\Controllers\Api\HandleTelegramHookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +19,5 @@ use App\Http\Controllers\Api\ProfitController;
 Route::middleware('auth.tradingview')->post('/tradingview', HandleTradingviewHookController::class);
 Route::middleware('auth.tradingview')
     ->post('/balances', GetBalancesController::class);
+
+Route::post('/telegram', HandleTelegramHookController::class);

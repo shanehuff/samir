@@ -10,6 +10,7 @@
     "doctrine/dbal": "^3.0",
     "guzzlehttp/guzzle": "^7.2",
     "inertiajs/inertia-laravel": "^0.6.3",
+    "irazasyed/telegram-bot-sdk": "^3.13",
     "jaggedsoft/php-binance-api": "master",
     "laravel/framework": "^10.10",
     "laravel/jetstream": "^4.1.2",
