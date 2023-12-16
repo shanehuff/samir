@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Inertia\Response;
 use Laravel\Jetstream\Jetstream;
+use Illuminate\Support\Number;
 
 class IncomesController
 {
@@ -37,7 +38,7 @@ class IncomesController
 
     private function toVND($amount): string
     {
-        return number_format($amount * $this->vnd, 0);
+        return Number::abbreviate($amount * $this->vnd);
     }
 
     private function tryToLoadVND(): void

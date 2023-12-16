@@ -27,7 +27,7 @@
       "resources/js/Pages/Profit/Show.vue"
     ],
     "css": [
-      "assets/app.8379090c.css"
+      "assets/app.c61a9fc8.css"
     ]
   },
   "resources/js/Pages/API/Index.vue": {
@@ -426,7 +426,7 @@
     ]
   },
   "resources/js/app.css": {
-    "file": "assets/app.8379090c.css",
+    "file": "assets/app.c61a9fc8.css",
     "src": "resources/js/app.css"
   }
 }
