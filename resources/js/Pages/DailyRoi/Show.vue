@@ -26,8 +26,15 @@ defineProps({
                 🗓 {{ deal.day }}
               </span>
 
-              <span class="text-sm font-semibold text-green-600 dark:text-green-300">
-                  <span v-if="parseInt(deal.net_profit) > 0">+</span>{{ deal.net_profit }} 💰
+              <span>
+                  <span v-if="parseInt(deal.net_profit) > 0" class="text-sm font-semibold text-green-700 dark:text-green-500">
+                      + {{ deal.net_profit }} 💰
+                  </span>
+
+                  <span v-else class="text-sm font-semibold text-red-700 dark:text-red-500">
+                    {{ deal.net_profit }} 💸
+                  </span>
+                  
                   <span class="text-gray-400">{{ deal.count }} 🤝</span>
               </span>
           </div>
