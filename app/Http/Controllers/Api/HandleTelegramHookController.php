@@ -11,6 +11,7 @@ use Telegram\Bot\Objects\Update;
 use Telegram\Bot\Api;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Objects\Message;
+use App\Services\Livia;
 
 class HandleTelegramHookController
 {
@@ -23,7 +24,12 @@ class HandleTelegramHookController
         $chatId = $request->input('message.chat.id');
         $message = $request->input('message.text');
 
-        if(str_contains($message, 'Create Account')) {
+
+        if(str_contains($message, 'JSON Structure:')) {
+            $livia = new Livia();
+            $livia->sendPrompt($message);
+            $response = $this->replyWithMessage($chatId, 'Sent request to Livia.');
+        } elseif(str_contains($message, 'Create Account')) {
 
             $response = $this->replyWithMessage($chatId, 'Please enter your name:');
 
