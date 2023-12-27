@@ -94,4 +94,11 @@ class Livia
 
         info($response->getBody());
     }
+
+    public function sendUpscale()
+    {
+        $response = $this->sendRequest('PUT', '/api/prompt-status');
+
+        info($response->getBody());
+    }
 }

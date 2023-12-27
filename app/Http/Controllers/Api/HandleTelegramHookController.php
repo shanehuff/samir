@@ -37,9 +37,11 @@ class HandleTelegramHookController
 
             return;
 
-        } elseif (str_contains($message, 'Tell me a joke')) {
+        } elseif (str_contains($message, '/upscale')) {
 
-            $this->replyWithJoke($chatId);
+            $livia = new Livia();
+            $livia->sendUpscale();
+            $response = $this->replyWithMessage($chatId, 'Sent request to Livia.');
 
         } elseif (str_contains($message, 'Profit today?')) {
 
