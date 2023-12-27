@@ -375,14 +375,14 @@ class TradingManager
                 ->first();
 
         // Retrieve latest short order with status NEW
-        $noPendingShortOrder = null === Order::query()
-                ->where('status', '=', Order::STATUS_NEW)
-                ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
-                ->where('side', '=', Order::SIDE_SELL)
-                ->orderByDesc('update_time')
-                ->first();
+//        $noPendingShortOrder = null === Order::query()
+//                ->where('status', '=', Order::STATUS_NEW)
+//                ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
+//                ->where('side', '=', Order::SIDE_SELL)
+//                ->orderByDesc('update_time')
+//                ->first();
 
-        return $noShortOrderFilledLastHour && $noPendingShortOrder;
+        return $noShortOrderFilledLastHour;
     }
 
     /** @noinspection DuplicatedCode */
@@ -402,14 +402,14 @@ class TradingManager
                 ->first();
 
         // Retrieve latest long order with status NEW
-        $noPendingLongOrder = null === Order::query()
-                ->where('status', '=', Order::STATUS_NEW)
-                ->where('position_side', '=', Order::POSITION_SIDE_LONG)
-                ->where('side', '=', Order::SIDE_BUY)
-                ->orderByDesc('update_time')
-                ->first();
+//        $noPendingLongOrder = null === Order::query()
+//                ->where('status', '=', Order::STATUS_NEW)
+//                ->where('position_side', '=', Order::POSITION_SIDE_LONG)
+//                ->where('side', '=', Order::SIDE_BUY)
+//                ->orderByDesc('update_time')
+//                ->first();
 
-        return $noLongOrderFilledLastHour && $noPendingLongOrder;
+        return $noLongOrderFilledLastHour;
     }
 
     private static function last2Hours(): int
