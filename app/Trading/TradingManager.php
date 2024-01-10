@@ -140,7 +140,7 @@ class TradingManager
     {
         $binanceOrder = self::binance()->openLong(
             self::minSize(),
-            self::currentPrice() - 0.1,
+            self::currentPrice() - 0.02,
         );
 
         self::upsertOrder($binanceOrder);
@@ -153,7 +153,7 @@ class TradingManager
     {
         $binanceOrder = self::binance()->openShort(
             self::minSize(),
-            self::currentPrice() + 0.1,
+            self::currentPrice() + 0.02,
         );
 
         self::upsertOrder($binanceOrder);

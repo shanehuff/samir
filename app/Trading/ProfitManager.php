@@ -25,6 +25,7 @@ class ProfitManager
             'duration' => abs($buy->time - $sell->time),
             'buy_price' => $buy->price,
             'sell_price' => $sell->price,
+            'symbol' => $sell->symbol
         ];
 
         self::upsertProfit($profit);
@@ -35,7 +36,7 @@ class ProfitManager
         Profit::query()->upsert(
             $data,
             ['trade_id'],
-            ['realized_profit', 'fee', 'net_profit', 'roe', 'created_at', 'duration', 'buy_price', 'sell_price', 'duration_readable']
+            ['realized_profit', 'fee', 'net_profit', 'roe', 'created_at', 'duration', 'buy_price', 'sell_price', 'duration_readable', 'symbol']
         );
     }
 

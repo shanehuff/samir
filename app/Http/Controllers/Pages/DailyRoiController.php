@@ -23,6 +23,7 @@ class DailyRoiController
     public function __invoke(Request $request): Response
     {
         $profits = Profit::query()
+            ->where('symbol', 'ETHUSDT')
             ->orderByDesc('id')
             ->get();
 
@@ -31,6 +32,7 @@ class DailyRoiController
         });
 
         $groupedIncomes = Income::query()
+            ->where('symbol', 'ETHUSDT')
             ->orderByDesc('id')
             ->get()
             ->groupBy(function ($income) {

@@ -21,6 +21,7 @@ class ShowProfitController
     public function __invoke($profitId): Response
     {
         $profit = Profit::query()
+            ->where('symbol', 'ETHUSDT')
             ->with('trade')
             ->where('id', $profitId)
             ->firstOrFail();

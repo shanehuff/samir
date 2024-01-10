@@ -22,6 +22,7 @@ class DealsController
     public function __invoke(Request $request): Response
     {
         $profits = Profit::query()
+            ->where('symbol', 'ETHUSDT')
             ->orderByDesc('id')
             ->limit(40)
             ->get();

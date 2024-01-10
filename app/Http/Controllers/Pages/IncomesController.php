@@ -22,6 +22,7 @@ class IncomesController
     public function __invoke(Request $request): Response
     {
         $incomes = Income::query()
+            ->where('symbol', 'ETHUSDT')
             ->orderByDesc('id')
             ->limit(40)
             ->get();

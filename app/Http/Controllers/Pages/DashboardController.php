@@ -25,29 +25,32 @@ class DashboardController
     public function __invoke(Request $request): Response
     {
         $profits = Profit::query()
+            ->where('symbol', 'ETHUSDT')
             ->orderByDesc('id')
             ->get();
 
         $buys = Trade::query()
+            ->where('symbol', 'ETHUSDT')
             ->where('side', Order::SIDE_BUY)
             ->get();
 
         $sells = Trade::query()
+            ->where('symbol', 'ETHUSDT')
             ->where('side', Order::SIDE_SELL)
             ->get();
 
-        $incomes = Income::all()->sum('income');
+        $incomes = Income::where('symbol', 'ETHUSDT')->sum('income');
         $netProfit = $profits->sum('net_profit');
         $fee = $profits->sum('fee');
-        $apy = (($profits->sum('net_profit') + Income::all()->sum('income')) / $buys->sum('quote_qty') * 100)  / $this->getDays($profits->min('created_at')) * 365;
+        //$apy = (($profits->sum('net_profit') + Income::all()->sum('income')) / $buys->sum('quote_qty') * 100)  / $this->getDays($profits->min('created_at')) * 365;
 
         return Jetstream::inertia()->render($request, 'Dashboard/Show', [
             'netProfit' => $this->toVND($netProfit),
             'fee' => $this->toVND($fee),
             'dealsCount' => $profits->count(),
-            'upTime' => $this->getUpTime($profits->min('created_at')),
+            //'upTime' => $this->getUpTime($profits->min('created_at')),
             'incomes' => $this->toVND($incomes),
-            'apy' => number_format($apy, 2) . '%',
+            //'apy' => number_format($apy, 2) . '%',
             'revenue' => $this->toVND($netProfit + $fee + $incomes),
             'avgRoe' => number_format($profits->avg('roe'), 2) . '%',
             'totalBuy' => $this->toVND($buys->sum('quote_qty')),
