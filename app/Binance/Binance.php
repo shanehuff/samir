@@ -64,7 +64,7 @@ class Binance
     /**
      * @throws Exception
      */
-    public function orders(string $symbol = 'BNBUSDT', ?string $updateTime = null): array
+    public function orders(string $symbol = 'ETHUSDT', ?string $updateTime = null): array
     {
         return $this->client->allOrders($symbol, $updateTime);
     }

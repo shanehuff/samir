@@ -45,7 +45,7 @@ class FuturesClient extends API
             'GET',
             [
                 'fapi' => true,
-                'symbol' => 'BNBUSDT',
+                'symbol' => 'ETHUSDT',
                 'startTime' => $startTime
             ],
             true
@@ -62,7 +62,7 @@ class FuturesClient extends API
             'GET',
             [
                 'fapi' => true,
-                'symbol' => 'BNBUSDT'
+                'symbol' => 'ETHUSDT'
             ],
             true
         ));
@@ -78,7 +78,7 @@ class FuturesClient extends API
             'POST',
             [
                 'fapi' => true,
-                'symbol' => 'BNBUSDT',
+                'symbol' => 'ETHUSDT',
                 'side' => 'BUY',
                 'quantity' => $size,
                 'type' => 'LIMIT',
@@ -90,7 +90,7 @@ class FuturesClient extends API
         );
     }
 
-    public function orders(string $symbol = 'BNBUSDT', $limit = 500, $fromOrderId = 0, $params = []): array
+    public function orders(string $symbol = 'ETHUSDT', $limit = 500, $fromOrderId = 0, $params = []): array
     {
         return $this->httpRequest(
             'fapi/v1/openOrders',
@@ -106,7 +106,7 @@ class FuturesClient extends API
     /**
      * @throws Exception
      */
-    public function allOrders(string $symbol = 'BNBUSDT', ?string $updateTime = null): array
+    public function allOrders(string $symbol = 'ETHUSDT', ?string $updateTime = null): array
     {
         return $this->httpRequest(
             'fapi/v1/allOrders',
@@ -130,7 +130,7 @@ class FuturesClient extends API
             'DELETE',
             [
                 'fapi' => true,
-                'symbol' => 'BNBUSDT'
+                'symbol' => 'ETHUSDT'
             ],
             true
         );
@@ -146,7 +146,7 @@ class FuturesClient extends API
             'GET',
             [
                 'fapi' => true,
-                'symbol' => 'BNBUSDT',
+                'symbol' => 'ETHUSDT',
                 'orderId' => $orderId
             ],
             true
@@ -163,7 +163,7 @@ class FuturesClient extends API
             'POST',
             [
                 'fapi' => true,
-                'symbol' => 'BNBUSDT',
+                'symbol' => 'ETHUSDT',
                 'side' => 'SELL',
                 'quantity' => $size,
                 'type' => 'LIMIT',
@@ -185,7 +185,7 @@ class FuturesClient extends API
             'POST',
             [
                 'fapi' => true,
-                'symbol' => 'BNBUSDT',
+                'symbol' => 'ETHUSDT',
                 'side' => 'SELL',
                 'quantity' => $size,
                 'type' => 'LIMIT',
@@ -207,7 +207,7 @@ class FuturesClient extends API
             'POST',
             [
                 'fapi' => true,
-                'symbol' => 'BNBUSDT',
+                'symbol' => 'ETHUSDT',
                 'side' => 'BUY',
                 'quantity' => $size,
                 'type' => 'LIMIT',
@@ -229,7 +229,7 @@ class FuturesClient extends API
             'GET',
             [
                 'fapi' => true,
-                'symbol' => 'BNBUSDT',
+                'symbol' => 'ETHUSDT',
                 'incomeType' => 'FUNDING_FEE',
                 'startTime' => $time
             ],

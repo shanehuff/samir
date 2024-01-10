@@ -114,7 +114,7 @@ class TradingManager
 
             function ($latestOrder) {
                 if ($latestOrder) {
-                    $orders = self::binance()->orders('BNBUSDT', $latestOrder->update_time);
+                    $orders = self::binance()->orders('ETHUSDT', $latestOrder->update_time);
 
                     foreach ($orders as $order) {
                         $order['cumQty'] = $order['executedQty'];
@@ -161,7 +161,7 @@ class TradingManager
 
     private static function minSize(): float
     {
-        return round(12 / self::currentPrice(), 2);
+        return round(24 / self::currentPrice(), 2);
     }
 
     private static function currentPrice(): float
@@ -370,17 +370,10 @@ class TradingManager
                 ->where('status', '=', Order::STATUS_FILLED)
                 ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
                 ->where('side', '=', Order::SIDE_SELL)
+                ->where('symbol', '=', 'ETHUSDT')
                 ->where('update_time', '>=', self::last2Hours())
                 ->orderByDesc('update_time')
                 ->first();
-
-        // Retrieve latest short order with status NEW
-//        $noPendingShortOrder = null === Order::query()
-//                ->where('status', '=', Order::STATUS_NEW)
-//                ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
-//                ->where('side', '=', Order::SIDE_SELL)
-//                ->orderByDesc('update_time')
-//                ->first();
 
         return $noShortOrderFilledLastHour;
     }
@@ -397,17 +390,10 @@ class TradingManager
                 ->where('status', '=', Order::STATUS_FILLED)
                 ->where('position_side', '=', Order::POSITION_SIDE_LONG)
                 ->where('side', '=', Order::SIDE_BUY)
+                ->where('symbol', '=', 'ETHUSDT')
                 ->where('update_time', '>=', self::last2Hours())
                 ->orderByDesc('update_time')
                 ->first();
-
-        // Retrieve latest long order with status NEW
-//        $noPendingLongOrder = null === Order::query()
-//                ->where('status', '=', Order::STATUS_NEW)
-//                ->where('position_side', '=', Order::POSITION_SIDE_LONG)
-//                ->where('side', '=', Order::SIDE_BUY)
-//                ->orderByDesc('update_time')
-//                ->first();
 
         return $noLongOrderFilledLastHour;
     }
