@@ -29,7 +29,13 @@ defineProps({
 
               <span class="text-sm font-semibold text-gray-700 dark:text-green-300">
                   <a :href="route('profits.show', deal.id)">
-                      <span v-if="parseInt(deal.net_profit) > 0">+</span>{{ deal.net_profit }} 💰
+                      <span v-if="parseInt(deal.net_profit) > 0" class="text-green-700 dark:text-green-500">
+                          + {{ deal.net_profit }} 💰
+                      </span>
+
+                      <span v-else class="text-red-700 dark:text-red-500">
+                        {{ deal.net_profit }} 💸
+                      </span>
                   </a>
               </span>
           </div>
