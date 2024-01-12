@@ -206,10 +206,11 @@ class TradingManager
                 'self_trade_prevention_mode' => $data['selfTradePreventionMode'],
                 'good_till_date' => $data['goodTillDate'],
                 'update_time' => $data['updateTime'],
+                'champion_id' => 1
             ]
         ],
             ['id'],
-            ['status', 'avg_price', 'cum_qty', 'cum_quote', 'executed_qty', 'update_time']
+            ['status', 'avg_price', 'cum_qty', 'cum_quote', 'executed_qty', 'update_time', 'champion_id']
         );
     }
 

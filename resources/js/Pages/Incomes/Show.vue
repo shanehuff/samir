@@ -24,7 +24,7 @@ defineProps({
                 >
                     <div class="p-4 flex justify-between">
                       <span class="text-sm font-semibold text-gray-700 dark:text-gray-400">
-                        🎉 {{ income.readable_time }}
+                        🎉 {{ income.day }}
                       </span>
 
                       <span v-if="parseInt(income.income) > 0" class="text-sm font-semibold text-green-700 dark:text-green-500">
