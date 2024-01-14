@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
+use App\Trading\ChampionManager;
+
 class AccountCommand extends Command
 {
     /**
@@ -13,12 +15,21 @@ class AccountCommand extends Command
      */
     protected $signature = 'account';
 
+    protected $championManager;
+
     /**
      * The console command description.
      *
      * @var string
      */
     protected $description = 'Interacts With Accounts';
+
+    public function __construct(ChampionManager $championManager)
+    {
+        $this->championManager = $championManager;
+
+        parent::__construct();
+    }
 
     /**
      * Execute the console command.
@@ -28,6 +39,6 @@ class AccountCommand extends Command
      */
     public function handle(): void
     {
-
+        $this->championManager->sync(1);
     }
 }

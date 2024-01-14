@@ -30,6 +30,6 @@ class FuturesImport extends Command
      */
     public function handle(): void
     {
-        TradingManager::import();
+        TradingManager::importRecentOrders();
     }
 }

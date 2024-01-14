@@ -5,6 +5,7 @@ namespace App\Trading;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
@@ -33,5 +34,10 @@ class Order extends Model
     public function champion(): BelongsTo
     {
         return $this->belongsTo(Champion::class);
+    }
+
+    public function trades(): HasMany
+    {
+        return $this->hasMany(Trade::class, 'order_id', 'order_id');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Pages\ChampionController;
 use App\Http\Controllers\Pages\DealsController;
 use App\Http\Controllers\Pages\DashboardController;
 use App\Http\Controllers\Pages\DailyRoiController;
@@ -27,3 +28,4 @@ Route::get('/daily-roi', DailyRoiController::class);
 Route::get('/monthly-roi', MonthlyRoiController::class);
 Route::get('/profits/{profitId}', ShowProfitController::class)->name('profits.show');
 Route::get('/incomes', IncomesController::class);
+Route::get('/champions/{id}', ChampionController::class)->name('champions.show');
