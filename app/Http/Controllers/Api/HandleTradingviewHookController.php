@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Trading\Champion;
 use App\Trading\TradingManager;
 use App\Http\Controllers\Controller;
 use App\Tradingview\InteractsWithTradingviewAlerts;
@@ -22,6 +23,13 @@ class HandleTradingviewHookController extends Controller
         ]);
 
         info(json_encode($request->payloads));
+
+        /** @var Champion $champion */
+        $champion = Champion::query()->find(1);
+
+        info($champion->toJson());
+
+        TradingManager::useChampion($champion);
 
         TradingManager::importRecentOrders();
 

@@ -10,6 +10,8 @@ class TradingManager
 {
     private static ?Binance $binance = null;
 
+    private static $champion = null;
+
     /**
      * @throws Exception
      */
@@ -27,6 +29,30 @@ class TradingManager
         }
         info('Handle Down End');
     }
+
+    /**
+     * @throws Exception
+     */
+    public static function handleDownDev(): void
+    {
+        if(is_null(self::$champion)) {
+            throw new Exception('Dev: No champion.');
+        }
+
+        info('Dev: Handle Down');
+        if (self::binance()->hasShortPosition()) {
+            info('Has short position');
+            self::maybeTakeShortProfit();
+        }
+
+        if (self::shouldOpenLong()) {
+            info('Should open long');
+            self::openLong();
+        }
+        info('Handle Down End');
+    }
+
+
 
     /**
      * @throws Exception
@@ -140,7 +166,7 @@ class TradingManager
     {
         $binanceOrder = self::binance()->openLong(
             self::minSize(),
-            self::currentPrice() - 0.02,
+            self::currentPrice() - 1,
         );
 
         self::upsertOrder($binanceOrder);
@@ -153,7 +179,7 @@ class TradingManager
     {
         $binanceOrder = self::binance()->openShort(
             self::minSize(),
-            self::currentPrice() + 0.02,
+            self::currentPrice() + 1,
         );
 
         self::upsertOrder($binanceOrder);
@@ -216,12 +242,7 @@ class TradingManager
 
     public static function test(): void
     {
-        dd(Order::query()
-            ->where('status', '=', Order::STATUS_FILLED)
-            ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
-            ->where('avg_price', '>=', self::currentPrice())
-            ->orderByDesc('update_time')
-            ->first());
+        dd(self::$champion);
     }
 
     /**
@@ -315,7 +336,7 @@ class TradingManager
         tap(self::getClosableLongOrder(), function ($order) {
             $binanceOrder = self::binance()->closeLong(
                 $order->orig_qty,
-                self::currentPrice() + 0.1,
+                self::currentPrice() + 1,
             );
 
             self::upsertOrder($binanceOrder);
@@ -330,7 +351,7 @@ class TradingManager
         tap(self::getClosableShortOrder(), function ($order) {
             $binanceOrder = self::binance()->closeShort(
                 $order->orig_qty,
-                self::currentPrice() - 0.1,
+                self::currentPrice() - 1,
             );
 
             self::upsertOrder($binanceOrder);
@@ -484,5 +505,10 @@ class TradingManager
             ['tran_id'],
             ['symbol', 'income_type', 'income', 'asset', 'time', 'trade_id', 'info', 'created_at']
         );
+    }
+
+    public static function useChampion(Champion $champion): void
+    {
+        self::$champion = $champion;
     }
 }

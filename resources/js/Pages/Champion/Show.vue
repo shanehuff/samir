@@ -1,5 +1,5 @@
 <template>
-    <div class="champion-details flex h-screen" :style="{ backgroundImage: 'url(' + background + ')', backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' }">
+    <div class="champion-details flex h-screen" :style="{ backgroundImage: 'url(' + background + ')', backgroundPosition: 'top center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' }">
         <!-- Display stats on the left -->
         <div class="stats left flex-1 p-4 bg-gray-200 bg-opacity-50 text-sm">
             <ul>

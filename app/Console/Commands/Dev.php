@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Trading\Champion;
 use App\Trading\TradingManager;
 use Exception;
 use Illuminate\Console\Command;
@@ -30,6 +31,11 @@ class Dev extends Command
      */
     public function handle(): void
     {
-        TradingManager::importRecentOrders();
+        /** @var Champion $champion */
+        $champion = Champion::query()->find(1);
+
+        TradingManager::useChampion($champion);
+
+        TradingManager::handleDownDev();
     }
 }
