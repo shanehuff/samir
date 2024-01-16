@@ -4,15 +4,15 @@
         <div class="stats left flex-1 p-4 bg-gray-200 bg-opacity-50 text-sm">
             <ul>
                 <li class="flex justify-between">
-                    <span class="py-2">👤</span>
+                    <span class="inline-block bg-purple-800 text-white px-4 py-2 rounded-full shadow py-2">👤</span>
                     <span class="inline-block bg-purple-800 text-white px-4 py-2 rounded-full shadow">{{ champion.archetype }}</span>
                 </li>
                 <li class="flex justify-between mt-4">
-                    <span>❤️</span>
-                    <HealthPointBar :remaining-h-p="champion.remain_capital" :full-h-p="champion.capital"></HealthPointBar>
+                    <span class="inline-block bg-green-600 text-white px-4 py-2 rounded-full shadow py-2">💼</span>
+                    <span class="inline-block bg-green-600 text-white px-4 py-2 rounded-full shadow">${{ champion.capital }}</span>
                 </li>
-                <li class="flex justify-between mt-1">
-                    <span class="py-2">🎂</span>
+                <li class="flex justify-between mt-4">
+                    <span class="inline-block bg-gray-700 text-white px-4 py-2 rounded-full shadow py-2">🎂</span>
                     <span class="whitespace-nowrap text-xs md:text-sm inline-block bg-gray-700 text-white px-4 py-2 rounded-full shadow">{{ champion.age }}</span>
                 </li>
             </ul>
@@ -29,15 +29,15 @@
         <div class="stats right flex-1 p-4 bg-gray-300 bg-opacity-50 text-sm">
             <ul>
                 <li class="flex justify-between">
-                    <span class="py-2">💼</span>
-                    <span class="inline-block bg-green-600 text-white px-4 py-2 rounded-full shadow">${{ champion.onduty }}</span>
+                    <span class="inline-block bg-red-100 text-white px-4 py-2 rounded-full shadow">❤️</span>
+                    <HealthPointBar :remaining-h-p="champion.remain_capital" :full-h-p="champion.capital"></HealthPointBar>
+                </li>
+                <li class="flex justify-between mt-2">
+                    <span class="inline-block bg-indigo-800 text-white px-4 py-2 rounded-full shadow py-2">💪</span>
+                    <span class="inline-block bg-indigo-800 text-white px-4 py-2 rounded-full shadow">{{ champion.grind }}</span>
                 </li>
                 <li class="flex justify-between mt-4">
-                    <span class="py-2">💪</span>
-                    <span class="inline-block bg-indigo-800 text-white px-4 py-2 rounded-full shadow">{{ champion.roi }}</span>
-                </li>
-                <li class="flex justify-between mt-4">
-                    <span class="py-2">🏺</span>
+                    <span class="py-2 inline-block bg-amber-800 text-white px-4 py-2 rounded-full shadow">🏺</span>
                     <span class="inline-block bg-amber-800 text-white px-4 py-2 rounded-full shadow">${{ champion.profit }}</span>
                 </li>
             </ul>

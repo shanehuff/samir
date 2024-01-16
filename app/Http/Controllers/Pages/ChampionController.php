@@ -23,7 +23,8 @@ class ChampionController
                 'name' => $champion->name,
                 'archetype' => $champion->archetype,
                 'onduty' => number_format($champion->onduty, 2),
-                'age' => $champion->created_at->diffForHumans()
+                'age' => $champion->created_at->diffForHumans(),
+                'grind' => $champion->grind
             ]
         ]);
     }
