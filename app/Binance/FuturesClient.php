@@ -8,6 +8,13 @@ use Illuminate\Support\Collection;
 
 class FuturesClient extends API
 {
+    protected ?string $symbol = null;
+
+    public function useSymbol($symbol): void
+    {
+        $this->symbol = $symbol;
+    }
+
     public function account(): array
     {
         return $this->httpRequest(
@@ -45,7 +52,7 @@ class FuturesClient extends API
             'GET',
             [
                 'fapi' => true,
-                'symbol' => 'ETHUSDT',
+                'symbol' => $this->symbol,
                 'startTime' => $startTime
             ],
             true
@@ -62,7 +69,7 @@ class FuturesClient extends API
             'GET',
             [
                 'fapi' => true,
-                'symbol' => 'ETHUSDT'
+                'symbol' => $this->symbol
             ],
             true
         ));
@@ -78,7 +85,7 @@ class FuturesClient extends API
             'POST',
             [
                 'fapi' => true,
-                'symbol' => 'ETHUSDT',
+                'symbol' => $this->symbol,
                 'side' => 'BUY',
                 'quantity' => $size,
                 'type' => 'LIMIT',
@@ -90,14 +97,14 @@ class FuturesClient extends API
         );
     }
 
-    public function orders(string $symbol = 'ETHUSDT', $limit = 500, $fromOrderId = 0, $params = []): array
+    public function orders(string $symbol = null, $limit = 500, $fromOrderId = 0, $params = []): array
     {
         return $this->httpRequest(
             'fapi/v1/openOrders',
             'GET',
             [
                 'fapi' => true,
-                'symbol' => $symbol
+                'symbol' => $symbol ?: $this->symbol
             ],
             true
         );
@@ -106,14 +113,14 @@ class FuturesClient extends API
     /**
      * @throws Exception
      */
-    public function allOrders(string $symbol = 'ETHUSDT', ?string $updateTime = null): array
+    public function allOrders(string $symbol = null, ?string $updateTime = null): array
     {
         return $this->httpRequest(
             'fapi/v1/allOrders',
             'GET',
             [
                 'fapi' => true,
-                'symbol' => $symbol,
+                'symbol' => $symbol ?: $this->symbol,
                 'startTime' => $updateTime - 1000
             ],
             true
@@ -130,7 +137,7 @@ class FuturesClient extends API
             'DELETE',
             [
                 'fapi' => true,
-                'symbol' => 'ETHUSDT'
+                'symbol' => $this->symbol
             ],
             true
         );
@@ -146,7 +153,7 @@ class FuturesClient extends API
             'GET',
             [
                 'fapi' => true,
-                'symbol' => 'ETHUSDT',
+                'symbol' => $this->symbol,
                 'orderId' => $orderId
             ],
             true
@@ -163,7 +170,7 @@ class FuturesClient extends API
             'POST',
             [
                 'fapi' => true,
-                'symbol' => 'ETHUSDT',
+                'symbol' => $this->symbol,
                 'side' => 'SELL',
                 'quantity' => $size,
                 'type' => 'LIMIT',
@@ -185,7 +192,7 @@ class FuturesClient extends API
             'POST',
             [
                 'fapi' => true,
-                'symbol' => 'ETHUSDT',
+                'symbol' => $this->symbol,
                 'side' => 'SELL',
                 'quantity' => $size,
                 'type' => 'LIMIT',
@@ -207,7 +214,7 @@ class FuturesClient extends API
             'POST',
             [
                 'fapi' => true,
-                'symbol' => 'ETHUSDT',
+                'symbol' => $this->symbol,
                 'side' => 'BUY',
                 'quantity' => $size,
                 'type' => 'LIMIT',
@@ -229,7 +236,7 @@ class FuturesClient extends API
             'GET',
             [
                 'fapi' => true,
-                'symbol' => 'ETHUSDT',
+                'symbol' => $this->symbol,
                 'incomeType' => 'FUNDING_FEE',
                 'startTime' => $time
             ],

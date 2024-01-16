@@ -36,6 +36,6 @@ class Dev extends Command
 
         TradingManager::useChampion($champion);
 
-        TradingManager::handleDownDev();
+        TradingManager::currentPrice();
     }
 }

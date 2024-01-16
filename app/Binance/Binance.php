@@ -15,16 +15,19 @@ class Binance
 
     protected ?array $short;
 
+    protected ?string $symbol = null;
+
     /**
      * @throws Exception
      */
-    public function __construct()
+    public function __construct($symbol = null)
     {
         $this->client = new FuturesClient(
             config('services.binance.key'),
             config('services.binance.secret')
         );
-
+        $this->client->useSymbol($symbol);
+        $this->symbol = $symbol;
         $this->positions = $this->client->positions();
         $this->long = $this->positions->get(0);
         $this->short = $this->positions->get(1);
@@ -64,9 +67,9 @@ class Binance
     /**
      * @throws Exception
      */
-    public function orders(string $symbol = 'ETHUSDT', ?string $updateTime = null): array
+    public function orders(string $symbol = null, ?string $updateTime = null): array
     {
-        return $this->client->allOrders($symbol, $updateTime);
+        return $this->client->allOrders($symbol?:$this->symbol, $updateTime);
     }
 
     public function positions(): Collection
@@ -76,22 +79,22 @@ class Binance
 
     public function hasLongPosition(): bool
     {
-        return $this->long['positionAmt'] > 0;
+        return $this->symbol === $this->long['symbol'] && $this->long['positionAmt'] > 0;
     }
 
     public function hasShortPosition(): bool
     {
-        return abs($this->short['positionAmt']) > 0;
+        return $this->symbol === $this->short['symbol'] && abs($this->short['positionAmt']) > 0;
     }
 
     public function hasLongProfit(): bool
     {
-        return $this->long['unRealizedProfit'] > 0;
+        return $this->symbol === $this->long['symbol'] && $this->long['unRealizedProfit'] > 0;
     }
 
     public function hasShortProfit(): bool
     {
-        return $this->short['unRealizedProfit'] > 0;
+        return $this->symbol === $this->short['symbol'] && $this->short['unRealizedProfit'] > 0;
     }
 
     /**

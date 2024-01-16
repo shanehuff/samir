@@ -10,13 +10,14 @@ class TradingManager
 {
     private static ?Binance $binance = null;
 
-    private static $champion = null;
+    private static ?Champion $champion = null;
 
     /**
      * @throws Exception
      */
     public static function handleDown(): void
     {
+        info('Use champion ID: ' . self::$champion->id);
         info('Handle Down');
         if (self::binance()->hasShortPosition()) {
             info('Has short position');
@@ -29,30 +30,6 @@ class TradingManager
         }
         info('Handle Down End');
     }
-
-    /**
-     * @throws Exception
-     */
-    public static function handleDownDev(): void
-    {
-        if(is_null(self::$champion)) {
-            throw new Exception('Dev: No champion.');
-        }
-
-        info('Dev: Handle Down');
-        if (self::binance()->hasShortPosition()) {
-            info('Has short position');
-            self::maybeTakeShortProfit();
-        }
-
-        if (self::shouldOpenLong()) {
-            info('Should open long');
-            self::openLong();
-        }
-        info('Handle Down End');
-    }
-
-
 
     /**
      * @throws Exception
@@ -185,20 +162,29 @@ class TradingManager
         self::upsertOrder($binanceOrder);
     }
 
+    /**
+     * @throws Exception
+     */
     private static function minSize(): float
     {
         return round(24 / self::currentPrice(), 2);
     }
 
-    private static function currentPrice(): float
+    /**
+     * @throws Exception
+     */
+    public static function currentPrice(): float
     {
         return round(self::binance()->getMarkPrice(), 2);
     }
 
+    /**
+     * @throws Exception
+     */
     private static function binance(): ?Binance
     {
         if (!self::$binance) {
-            self::$binance = new Binance();
+            self::$binance = new Binance(self::$champion->symbol);
         }
 
         return self::$binance;
@@ -232,7 +218,7 @@ class TradingManager
                 'self_trade_prevention_mode' => $data['selfTradePreventionMode'],
                 'good_till_date' => $data['goodTillDate'],
                 'update_time' => $data['updateTime'],
-                'champion_id' => 1
+                'champion_id' => self::$champion->id
             ]
         ],
             ['id'],
@@ -358,6 +344,9 @@ class TradingManager
         });
     }
 
+    /**
+     * @throws Exception
+     */
     private static function getClosableLongOrder(): ?object
     {
         return Order::query()
@@ -365,10 +354,14 @@ class TradingManager
             ->where('position_side', '=', Order::POSITION_SIDE_LONG)
             ->where('side', '=', Order::SIDE_BUY)
             ->where('avg_price', '<=', self::currentPrice())
+            ->where('champion_id', '=', self::$champion->id)
             ->orderByDesc('update_time')
             ->first();
     }
 
+    /**
+     * @throws Exception
+     */
     private static function getClosableShortOrder(): ?object
     {
         return Order::query()
@@ -376,11 +369,15 @@ class TradingManager
             ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
             ->where('side', '=', Order::SIDE_SELL)
             ->where('avg_price', '>=', self::currentPrice())
+            ->where('champion_id', '=', self::$champion->id)
             ->orderByDesc('update_time')
             ->first();
     }
 
     /** @noinspection DuplicatedCode */
+    /**
+     * @throws Exception
+     */
     private static function shouldOpenShort(): bool
     {
         if(self::binance()->hasShortProfit()) {
@@ -388,7 +385,7 @@ class TradingManager
         }
 
         // Retrieve latest short order in last 2 hours
-        $noShortOrderFilledLastHour = null === Order::query()
+        return null === Order::query()
                 ->where('status', '=', Order::STATUS_FILLED)
                 ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
                 ->where('side', '=', Order::SIDE_SELL)
@@ -396,11 +393,12 @@ class TradingManager
                 ->where('update_time', '>=', self::last2Hours())
                 ->orderByDesc('update_time')
                 ->first();
-
-        return $noShortOrderFilledLastHour;
     }
 
     /** @noinspection DuplicatedCode */
+    /**
+     * @throws Exception
+     */
     public static function shouldOpenLong(): bool
     {
         if(self::binance()->hasLongProfit()) {
@@ -408,16 +406,14 @@ class TradingManager
         }
 
         // Retrieve latest long order in last 2 hours
-        $noLongOrderFilledLastHour = null === Order::query()
+        return null === Order::query()
                 ->where('status', '=', Order::STATUS_FILLED)
                 ->where('position_side', '=', Order::POSITION_SIDE_LONG)
                 ->where('side', '=', Order::SIDE_BUY)
-                ->where('symbol', '=', 'ETHUSDT')
+                ->where('symbol', '=', self::$champion->symbol)
                 ->where('update_time', '>=', self::last2Hours())
                 ->orderByDesc('update_time')
                 ->first();
-
-        return $noLongOrderFilledLastHour;
     }
 
     private static function last2Hours(): int
