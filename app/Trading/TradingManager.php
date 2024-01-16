@@ -146,7 +146,7 @@ class TradingManager
     {
         $binanceOrder = self::binance()->openLong(
             self::minSize(),
-            self::currentPrice() - 1,
+            self::currentPrice() - self::priceGap(),
         );
 
         self::upsertOrder($binanceOrder);
@@ -159,7 +159,7 @@ class TradingManager
     {
         $binanceOrder = self::binance()->openShort(
             self::minSize(),
-            self::currentPrice() + 1,
+            self::currentPrice() + self::priceGap(),
         );
 
         self::upsertOrder($binanceOrder);
@@ -327,7 +327,7 @@ class TradingManager
         if ($order) {
             $binanceOrder = self::binance()->closeLong(
                 $order->orig_qty,
-                self::currentPrice() + 1,
+                self::currentPrice() + self::priceGap(),
             );
 
             self::upsertOrder($binanceOrder);
@@ -345,7 +345,7 @@ class TradingManager
         if ($order) {
             $binanceOrder = self::binance()->closeShort(
                 $order->orig_qty,
-                self::currentPrice() - 1,
+                self::currentPrice() - self::priceGap(),
             );
 
             self::upsertOrder($binanceOrder);
@@ -527,5 +527,13 @@ class TradingManager
     private static function updateBinanceInstance(): void
     {
         self::$binance = new Binance(self::$champion->symbol);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private static function priceGap(): float
+    {
+        return round(0.0004 * self::currentPrice(), 2);
     }
 }
