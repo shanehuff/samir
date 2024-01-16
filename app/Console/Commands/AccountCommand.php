@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Trading\Champion;
+use Exception;
 use Illuminate\Console\Command;
 
 use App\Trading\ChampionManager;
@@ -15,7 +17,7 @@ class AccountCommand extends Command
      */
     protected $signature = 'account';
 
-    protected $championManager;
+    protected ChampionManager $championManager;
 
     /**
      * The console command description.
@@ -39,6 +41,11 @@ class AccountCommand extends Command
      */
     public function handle(): void
     {
-        $this->championManager->sync(1);
+        $champions = $this->championManager->getActiveFarmers();
+
+        $champions->each(function($champion) {
+            $this->championManager->sync($champion);
+        });
+
     }
 }

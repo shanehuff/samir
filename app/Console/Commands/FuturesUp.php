@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Trading\Champion;
+use App\Trading\ChampionManager;
 use App\Trading\TradingManager;
 use Exception;
 use Illuminate\Console\Command;
@@ -26,15 +27,17 @@ class FuturesUp extends Command
     /**
      * Execute the console command.
      *
+     * @param ChampionManager $championManager
      * @return void
      * @throws Exception
      */
-    public function handle(): void
+    public function handle(ChampionManager $championManager): void
     {
-        /** @var Champion $champion */
-        $champion = Champion::query()->find(1);
+        $champions = $championManager->getActiveFarmers();
 
-        TradingManager::useChampion($champion);
-        TradingManager::handleUp();
+        $champions->each(function ($champion) {
+            TradingManager::useChampion($champion);
+            TradingManager::handleUp();
+        });
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Trading\ChampionManager;
 use App\Trading\TradingManager;
 use Exception;
 use Illuminate\Console\Command;
@@ -25,11 +26,19 @@ class FuturesDown extends Command
     /**
      * Execute the console command.
      *
+     * @param ChampionManager $championManager
      * @return void
      * @throws Exception
      */
-    public function handle(): void
+    public function handle(ChampionManager $championManager): void
     {
-        TradingManager::handleDown();
+
+        $champions = $championManager->getActiveFarmers();
+
+        $champions->each(function ($champion) {
+            TradingManager::useChampion($champion);
+            TradingManager::handleDown();
+        });
+
     }
 }

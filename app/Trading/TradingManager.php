@@ -38,6 +38,8 @@ class TradingManager
     {
         info('Handle Up');
 
+        info('Use champion ID: ' . self::$champion->id);
+
         if (self::binance()->hasLongPosition()) {
             info('Has long position');
             self::maybeTakeLongProfit();
@@ -112,12 +114,13 @@ class TradingManager
         tap(
             Order::query()
                 ->where('status', '=', Order::STATUS_NEW)
+                ->where('champion_id', '=', self::$champion->id)
                 ->orderBy('update_time')
                 ->first(),
 
             function ($latestOrder) {
                 if ($latestOrder) {
-                    $orders = self::binance()->orders('ETHUSDT', $latestOrder->update_time);
+                    $orders = self::binance()->orders(self::$champion->symbol, $latestOrder->update_time);
 
                     foreach ($orders as $order) {
                         $order['cumQty'] = $order['executedQty'];
@@ -167,7 +170,7 @@ class TradingManager
      */
     private static function minSize(): float
     {
-        return round(24 / self::currentPrice(), 2);
+        return round(self::$champion->grind / self::currentPrice(), 2);
     }
 
     /**
@@ -192,7 +195,7 @@ class TradingManager
 
     private static function upsertOrder(array $data): void
     {
-        Order::query()->upsert([
+        $order = Order::query()->upsert([
             [
                 'order_id' => $data['orderId'],
                 'symbol' => $data['symbol'],
@@ -319,14 +322,16 @@ class TradingManager
      */
     private static function takeLongProfit(): void
     {
-        tap(self::getClosableLongOrder(), function ($order) {
+        $order = self::getClosableLongOrder();
+
+        if ($order) {
             $binanceOrder = self::binance()->closeLong(
                 $order->orig_qty,
                 self::currentPrice() + 1,
             );
 
             self::upsertOrder($binanceOrder);
-        });
+        }
     }
 
     /**
@@ -334,14 +339,17 @@ class TradingManager
      */
     private static function takeShortProfit(): void
     {
-        tap(self::getClosableShortOrder(), function ($order) {
+
+        $order = self::getClosableShortOrder();
+
+        if ($order) {
             $binanceOrder = self::binance()->closeShort(
                 $order->orig_qty,
                 self::currentPrice() - 1,
             );
 
             self::upsertOrder($binanceOrder);
-        });
+        }
     }
 
     /**
@@ -380,7 +388,7 @@ class TradingManager
      */
     private static function shouldOpenShort(): bool
     {
-        if(self::binance()->hasShortProfit()) {
+        if (self::binance()->hasShortProfit()) {
             return false;
         }
 
@@ -401,7 +409,7 @@ class TradingManager
      */
     public static function shouldOpenLong(): bool
     {
-        if(self::binance()->hasLongProfit()) {
+        if (self::binance()->hasLongProfit()) {
             return false;
         }
 
@@ -503,8 +511,21 @@ class TradingManager
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public static function useChampion(Champion $champion): void
     {
         self::$champion = $champion;
+
+        self::updateBinanceInstance();
+    }
+
+    /**
+     * @throws Exception
+     */
+    private static function updateBinanceInstance(): void
+    {
+        self::$binance = new Binance(self::$champion->symbol);
     }
 }

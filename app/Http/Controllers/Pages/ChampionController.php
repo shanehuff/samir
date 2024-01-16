@@ -14,8 +14,8 @@ class ChampionController
         $champion = Champion::query()->findOrFail($id);
 
         return Jetstream::inertia()->render($request, 'Champion/Show', [
-            'background' => 'https://samir.chillbits.com/storage/farmer-1-54f37d19-725d-4802-9599-517d9c49bbd6.jpg',
-            'champion' => (object) [
+            'background' => $champion->avatar_url,
+            'champion' => (object)[
                 'remain_capital' => number_format($champion->capital - $champion->onduty, 2),
                 'capital' => $champion->capital,
                 'roi' => number_format($champion->roi * 100, 2),

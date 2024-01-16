@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Trading\Champion;
+use App\Trading\ChampionManager;
 use App\Trading\TradingManager;
 use Exception;
 use Illuminate\Console\Command;
@@ -29,15 +30,16 @@ class FuturesProfits extends Command
      * @return void
      * @throws Exception
      */
-    public function handle(): void
+    public function handle(ChampionManager $championManager): void
     {
         info('Collect profits & incomes');
-        /** @var Champion $champion */
 
-        $champion = Champion::query()->find(1);
+        $champions = $championManager->getActiveFarmers();
 
-        TradingManager::useChampion($champion);
-        TradingManager::collectProfits();
-        TradingManager::collectRecentIncomes();
+        $champions->each(function($champion) {
+            TradingManager::useChampion($champion);
+            TradingManager::collectProfits();
+            TradingManager::collectRecentIncomes();
+        });
     }
 }

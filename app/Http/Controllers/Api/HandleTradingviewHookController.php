@@ -24,21 +24,29 @@ class HandleTradingviewHookController extends Controller
 
         info(json_encode($request->payloads));
 
-        /** @var Champion $champion */
-        $champion = Champion::query()->find(1);
+        $champions = Champion::query()
+            ->where('archetype', 'farmer')
+            ->where('status', 'active')
+            ->get();
 
-        info($champion->toJson());
+        info('Champions: ' . $champions->count());
 
-        TradingManager::useChampion($champion);
+        if ($champions->count() > 0) {
+            $champions->each(function ($champion) use ($request) {
+                if ($champion->symbol === $request->payloads['symbol']) {
+                    TradingManager::useChampion($champion);
 
-        TradingManager::importRecentOrders();
+                    TradingManager::importRecentOrders();
 
-        if('down' === $request->payloads['direction']) {
-            TradingManager::handleDown();
-        }
+                    if ('down' === $request->payloads['direction']) {
+                        TradingManager::handleDown();
+                    }
 
-        if('up' === $request->payloads['direction']) {
-            TradingManager::handleUp();
+                    if ('up' === $request->payloads['direction']) {
+                        TradingManager::handleUp();
+                    }
+                }
+            });
         }
 
         return [
