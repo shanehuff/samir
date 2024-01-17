@@ -24,7 +24,10 @@ class ChampionController
                 'archetype' => $champion->archetype,
                 'onduty' => number_format($champion->onduty, 2),
                 'age' => $champion->created_at->diffForHumans(),
-                'grind' => $champion->grind
+                'grind' => $champion->grind,
+                'fee' => number_format($champion->fee, 2),
+                'income' => number_format($champion->income, 2),
+                'current_capital' => number_format($champion->current_capital, 2)
             ]
         ]);
     }

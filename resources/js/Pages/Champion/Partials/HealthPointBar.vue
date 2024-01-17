@@ -2,7 +2,7 @@
     <div class="hp-bar shadow">
         <div class="hp-bar-fill" :style="{ width: fillPercentage }"></div>
         <div class="hp-bar-text">
-            {{ Math.round(remainingHP / fullHP) }} %
+            {{ Math.round(remainingHP / fullHP * 100) }} %
         </div>
     </div>
 </template>
@@ -29,7 +29,7 @@ export default {
 
 <style scoped>
 .hp-bar {
-    width: 80%;
+    width: 100%;
     height: 20px;
     background-color: #ccc;
     border-radius: 5px;

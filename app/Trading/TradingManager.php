@@ -388,7 +388,7 @@ class TradingManager
      */
     private static function shouldOpenShort(): bool
     {
-        if (self::binance()->hasShortProfit()) {
+        if (self::binance()->hasShortProfit() || self::$champion->can_trade === false) {
             return false;
         }
 
@@ -397,7 +397,8 @@ class TradingManager
                 ->where('status', '=', Order::STATUS_FILLED)
                 ->where('position_side', '=', Order::POSITION_SIDE_SHORT)
                 ->where('side', '=', Order::SIDE_SELL)
-                ->where('symbol', '=', 'ETHUSDT')
+                ->where('symbol', '=', self::$champion->symbol)
+                ->where('champion_id', '=', self::$champion->id)
                 ->where('update_time', '>=', self::last2Hours())
                 ->orderByDesc('update_time')
                 ->first();
@@ -409,7 +410,7 @@ class TradingManager
      */
     public static function shouldOpenLong(): bool
     {
-        if (self::binance()->hasLongProfit()) {
+        if (self::binance()->hasLongProfit() || self::$champion->can_trade === false) {
             return false;
         }
 
@@ -419,6 +420,7 @@ class TradingManager
                 ->where('position_side', '=', Order::POSITION_SIDE_LONG)
                 ->where('side', '=', Order::SIDE_BUY)
                 ->where('symbol', '=', self::$champion->symbol)
+                ->where('champion_id', '=', self::$champion->id)
                 ->where('update_time', '>=', self::last2Hours())
                 ->orderByDesc('update_time')
                 ->first();

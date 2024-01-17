@@ -17,4 +17,23 @@ class Champion extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function getFundingIncomeAttribute()
+    {
+        return Income::query()
+            ->where('time', '>=', $this->orders()->first()->update_time)
+            ->where('symbol', '=', $this->symbol)
+            ->get()
+            ->sum('income');
+    }
+
+    public function getCurrentCapitalAttribute()
+    {
+        return $this->capital + $this->profit + $this->income - $this->fee;
+    }
+
+    public function getCanTradeAttribute(): bool
+    {
+        return 'active' === $this->status && $this->current_capital - $this->onduty > $this->grind;
+    }
 }

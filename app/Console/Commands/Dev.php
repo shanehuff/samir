@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Trading\Champion;
+use App\Trading\ChampionManager;
+use App\Trading\Income;
 use App\Trading\TradingManager;
 use Exception;
 use Illuminate\Console\Command;
@@ -26,16 +28,17 @@ class Dev extends Command
     /**
      * Execute the console command.
      *
+     * @param ChampionManager $championManager
      * @return void
      * @throws Exception
      */
-    public function handle(): void
+    public function handle(ChampionManager $championManager): void
     {
         /** @var Champion $champion */
         $champion = Champion::query()->find(1);
 
-        TradingManager::useChampion($champion);
+        dd($champion->can_trade);
 
-        TradingManager::currentPrice();
+        $championManager->sync($champion);
     }
 }

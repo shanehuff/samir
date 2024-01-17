@@ -24,6 +24,7 @@ class ChampionManager
             $cumQuote = $item->reduce_only ? -$item->cum_quote : $item->cum_quote;
             $carry[$item->position_side] = ($carry[$item->position_side] ?? 0) + $cumQuote;
             $carry['PROFIT'] = ($carry['PROFIT'] ?? 0) + $item->trades->sum('realized_pnl');
+            $carry['FEE'] = ($carry['FEE'] ?? 0) + $item->trades->sum('commission');
 
             return $carry;
         }, []);
@@ -31,11 +32,14 @@ class ChampionManager
         $result['LONG'] = $result['LONG'] ?? 0;
         $result['SHORT'] = $result['SHORT'] ?? 0;
         $result['PROFIT'] = $result['PROFIT'] ?? 0;
+        $result['FEE'] = $result['FEE'] ?? 0;
 
         $champion->update([
             'onduty' => ($result['LONG'] + $result['SHORT']) / 2,
             'profit' => $result['PROFIT'],
-            'roi' => $result['PROFIT'] / $champion->capital
+            'roi' => $result['PROFIT'] / $champion->capital,
+            'fee' => $result['FEE'],
+            'income' => $champion->funding_income
         ]);
     }
 
