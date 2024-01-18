@@ -15,6 +15,11 @@
                     <span class="inline-block bg-gray-700 text-white px-4 py-2 rounded-full shadow py-2">🎂</span>
                     <span class="flex items-center whitespace-nowrap text-xs md:text-sm inline-block bg-gray-700 text-white px-4 py-2 rounded-full shadow">{{ champion.age }}</span>
                 </li>
+
+                <li class="flex justify-between mt-4">
+                    <span class="inline-block bg-teal-600 text-white px-4 py-2 rounded-full shadow py-2">📈</span>
+                    <span class="flex items-center whitespace-nowrap text-xs md:text-sm inline-block bg-teal-600 text-white px-4 py-2 rounded-full shadow">{{ champion.apy }}%</span>
+                </li>
             </ul>
         </div>
 
