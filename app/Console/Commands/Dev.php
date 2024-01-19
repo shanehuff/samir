@@ -32,6 +32,22 @@ class Dev extends Command
     {
         /** @var Champion $champion */
         $champion = Champion::query()->find(4);
+        $spotTradingManager
+            ->useChampion($champion)
+            ->syncOrdersFromExchange();
+
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @param SpotTradingManager $spotTradingManager
+     * @return void
+     */
+    public function buy(SpotTradingManager $spotTradingManager): void
+    {
+        /** @var Champion $champion */
+        $champion = Champion::query()->find(4);
         $price = 313.6;
 
         $spotTradingManager
@@ -39,4 +55,5 @@ class Dev extends Command
             ->placeBuyOrder($price);
 
     }
+
 }
