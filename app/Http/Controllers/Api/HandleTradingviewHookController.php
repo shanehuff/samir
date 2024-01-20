@@ -24,6 +24,19 @@ class HandleTradingviewHookController extends Controller
 
         info(json_encode($request->payloads));
 
+        if ('SPOTRSI5' === $request->payloads['indicator']) {
+            $this->handleSpotTrades($request);
+        } else {
+            $this->handleFuturesTrades($request);
+        }
+
+        return [
+            'success' => true
+        ];
+    }
+
+    private function handleFuturesTrades(Request $request)
+    {
         $champions = Champion::query()
             ->where('archetype', 'farmer')
             ->where('status', 'active')
@@ -48,9 +61,28 @@ class HandleTradingviewHookController extends Controller
                 }
             });
         }
+    }
 
-        return [
-            'success' => true
-        ];
+    private function handleSpotTrades(Request $request)
+    {
+        $champions = Champion::query()
+            ->where('archetype', 'lootcycle')
+            ->where('status', 'active')
+            ->get();
+
+        $spotTradingManager = new SpotTradingManager();
+
+        if ($champions->count() > 0) {
+            $champions->each(function ($champion) use ($request, $spotTradingManager) {
+                if ($champion->symbol === $request->payloads['symbol']) {
+                    $spotTradingManager->useChampion($champion);
+                    $spotTradingManager->syncOrdersFromExchange();
+
+                    if ('down' === $request->payloads['direction']) {
+                        $spotTradingManager->placeBuyOrder((float)$request->payloads['price']);
+                    }
+                }
+            });
+        }
     }
 }
