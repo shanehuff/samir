@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Trading\Champion;
 use App\Trading\TradingManager;
+use App\Trading\SpotTradingManager;
 use App\Http\Controllers\Controller;
 use App\Tradingview\InteractsWithTradingviewAlerts;
 use Exception;
@@ -74,7 +75,7 @@ class HandleTradingviewHookController extends Controller
 
         if ($champions->count() > 0) {
             $champions->each(function ($champion) use ($request, $spotTradingManager) {
-                if ($champion->symbol === $request->payloads['symbol']) {
+                if ($champion->symbol === $request->payloads['symbol']  && $champion->can_trade) {
                     $spotTradingManager->useChampion($champion);
                     $spotTradingManager->syncOrdersFromExchange();
 

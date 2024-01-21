@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Trading\Champion;
 use App\Trading\SpotTradingManager;
+use App\Trading\ChampionManager;
 use Illuminate\Console\Command;
 
 class Dev extends Command
@@ -28,14 +29,23 @@ class Dev extends Command
      * @param SpotTradingManager $spotTradingManager
      * @return void
      */
-    public function handle(SpotTradingManager $spotTradingManager): void
+    public function handle(SpotTradingManager $spotTradingManager, ChampionManager $championManager): void
+    {
+        $champions = $championManager->getActiveLootcycles();
+
+        $champions->each(function($champion) use ($championManager) {
+            $championManager->syncLootcycle($champion);
+        });
+    }
+
+    public function syncOrderAndTrades($spotTradingManager, $championManager)
     {
         /** @var Champion $champion */
         $champion = Champion::query()->find(4);
-        $spotTradingManager
+        $data = $spotTradingManager
             ->useChampion($champion)
-            ->syncOrdersFromExchange();
-
+            ->syncOrdersFromExchange()
+            ->collectTrades();
     }
 
     /**

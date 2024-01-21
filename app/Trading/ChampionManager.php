@@ -50,4 +50,40 @@ class ChampionManager
             ->where('status', 'active')
             ->get();
     }
+
+    public function getActiveLootcycles(): Collection|array
+    {
+        return Champion::query()
+            ->where('archetype', 'lootcycle')
+            ->where('status', 'active')
+            ->get();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function syncLootcycle(Champion $champion): void
+    {
+        $orders = SpotOrder::query()
+            ->where('champion_id', '=', $champion->id)
+            ->where('status', '=', SpotOrder::STATUS_FILLED)
+            ->get();
+
+        $result = $orders->reduce(function ($carry, $order) {
+            $carry['FEE'] = ($carry['FEE'] ?? 0) + ($order->trades->sum('commission') * $order->trades->avg('price'));
+            $carry['ONDUTY'] = ($carry['ONDUTY'] ?? 0) + $order->cummulative_quote_qty;
+            $carry['QTY'] = ($carry['QTY'] ?? 0) + $order->executed_qty;
+
+            return $carry;
+        }, []);
+
+        $champion->update([
+            'onduty' => $result['ONDUTY'],
+            'profit' => 0,
+            'roi' => 0,
+            'fee' => $result['FEE'],
+            'income' => 0,
+            'entry' => ($result['ONDUTY'] - $result['FEE']) / $result['QTY']
+        ]);
+    }
 }

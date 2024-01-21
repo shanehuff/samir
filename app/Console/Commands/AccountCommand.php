@@ -41,11 +41,25 @@ class AccountCommand extends Command
      */
     public function handle(): void
     {
+        $this->syncActiveFarmers();
+        $this->syncActiveLootcycles();
+    }
+
+    public function syncActiveLootcycles()
+    {
+        $champions = $this->championManager->getActiveLootcycles();
+
+        $champions->each(function($champion) {
+            $this->championManager->syncLootcycle($champion);
+        });
+    }
+
+    public function syncActiveFarmers()
+    {
         $champions = $this->championManager->getActiveFarmers();
 
         $champions->each(function($champion) {
             $this->championManager->sync($champion);
         });
-
     }
 }

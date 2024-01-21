@@ -15,20 +15,16 @@ class SpotClient extends API
         $this->symbol = $symbol;
     }
 
-    public function test()
+    public function getOrderTrades($symbol, $orderId, $limit = 500)
     {
-        return $this->httpRequest(
-            'v3/order',
-            'POST',
-            [
-                'symbol' => 'BNBUSDT',
-                'side' => 'BUY',
-                'type' => 'LIMIT',
-                'timeInForce' => 'GTC',
-                'quantity' => 0.017,
-                'price' => 311.6
-            ],
-            true
-        );
+        $parameters = [
+            "symbol" => $symbol,
+            "limit" => $limit,
+        ];
+        if ($orderId > 0) {
+            $parameters["orderId"] = $orderId;
+        }
+
+        return $this->httpRequest("v3/myTrades", "GET", $parameters, true);
     }
 }

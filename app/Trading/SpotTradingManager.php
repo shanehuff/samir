@@ -79,7 +79,7 @@ class SpotTradingManager
     /**
      * @throws Exception
      */
-    public function syncOrdersFromExchange(): void
+    public function syncOrdersFromExchange(): static
     {
         $order = SpotOrder::query()
             ->where('champion_id', '=', $this->champion->id)
@@ -95,6 +95,54 @@ class SpotTradingManager
 
             foreach ($exchangeOrders as $exchangeOrder) {
                 $this->upsertSpotOrder($exchangeOrder);
+            }
+        }
+
+        return $this;
+    }
+
+    public function collectTrades()
+    {
+        $order = SpotOrder::query()
+            ->where('status', '=', SpotOrder::STATUS_FILLED)
+            ->where('is_trades_collected', '=', false)
+            ->first();
+
+        if ($order) {
+            $trades = $this->client()->getOrderTrades($order->symbol, $order->order_id);
+
+            $this->upsertTrades($trades);
+
+            $order->update([
+                'is_trades_collected' => true
+            ]);
+        }
+    }
+
+    public function upsertTrades(array $trades)
+    {
+        if (count($trades) > 0) {
+            foreach ($trades as $data) {
+                SpotTrade::query()->upsert([
+                    [
+                        'binance_trade_id' => $data['id'],
+                        'order_id' => $data['orderId'],
+                        'symbol' => $data['symbol'],
+                        'order_list_id' => $data['orderListId'],
+                        'price' => $data['price'],
+                        'qty' => $data['qty'],
+                        'quote_qty' => $data['quoteQty'],
+                        'commission' => $data['commission'],
+                        'commission_asset' => $data['commissionAsset'],
+                        'time' => $data['time'],
+                        'is_buyer' => $data['isBuyer'],
+                        'is_maker' => $data['isMaker'],
+                        'is_best_match' => $data['isBestMatch'],
+                    ]
+                ],
+                    ['binance_trade_id'],
+                    ['price', 'qty', 'quote_qty', 'time', 'is_buyer', 'commission']
+                );
             }
         }
     }

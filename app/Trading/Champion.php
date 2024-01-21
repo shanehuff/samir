@@ -13,9 +13,18 @@ class Champion extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'entry' => 'float',
+    ];
+
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function spotOrders(): HasMany
+    {
+        return $this->hasMany(SpotOrder::class);
     }
 
     public function getFundingIncomeAttribute()
