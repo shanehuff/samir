@@ -30,6 +30,21 @@ class SpotTradingManager
         return $this->client;
     }
 
+    public function maybePlaceSellOrder(float $price): void
+    {
+        if ($price > $this->champion->entry) {
+            $binanceOrder = $this->client()->sell(
+                $this->champion->symbol,
+                round($this->champion->grind / $price, 2),
+                $price
+            );
+
+            if ($binanceOrder) {
+                $this->upsertSpotOrder($binanceOrder);
+            }
+        }
+    }
+
     public function placeBuyOrder(float $price): void
     {
         $binanceOrder = $this->client()->buy(
@@ -103,19 +118,21 @@ class SpotTradingManager
 
     public function collectTrades()
     {
-        $order = SpotOrder::query()
+        $orders = SpotOrder::query()
             ->where('status', '=', SpotOrder::STATUS_FILLED)
             ->where('is_trades_collected', '=', false)
-            ->first();
+            ->get();
 
-        if ($order) {
-            $trades = $this->client()->getOrderTrades($order->symbol, $order->order_id);
+        if ($orders->count() > 0) {
+            $orders->each(function ($order) {
+                $trades = $this->client()->getOrderTrades($order->symbol, $order->order_id);
 
-            $this->upsertTrades($trades);
+                $this->upsertTrades($trades);
 
-            $order->update([
-                'is_trades_collected' => true
-            ]);
+                $order->update([
+                    'is_trades_collected' => true
+                ]);
+            });
         }
     }
 
@@ -145,5 +162,37 @@ class SpotTradingManager
                 );
             }
         }
+    }
+
+    public function noRecentBuySpotOrder(Champion $champion)
+    {
+        $order = SpotOrder::query()
+            ->where('champion_id', '=', $champion->id)
+            ->where('side', '=', SpotOrder::SIDE_BUY)
+            ->orderByDesc('created_at')
+            ->first();
+
+        if ($order) {
+            // Make sure no order placed last 2 hours
+            return now()->diffInHours($order->created_at) > 2;
+        }
+
+        return true;
+    }
+
+    public function noRecentSellSpotOrder(Champion $champion)
+    {
+        $order = SpotOrder::query()
+            ->where('champion_id', '=', $champion->id)
+            ->where('side', '=', SpotOrder::SIDE_SELL)
+            ->orderByDesc('created_at')
+            ->first();
+
+        if ($order) {
+            // Make sure no order placed last 2 hours
+            return now()->diffInHours($order->created_at) > 2;
+        }
+
+        return true;
     }
 }

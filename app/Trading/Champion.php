@@ -43,6 +43,22 @@ class Champion extends Model
 
     public function getCanTradeAttribute(): bool
     {
-        return 'active' === $this->status && $this->current_capital - $this->onduty > $this->grind;
+        return 'active' === $this->status &&
+            $this->current_capital - $this->onduty > $this->grind;
+    }
+
+    public function getCanBuySpotAttribute(): bool
+    {
+
+        return 'active' === $this->status &&
+            'lootcycle' === $this->archetype &&
+            $this->current_capital - $this->onduty > $this->grind;
+    }
+
+    public function getCanSellSpotAttribute(): bool
+    {
+        return 'active' === $this->status &&
+            'lootcycle' === $this->archetype &&
+            $this->onduty / $this->current_capital >= 0.7;
     }
 }

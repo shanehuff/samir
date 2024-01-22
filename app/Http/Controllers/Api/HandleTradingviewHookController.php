@@ -75,12 +75,16 @@ class HandleTradingviewHookController extends Controller
 
         if ($champions->count() > 0) {
             $champions->each(function ($champion) use ($request, $spotTradingManager) {
-                if ($champion->symbol === $request->payloads['symbol']  && $champion->can_trade) {
+                if ($champion->symbol === $request->payloads['symbol']) {
                     $spotTradingManager->useChampion($champion);
                     $spotTradingManager->syncOrdersFromExchange();
 
-                    if ('down' === $request->payloads['direction']) {
+                    if ('down' === $request->payloads['direction'] && $champion->can_buy_spot && $spotTradingManager->noRecentBuySpotOrder($champion)) {
                         $spotTradingManager->placeBuyOrder((float)$request->payloads['price']);
+                    }
+
+                    if ('up' === $request->payloads['direction'] && $champion->can_sell_spot && $spotTradingManager->noRecentSellSpotOrder($champion)) {
+                        $spotTradingManager->maybePlaceSellOrder((float)$request->payloads['price']);
                     }
                 }
             });
