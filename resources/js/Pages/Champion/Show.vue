@@ -57,7 +57,7 @@
                     <span class="inline-block bg-blue-500 text-white px-4 py-2 rounded-full shadow">${{ champion.fee }}</span>
                 </li>
 
-                <li class="flex justify-between mt-4">
+                <li v-if="'lootcycle' === champion.archetype" class="flex justify-between mt-4">
                     <span class="py-2 inline-block bg-lime-500 text-white px-4 py-2 rounded-full shadow">🚪</span>
                     <span class="inline-block bg-lime-500 text-white px-4 py-2 rounded-full shadow">${{ champion.entry }}</span>
                 </li>
