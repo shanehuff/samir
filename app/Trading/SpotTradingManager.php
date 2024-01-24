@@ -47,9 +47,10 @@ class SpotTradingManager
 
     public function placeBuyOrder(float $price): void
     {
+        $afterPoint = 'GMTUSDT' === $this->champion->symbol ? 1:2;
         $binanceOrder = $this->client()->buy(
             $this->champion->symbol,
-            round($this->champion->grind / $price, 2),
+            round($this->champion->grind / $price, $afterPoint),
             $price
         );
 
@@ -174,7 +175,7 @@ class SpotTradingManager
 
         if ($order) {
             // Make sure no order placed last 2 hours
-            return now()->diffInHours($order->created_at) > 2;
+            return now()->diffInHours($order->created_at) >= 2;
         }
 
         return true;

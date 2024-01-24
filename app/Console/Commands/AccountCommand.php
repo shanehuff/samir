@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Trading\Champion;
+use App\Trading\SpotTradingManager;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -19,6 +20,8 @@ class AccountCommand extends Command
 
     protected ChampionManager $championManager;
 
+    protected SpotTradingManager$spotTradingManager;
+
     /**
      * The console command description.
      *
@@ -26,9 +29,10 @@ class AccountCommand extends Command
      */
     protected $description = 'Interacts With Accounts';
 
-    public function __construct(ChampionManager $championManager)
+    public function __construct(ChampionManager $championManager, SpotTradingManager $spotTradingManager)
     {
         $this->championManager = $championManager;
+        $this->spotTradingManager = $spotTradingManager;
 
         parent::__construct();
     }
@@ -50,6 +54,11 @@ class AccountCommand extends Command
         $champions = $this->championManager->getActiveLootcycles();
 
         $champions->each(function($champion) {
+            $this->spotTradingManager
+                ->useChampion($champion)
+                ->syncOrdersFromExchange()
+                ->collectTrades();
+
             $this->championManager->syncLootcycle($champion);
         });
     }

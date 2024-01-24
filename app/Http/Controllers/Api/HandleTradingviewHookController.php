@@ -79,6 +79,7 @@ class HandleTradingviewHookController extends Controller
                     $spotTradingManager->useChampion($champion);
                     $spotTradingManager->syncOrdersFromExchange();
 
+                    //dd('down' === $request->payloads['direction'],$champion->can_buy_spot,$spotTradingManager->noRecentBuySpotOrder($champion));
                     if ('down' === $request->payloads['direction'] && $champion->can_buy_spot && $spotTradingManager->noRecentBuySpotOrder($champion)) {
                         $spotTradingManager->placeBuyOrder((float)$request->payloads['price']);
                     }
