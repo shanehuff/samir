@@ -33,7 +33,7 @@ class Dev extends Command
     {
         /** @var Champion $champion */
         $champion = Champion::query()->find(4);
-        $this->syncOrderAndTrades($spotTradingManager, $championManager);
+        $championManager->syncLootcycle($champion);
     }
 
     public function sync($championManager)

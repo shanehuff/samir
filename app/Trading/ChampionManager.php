@@ -70,17 +70,32 @@ class ChampionManager
             ->get();
 
         $result = $orders->reduce(function ($carry, $order) {
-            $carry['FEE'] = ($carry['FEE'] ?? 0) + ($order->trades->sum('commission') * $order->trades->avg('price'));
-            $carry['ONDUTY'] = ($carry['ONDUTY'] ?? 0) + $order->cummulative_quote_qty;
-            $carry['QTY'] = ($carry['QTY'] ?? 0) + $order->executed_qty;
+            $tokenCommissionTrades = $order->trades->where('is_buyer', '=', true);
+            $usdtCommissionTrades = $order->trades->where('is_buyer', '=', false);
+
+            $carry['FEE'] = ($carry['FEE'] ?? 0) + ($tokenCommissionTrades->sum('commission') * $tokenCommissionTrades->avg('price'));
+            $carry['ONDUTY'] = ($carry['ONDUTY'] ?? 0) + ('BUY' === $order->side ? $order->cummulative_quote_qty : -$order->cummulative_quote_qty);
+            $carry['QTY'] = ($carry['QTY'] ?? 0) + ('BUY' === $order->side ? $order->executed_qty : -$order->executed_qty);
+
+            $carry['SOLD_QUOTE'] = ($carry['SOLD_QUOTE'] ?? 0) + $usdtCommissionTrades->sum('quote_qty');
+            $carry['SOLD_QTY'] = ($carry['SOLD_QTY'] ?? 0) + $usdtCommissionTrades->sum('qty');
+            $carry['SOLD_FEE'] = ($carry['SOLD_FEE'] ?? 0) + $usdtCommissionTrades->sum('commission');
+
+            $carry['BOUGHT_QUOTE'] = ($carry['BOUGHT_QUOTE'] ?? 0) + $tokenCommissionTrades->sum('quote_qty');
+            $carry['BOUGHT_QTY'] = ($carry['BOUGHT_QTY'] ?? 0) + $tokenCommissionTrades->sum('qty');
+            $carry['BOUGHT_FEE'] = ($carry['BOUGHT_FEE'] ?? 0) + $tokenCommissionTrades->sum('commission') * $tokenCommissionTrades->avg('price');
 
             return $carry;
         }, []);
 
+        $result['AVG_BUY_PRICE'] = ($result['BOUGHT_QUOTE'] - $result['BOUGHT_FEE']) / $result['BOUGHT_QTY'];
+        $result['AVG_SELL_PRICE'] = ($result['SOLD_QUOTE'] - $result['SOLD_FEE']) / $result['SOLD_QTY'];
+        $profit = ($result['AVG_SELL_PRICE'] - $result['AVG_BUY_PRICE']) * $result['SOLD_QTY'];
+
         $champion->update([
             'onduty' => $result['ONDUTY'],
-            'profit' => 0,
-            'roi' => 0,
+            'profit' => $profit,
+            'roi' => $profit / $champion->capital,
             'fee' => $result['FEE'],
             'income' => 0,
             'entry' => ($result['ONDUTY'] - $result['FEE']) / $result['QTY']
