@@ -32,7 +32,7 @@ class SpotTradingManager
 
     public function maybePlaceSellOrder(float $price): void
     {
-        if ($price > $this->champion->entry) {
+        if ($price >= $this->champion->entry) {
             $binanceOrder = $this->client()->sell(
                 $this->champion->symbol,
                 round($this->champion->grind / $price, 2),

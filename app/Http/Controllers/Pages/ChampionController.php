@@ -29,7 +29,7 @@ class ChampionController
                 'income' => number_format($champion->income, 2),
                 'current_capital' => number_format($champion->current_capital, 2),
                 'apy' => number_format($champion->roi / $champion->created_at->diffInHours(now()) * 876000, 2),
-                'entry' => number_format($champion->entry, 2)
+                'entry' => number_format($champion->entry, 4)
             ]
         ]);
     }

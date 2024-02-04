@@ -59,6 +59,6 @@ class Champion extends Model
     {
         return 'active' === $this->status &&
             'lootcycle' === $this->archetype &&
-            $this->onduty / $this->current_capital >= 0.7;
+            $this->onduty / $this->current_capital >= 0.25;
     }
 }
