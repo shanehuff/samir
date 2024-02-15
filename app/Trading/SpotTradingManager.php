@@ -33,9 +33,10 @@ class SpotTradingManager
     public function maybePlaceSellOrder(float $price): void
     {
         if ($price >= $this->champion->entry) {
+            $afterPoint = 'GMTUSDT' === $this->champion->symbol ? 1 : 2;
             $binanceOrder = $this->client()->sell(
                 $this->champion->symbol,
-                round($this->champion->grind / $price, 2),
+                round($this->champion->grind / $price, $afterPoint),
                 $price
             );
 
@@ -47,7 +48,7 @@ class SpotTradingManager
 
     public function placeBuyOrder(float $price): void
     {
-        $afterPoint = 'GMTUSDT' === $this->champion->symbol ? 1:2;
+        $afterPoint = 'GMTUSDT' === $this->champion->symbol ? 1 : 2;
         $binanceOrder = $this->client()->buy(
             $this->champion->symbol,
             round($this->champion->grind / $price, $afterPoint),
