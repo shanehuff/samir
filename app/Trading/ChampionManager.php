@@ -20,7 +20,7 @@ class ChampionManager
         TradingManager::useChampion($champion);
         TradingManager::importRecentOrders();
 
-        $result = $champion->orders->reduce(function ($carry, $item) {
+        $result = $champion->filledOrders->reduce(function ($carry, $item) {
             $cumQuote = $item->reduce_only ? -$item->cum_quote : $item->cum_quote;
             $carry[$item->position_side] = ($carry[$item->position_side] ?? 0) + $cumQuote;
             $carry['PROFIT'] = ($carry['PROFIT'] ?? 0) + $item->trades->sum('realized_pnl');
@@ -29,8 +29,8 @@ class ChampionManager
             return $carry;
         }, []);
 
-        $result['LONG'] = $result['LONG'] ?? 0;
-        $result['SHORT'] = $result['SHORT'] ?? 0;
+        $result['LONG'] = ($result['LONG'] ?? 0) < 0 ? 0 : ($result['LONG'] ?? 0);
+        $result['SHORT'] = ($result['SHORT'] ?? 0) < 0 ? 0 : ($result['SHORT'] ?? 0);
         $result['PROFIT'] = $result['PROFIT'] ?? 0;
         $result['FEE'] = $result['FEE'] ?? 0;
 
@@ -98,7 +98,7 @@ class ChampionManager
             'roi' => $profit / $champion->capital,
             'fee' => $result['FEE'],
             'income' => 0,
-            'entry' => ($result['ONDUTY'] - $result['FEE']) / $result['QTY']
+            'entry' => $result['AVG_BUY_PRICE']
         ]);
     }
 }

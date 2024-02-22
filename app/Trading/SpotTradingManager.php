@@ -35,7 +35,7 @@ class SpotTradingManager
         $afterPoint = 'GMTUSDT' === $this->champion->symbol ? 1 : 2;
         $size = round($this->champion->grind / $price, $afterPoint);
 
-        if('BNBUSDT' === $this->champion->symbol) {
+        if ('BNBUSDT' === $this->champion->symbol) {
             return $size > 0.02 ? $size : 0.02;
         }
 
@@ -112,6 +112,13 @@ class SpotTradingManager
             ->where('champion_id', '=', $this->champion->id)
             ->where('status', '=', SpotOrder::STATUS_NEW)
             ->first();
+
+        if (is_null($order)) {
+            $order = SpotOrder::query()
+                ->where('symbol', $this->champion->symbol)
+                ->orderByDesc('order_id')
+                ->first();
+        }
 
         if ($order) {
             $exchangeOrders = $this->client()->orders(

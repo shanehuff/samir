@@ -27,6 +27,11 @@ class Champion extends Model
         return $this->hasMany(SpotOrder::class);
     }
 
+    public function filledOrders(): HasMany
+    {
+        return $this->hasMany(Order::class)->where('status', Order::STATUS_FILLED);
+    }
+
     public function getFundingIncomeAttribute()
     {
         return Income::query()
