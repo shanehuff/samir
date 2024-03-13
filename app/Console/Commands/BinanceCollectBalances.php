@@ -43,7 +43,7 @@ class BinanceCollectBalances extends Command
 
         $riskyMargin = $futuresAssets
             ->where('asset', '=', 'USDT')
-            ->sum('initialMargin');
+            ->sum('marginBalance');
 
         $data['FU'] = [
             'symbol' => 'FU',
