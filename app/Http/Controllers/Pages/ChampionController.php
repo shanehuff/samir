@@ -16,7 +16,7 @@ class ChampionController
         return Jetstream::inertia()->render($request, 'Champion/Show', [
             'background' => $champion->avatar_url,
             'champion' => (object)[
-                'remain_capital' => number_format($champion->capital - $champion->onduty, 2),
+                'remain_capital' => number_format($champion->current_capital - $champion->onduty, 2),
                 'capital' => $champion->capital,
                 'roi' => number_format($champion->roi * 100, 2),
                 'profit' => number_format($champion->profit, 2),

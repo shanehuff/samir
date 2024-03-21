@@ -73,8 +73,8 @@ class ChampionManager
             $tokenCommissionTrades = $order->trades->where('is_buyer', '=', true);
             $usdtCommissionTrades = $order->trades->where('is_buyer', '=', false);
 
-            $carry['FEE'] = ($carry['FEE'] ?? 0) + ($tokenCommissionTrades->sum('commission') * $tokenCommissionTrades->avg('price'));
-            $carry['ONDUTY'] = ($carry['ONDUTY'] ?? 0) + ('BUY' === $order->side ? $order->cummulative_quote_qty : -$order->cummulative_quote_qty);
+            //$carry['FEE'] = ($carry['FEE'] ?? 0) + ($tokenCommissionTrades->sum('commission') * $tokenCommissionTrades->avg('price'));
+            //$carry['ONDUTY'] = ($carry['ONDUTY'] ?? 0) + ('BUY' === $order->side ? $order->cummulative_quote_qty : -$order->cummulative_quote_qty);
             $carry['QTY'] = ($carry['QTY'] ?? 0) + ('BUY' === $order->side ? $order->executed_qty : -$order->executed_qty);
 
             $carry['SOLD_QUOTE'] = ($carry['SOLD_QUOTE'] ?? 0) + $usdtCommissionTrades->sum('quote_qty');
@@ -91,6 +91,8 @@ class ChampionManager
         $result['AVG_BUY_PRICE'] = ($result['BOUGHT_QUOTE'] - $result['BOUGHT_FEE']) / $result['BOUGHT_QTY'];
         $result['AVG_SELL_PRICE'] = ($result['SOLD_QUOTE'] - $result['SOLD_FEE']) / $result['SOLD_QTY'];
         $profit = ($result['AVG_SELL_PRICE'] - $result['AVG_BUY_PRICE']) * $result['SOLD_QTY'];
+        $result['FEE'] = $result['BOUGHT_FEE'] + $result['SOLD_FEE'];
+        $result['ONDUTY'] = $result['QTY'] * $result['AVG_BUY_PRICE'];
 
         $champion->update([
             'onduty' => $result['ONDUTY'],
