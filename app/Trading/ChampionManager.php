@@ -89,8 +89,15 @@ class ChampionManager
         }, []);
 
         $result['AVG_BUY_PRICE'] = ($result['BOUGHT_QUOTE'] - $result['BOUGHT_FEE']) / $result['BOUGHT_QTY'];
-        $result['AVG_SELL_PRICE'] = ($result['SOLD_QUOTE'] - $result['SOLD_FEE']) / $result['SOLD_QTY'];
-        $profit = ($result['AVG_SELL_PRICE'] - $result['AVG_BUY_PRICE']) * $result['SOLD_QTY'];
+
+        if($result['SOLD_QTY'] > 0) {
+            $result['AVG_SELL_PRICE'] = ($result['SOLD_QUOTE'] - $result['SOLD_FEE']) / $result['SOLD_QTY'];
+            $profit = ($result['AVG_SELL_PRICE'] - $result['AVG_BUY_PRICE']) * $result['SOLD_QTY'];
+        } else {
+            $result['AVG_SELL_PRICE'] = 0;
+            $profit = 0;
+        }
+        
         $result['FEE'] = $result['BOUGHT_FEE'] + $result['SOLD_FEE'];
         $result['ONDUTY'] = $result['QTY'] * $result['AVG_BUY_PRICE'];
 
