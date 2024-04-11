@@ -32,14 +32,28 @@ class SpotTradingManager
 
     private function getMinSize(float $price)
     {
-        $afterPoint = 'GMTUSDT' === $this->champion->symbol ? 1 : 2;
-        $size = round($this->champion->grind / $price, $afterPoint);
+        $afterPoint = $this->getAfterPoint();
+        $size = number_format($this->champion->grind / $price, $afterPoint);
 
         if ('BNBUSDT' === $this->champion->symbol) {
             return $size > 0.02 ? $size : 0.02;
         }
 
         return $size;
+    }
+
+    private function getAfterPoint()
+    {
+        switch ($this->champion->symbol) {
+            case 'GMTUSDT':
+                return 1;
+            case 'BNBUSDT':
+                return 2;
+            case 'BTCUSDT':
+                return 5;
+            default:
+                return 2;
+        }
     }
 
     public function maybePlaceSellOrder(float $price): void
@@ -59,6 +73,9 @@ class SpotTradingManager
 
     public function placeBuyOrder(float $price): void
     {
+        info([$this->champion->symbol,
+            $this->getMinSize($price),
+            $price]);
         $binanceOrder = $this->client()->buy(
             $this->champion->symbol,
             $this->getMinSize($price),
