@@ -31,8 +31,9 @@ class Dev extends Command
      */
     public function handle(SpotTradingManager $spotTradingManager, ChampionManager $championManager): void
     {
+        //$spotTradingManager->collectTrades();
         /** @var Champion $champion */
-        $champion = Champion::query()->find(5);
+        $champion = Champion::query()->find(6);
         $championManager->syncLootcycle($champion);
     }
 
