@@ -45,6 +45,8 @@ class SpotTradingManager
     private function getAfterPoint()
     {
         switch ($this->champion->symbol) {
+            case 'DOGEFGUSD':
+                return 0;
             case 'GMTUSDT':
                 return 1;
             case 'BNBUSDT':
