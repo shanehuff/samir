@@ -60,7 +60,7 @@ class SpotTradingManager
 
     public function maybePlaceSellOrder(float $price): void
     {
-        if ($price >= $this->champion->entry) {
+        if ($this->shouldPlaceSellOrder($price)) {
             $binanceOrder = $this->client()->sell(
                 $this->champion->symbol,
                 $this->getMinSize($price),
@@ -71,6 +71,12 @@ class SpotTradingManager
                 $this->upsertSpotOrder($binanceOrder);
             }
         }
+    }
+
+    private function shouldPlaceSellOrder(float $price): bool
+    {
+        return $price >= $this->champion->entry || 
+            ($this->champion->onduty / ($this->champion->capital + $this->champion->profit - $this->champion->fee)) >= 0.5
     }
 
     public function placeBuyOrder(float $price): void
