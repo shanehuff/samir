@@ -217,8 +217,8 @@ class SpotTradingManager
             ->first();
 
         if ($order) {
-            // Make sure no order placed last 2 hours
-            return now()->diffInHours($order->created_at) >= 2;
+            // Make sure no order placed last 1 hour
+            return now()->diffInHours($order->created_at) >= 1;
         }
 
         return true;
@@ -233,8 +233,8 @@ class SpotTradingManager
             ->first();
 
         if ($order) {
-            // Make sure no order placed last 2 hours
-            return now()->diffInHours($order->created_at) > 2;
+            // Make sure no order placed last 1 hour
+            return now()->diffInHours($order->created_at) > 1;
         }
 
         return true;
