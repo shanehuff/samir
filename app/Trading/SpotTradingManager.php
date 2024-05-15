@@ -75,7 +75,7 @@ class SpotTradingManager
 
     private function shouldPlaceSellOrder(float $price): bool
     {
-        return $price >= $this->champion->entry || 
+        return $price >= $this->champion->entry && 
             ($this->champion->onduty / ($this->champion->capital + $this->champion->profit - $this->champion->fee)) >= 0.5;
     }
 
