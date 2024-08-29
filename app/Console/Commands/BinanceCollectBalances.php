@@ -40,10 +40,15 @@ class BinanceCollectBalances extends Command
         );
 
         $futuresAssets = collect($api->futures()['assets']);
+	$futuresAssetsUsdt = $futuresAssets->where('asset', '=', 'USDT');
 
-        $riskyMargin = $futuresAssets
-            ->where('asset', '=', 'USDT')
-            ->sum('marginBalance');
+	// Access the nested array at key 4
+	$assetData = $futuresAssetsUsdt->get(4);
+
+	// Convert the string values to floats and calculate the difference
+	$walletBalance = (float) $assetData['walletBalance'];
+	$maxWithdrawAmount = (float) $assetData['maxWithdrawAmount'];
+	$riskyMargin = $walletBalance - $maxWithdrawAmount;
 
         $data['FU'] = [
             'symbol' => 'FU',
